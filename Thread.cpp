@@ -13,16 +13,32 @@ void* Thread::thread_func(void* thisObj)
   return NULL;
 }
 
-
-void Thread::Run()
+Thread::ThreadId Thread::Run()
 {
-  pthread_t threadId;
-
-  if (pthread_create(&threadId, NULL,
+  if (pthread_create(&(m_threadId.id), NULL,
 		     thread_func, (void*) this) != 0)
     {
       cerr << "pthread_create failed" << endl;
       exit(1);
     }
+
+  m_threadId.isValid = true;
+
+  return m_threadId;
+}
+
+void Thread::Stop()
+{
+  if (!m_threadId.isValid)
+    {
+      return;
+    }
+
+  pthread_cancel(m_threadId.id);
+}
+
+Thread::ThreadId Thread::GetId() const
+{
+  return m_threadId;
 }
 
