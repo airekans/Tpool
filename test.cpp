@@ -4,7 +4,7 @@
 using namespace tpool;
 using namespace std;
 
-class TestThread : public Thread<TestThread> {
+class TestThread : public Thread {
 public:
   virtual void Entry()
   {

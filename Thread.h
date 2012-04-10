@@ -7,38 +7,16 @@
 
 namespace tpool {
 
-  namespace __impl {
-
-    template<class ObjClass>
-      void* thread_func(void* obj)
-      {
-	ObjClass* o = static_cast<ObjClass*>(obj);
-	o->Entry();
-      }
-
-  } // implementation details
-
-
-  template<class ChildClass>
-    class Thread {
+  class Thread {
+  private:
+    static void* thread_func(void* thisObj);
+   
   public:
     virtual ~Thread() {}
 
-    void Run()
-    {
-      using std::cerr;
-      using std::endl;
-      using __impl::thread_func;
+    void Run();
 
-      pthread_t threadId;
-
-      if (pthread_create(&threadId, NULL,
-			 thread_func<ChildClass>, (void*) this) != 0)
-	{
-	  cerr << "pthread_create failed" << endl;
-	  exit(1);
-	}
-    }
+  protected:
     virtual void Entry() = 0;
 
   };
