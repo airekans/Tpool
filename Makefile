@@ -1,5 +1,5 @@
 CXXFLAGS += -pthread
-LDFLAGS += -L /usr/local/lib/gtest -lgtest_main -lgtest
+LDFLAGS += # -L /usr/local/lib/gtest -lgtest_main -lgtest
 
 SRCS := Thread.cpp \
 	test.cpp

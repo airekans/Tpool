@@ -9,23 +9,21 @@ namespace tpool {
   private:
     static void* thread_func(void* thisObj);
 
-    struct Tid {
+    struct ThreadId {
       bool isValid;
       pthread_t id;
 
-    Tid() : isValid(false)
+    ThreadId() : isValid(false)
       {
       }
     };
    
   public:
-    typedef Tid ThreadId;
 
     virtual ~Thread() {}
 
-    ThreadId Run();
+    void Run();
     void Stop();
-    ThreadId GetId() const;
 
   protected:
     virtual void Entry() = 0;
