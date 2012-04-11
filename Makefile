@@ -1,12 +1,17 @@
 CXXFLAGS += -pthread
+CXXFLAGS += -I ./include
+LDFLAGS += -shared
 LDFLAGS += # -L /usr/local/lib/gtest -lgtest_main -lgtest
 
-SRCS := Thread.cpp \
-	test.cpp
+LINKER := ld
+
+TARGET := tpool.so
+
+SRCS := $(wildcard src/*.cpp)
 
 OBJS = $(SRCS:%.cpp=%.o)
 
-all: test.test
+all: $(TARGET)
 
-test.test: $(OBJS)
-	g++ -o $@ $(CXXFLAGS) $^ $(LDFLAGS)
+$(TARGET): $(OBJS)
+	$(LINKER) $(LDFLAGS) -o $@ $^

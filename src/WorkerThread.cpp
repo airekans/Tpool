@@ -1,4 +1,5 @@
 #include "WorkerThread.h"
+#include "TaskQueueBase.h"
 
 using namespace tpool;
 using namespace boost;
@@ -13,7 +14,7 @@ void WorkerThread::Entry()
   while (true)
     {
       // 1. fetch task from task queue
-      shared<TaskBase> task = m_taskQueue->Pop();
+      shared_ptr<TaskBase> task = m_taskQueue->Pop();
 
       // 2. perform the task
       if (task)
