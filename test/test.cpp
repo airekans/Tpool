@@ -1,8 +1,13 @@
 #include "Thread.h"
 #include <iostream>
+#include <gtest/gtest.h>
 
 using namespace tpool;
 using namespace std;
+
+namespace {
+  int GLOBAL_COUNTER = 0;
+}
 
 class TestThread : public Thread {
 public:
@@ -10,25 +15,25 @@ public:
   {
     for (int i = 0; i < 20; ++i)
       {
-	cout << "This is TestThread: " << i << endl;
+	++GLOBAL_COUNTER;
       }
   }
 
 
 };
 
-int main(int argc, char** argv)
+TEST(BasicThreadTestSuite, test_lifecycle)
 {
-  TestThread t;
+  {
+    TestThread t;
 
-  t.Run();
+    t.Run();
 
-  for (int i = 0; i < 20; ++i)
-    {
-      cout << "This is main: " << i << endl;
-    }
-
-  sleep(1);
-  
-  return 0;
+    for (int i = 0; i < 20; ++i)
+      {
+	++GLOBAL_COUNTER;
+      }
+  }
+  ASSERT_EQ(40, GLOBAL_COUNTER);
 }
+

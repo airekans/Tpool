@@ -20,7 +20,7 @@ namespace tpool {
    
   public:
 
-    virtual ~Thread() {}
+    virtual ~Thread();
 
     void Run();
     void Stop();
