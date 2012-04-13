@@ -20,7 +20,7 @@ namespace tpool {
 
   public:
     template<class Func>
-      explicit Thread(Func& f)
+      explicit Thread(const Func& f)
       : m_isStart(false)
       {
 	std::auto_ptr<Func> fp(new Func(f));
