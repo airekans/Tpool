@@ -3,7 +3,7 @@
 
 #include <pthread.h>
 #include <memory>
-#include <iostream>
+#include <cstdlib>
 
 namespace tpool {
   
@@ -18,35 +18,30 @@ namespace tpool {
 	return NULL;
       }
 
-    struct ThreadId {
-      bool isValid;
-      pthread_t id;
-
-    ThreadId() : isValid(false)
-      {
-      }
-    };
-   
   public:
     template<class Func>
       explicit Thread(Func& f)
+      : m_isStart(false)
       {
-	std::auto_ptr<Func> fp(new Func());
+	std::auto_ptr<Func> fp(new Func(f));
 
-	pthread_t tid;
-	pthread_create(&tid, NULL,
+	if (pthread_create(&m_threadId, NULL,
 		       thread_func<Func>,
-		       fp.get());
+		       fp.get())
+	    != 0)
+	  {
+	    exit(1);
+	  }
+	
 	fp.release();
+	m_isStart = true;
       }
 
-    virtual ~Thread();
-
-    void Run();
-    void Stop();
+    ~Thread();
 
   private:
-    ThreadId m_threadId;
+    pthread_t m_threadId;
+    bool m_isStart;
 
   };
 

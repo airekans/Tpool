@@ -1,5 +1,4 @@
 #include "Thread.h"
-#include <pthread.h>
 #include <iostream>
 #include <cstdlib>
 
@@ -8,6 +7,10 @@ using namespace tpool;
 
 Thread::~Thread()
 {
+  if (m_isStart)
+    {
+      pthread_join(m_threadId, NULL);
+    }
 }
 
 void Thread::Run()

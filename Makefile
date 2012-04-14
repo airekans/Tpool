@@ -1,4 +1,4 @@
-CXXFLAGS += -pthread -fPIC
+CXXFLAGS += -pthread -fPIC -Wall
 CXXFLAGS += -I ./include
 LDFLAGS += -shared
 LDFLAGS += # -L /usr/local/lib/gtest -lgtest_main -lgtest
@@ -17,7 +17,7 @@ all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(LINKER) $(LDFLAGS) -Wl,-soname,$@ -o $@.1.0 $^
-	ln -s $@.1.0 $@
+	ln -fs $@.1.0 $@
 
 test:
 	cd $(TEST_DIR); $(MAKE)
