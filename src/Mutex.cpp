@@ -1,14 +1,16 @@
 #include "Mutex.h"
 #include <cstdlib>
+#include <stdexcept>
 
 using namespace tpool::sync;
+using namespace std;
 
 Mutex::Mutex()
 {
   // TODO: check the return code.
   if (pthread_mutex_init(&m_mutex, NULL) != 0)
     {
-      exit(1);
+      throw runtime_error("failed to initialize mutex");
     }
 }
 
