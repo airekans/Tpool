@@ -7,16 +7,16 @@
 namespace tpool {
   class TaskQueueBase;
 
-  class WorkerThread : public Thread {
-  public:
-    WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue);
+  /* class WorkerThread : public Thread { */
+  /* public: */
+  /*   WorkerThread(boost::shared_ptr<TaskQueueBase> taskQueue); */
 
-  protected:
-    virtual void Entry();
+  /* protected: */
+  /*   virtual void Entry(); */
 
-  private:
-    boost::shared_ptr<TaskQueueBase> m_taskQueue;
-  };
+  /* private: */
+  /*   boost::shared_ptr<TaskQueueBase> m_taskQueue; */
+  /* }; */
 }
 
 #endif
