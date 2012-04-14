@@ -28,5 +28,5 @@ clean:
 
 depend: $(SRCS)
 	for s in $(SRCS); do \
-	g++ -MM -MT $s $s; \
+	g++ -I ./include -MM -MT $$s $$s; \
 	done
