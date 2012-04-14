@@ -20,13 +20,23 @@ Mutex::~Mutex()
   pthread_mutex_destroy(&m_mutex);
 }
 
+void Mutex::Lock()
+{
+  pthread_mutex_lock(&m_mutex);
+}
+
+void Mutex::Unlock()
+{
+  pthread_mutex_unlock(&m_mutex);
+}
+
 MutexLocker::MutexLocker(Mutex& m)
 {
   m_mutex = &m;
-  pthread_mutex_lock(&m.m_mutex);
+  m.Lock();
 }
 
 MutexLocker::~MutexLocker()
 {
-  pthread_mutex_unlock(&(m_mutex->m_mutex));
+  m_mutex->Unlock();
 }

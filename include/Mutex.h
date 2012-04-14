@@ -17,6 +17,10 @@ namespace tpool {
     private:
       Mutex(const Mutex&);
       Mutex& operator=(const Mutex&);
+
+      // These two functions can only called by MutexLocker
+      void Lock();
+      void Unlock();
       
       pthread_mutex_t m_mutex;
     };
