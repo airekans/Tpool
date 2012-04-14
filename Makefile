@@ -1,7 +1,9 @@
 CXXFLAGS += -pthread -fPIC -Wall
 CXXFLAGS += -I ./include
-LDFLAGS += -shared
-LDFLAGS += # -L /usr/local/lib/gtest -lgtest_main -lgtest
+
+LIBTYPE := -shared
+
+LDFLAGS += -pthread
 
 LINKER := g++
 
@@ -16,7 +18,7 @@ OBJS = $(SRCS:%.cpp=%.o)
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(LINKER) $(LDFLAGS) -Wl,-soname,$@ -o $@.1.0 $^
+	$(LINKER) $(LIBTYPE) -Wl,-soname,$@ -o $@.1.0 $^ $(LDFLAGS)
 	ln -fs $@.1.0 $@
 
 test:
