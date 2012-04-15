@@ -8,9 +8,9 @@ using namespace boost;
 
 namespace {
   struct ThreadFunc {
-    shared_ptr<TaskQueueBase> taskQueue;
+    TaskQueueBase::Ptr taskQueue;
 
-    ThreadFunc(shared_ptr<TaskQueueBase> q)
+    ThreadFunc(TaskQueueBase::Ptr q)
     {
       taskQueue = q;
     }
@@ -25,7 +25,7 @@ namespace {
       while (true)
 	{
 	  // 1. fetch task from task queue
-	  shared_ptr<TaskBase> task = taskQueue->Pop();
+	  TaskBase::Ptr task = taskQueue->Pop();
 
 	  // 2. perform the task
 	  if (task)
@@ -40,7 +40,7 @@ namespace {
 }
 
 
-WorkerThread::WorkerThread(shared_ptr<TaskQueueBase> taskQueue)
+WorkerThread::WorkerThread(TaskQueueBase::Ptr taskQueue)
 {
   m_taskQueue = taskQueue;
 

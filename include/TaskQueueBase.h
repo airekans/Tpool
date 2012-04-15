@@ -7,8 +7,12 @@
 namespace tpool {
   class TaskQueueBase {
   public:
-    virtual void Push(boost::shared_ptr<TaskBase> task) = 0;
-    virtual boost::shared_ptr<TaskBase> Pop() = 0;
+    typedef boost::shared_ptr<TaskQueueBase> Ptr;
+    
+    virtual ~TaskQueueBase() {}
+    
+    virtual void Push(TaskBase::Ptr task) = 0;
+    virtual TaskBase::Ptr Pop() = 0;
   };
 }
 
