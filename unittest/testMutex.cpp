@@ -100,9 +100,8 @@ namespace {
     
     void operator()()
     {
-      sync::MutexWaitWhen(mutex,
+      sync::MutexWaitLocker(mutex,
 			  (GreaterThanFunc(counter)));
-      sync::MutexLocker l(mutex);
       wakeCount = counter; // wakeCount should > 0 now
     }
   };

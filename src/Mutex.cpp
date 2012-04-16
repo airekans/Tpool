@@ -31,12 +31,17 @@ void Mutex::Unlock()
 }
 
 MutexLocker::MutexLocker(Mutex& m)
+  : m_mutex(m)
 {
-  m_mutex = &m;
-  m.Lock();
+  m_mutex.Lock();
 }
 
 MutexLocker::~MutexLocker()
 {
-  m_mutex->Unlock();
+  m_mutex.Unlock();
+}
+
+MutexWaitLocker::~MutexWaitLocker()
+{
+  m_mutex.Unlock();
 }

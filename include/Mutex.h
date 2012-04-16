@@ -8,10 +8,12 @@
 namespace tpool {
   namespace sync {
     class MutexLocker;
+    class MutexWaitLocker;
     class ConditionVariable;
     
     class Mutex : private boost::noncopyable {
       friend class MutexLocker;
+      friend class MutexWaitLocker;
       friend class ConditionVariable;
 
     public:
@@ -32,21 +34,31 @@ namespace tpool {
       ~MutexLocker();
 
     private:
-      Mutex* m_mutex;
+      Mutex& m_mutex;
     };
 
-    template<typename ConditionFunc>
-      void MutexWaitWhen(Mutex& m, ConditionFunc f)
-      {
-	while (true)
-	  {
-	    MutexLocker l(m);
-	    if (f())
-	      {
-		return;
-	      }
-	  }
-      }
+    class MutexWaitLocker {
+    public:
+      template<typename ConditionFunc>
+	MutexWaitLocker(Mutex& m, ConditionFunc f)
+	: m_mutex(m)
+	{
+	  while (true)
+	    {
+	      m_mutex.Lock();
+	      if (f())
+		{
+		  break;
+		}
+	      m_mutex.Unlock();
+	    }
+	}
+
+      ~MutexWaitLocker();
+
+    private:
+      Mutex& m_mutex;
+    };
   }
 }
 
