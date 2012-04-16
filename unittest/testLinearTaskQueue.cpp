@@ -3,14 +3,18 @@
 #include "TaskBase.h"
 #include <gtest/gtest.h>
 #include <cstdlib>
+#include <boost/shared_ptr.hpp>
+#include <vector>
 
+using namespace std;
 using namespace tpool;
+using namespace boost;
 
 namespace {
   struct EmptyTask : public TaskBase {
     void Do() {}
   };
-  
+
   struct PushThreadFunc {
     const int num;
     LinearTaskQueue& taskQueue;
@@ -19,12 +23,17 @@ namespace {
       : taskQueue(q), num(n)
     {}
 
-    void operator()()
+    virtual void Do()
     {
       for (int i = 0; i < num; ++i)
 	{
 	  taskQueue.Push(TaskBase::Ptr(new EmptyTask));
 	}
+    }
+    
+    void operator()()
+    {
+      Do();
     }
   };
 }
@@ -66,4 +75,81 @@ TEST(LinearTaskQueueTestSuite, test_PopWait)
   }
 
   ASSERT_EQ(9, taskQueue.Size());
+}
+
+namespace {
+  struct ThreadSafeInt {
+    int i;
+    sync::Mutex mutex;
+
+    ThreadSafeInt() : i(0) {}
+    ThreadSafeInt& operator++()
+    {
+      sync::MutexLocker l(mutex);
+      ++i;
+      return *this;
+    }
+  };
+  
+  struct IncTask : public TaskBase {
+    ThreadSafeInt& counter;
+
+    IncTask(ThreadSafeInt& i)
+      : counter(i)
+    {}
+
+    void Do()
+    {
+      ++counter;
+    }
+  };
+
+  struct PushIncTaskThreadFunc : public PushThreadFunc {
+    ThreadSafeInt& counter;
+
+    PushIncTaskThreadFunc(LinearTaskQueue& q, int n, ThreadSafeInt& i)
+      : PushThreadFunc(q, n), counter(i)
+    {}
+
+    virtual void Do()
+    {
+      for (int i = 0; i < num; ++i)
+	{
+	  taskQueue.Push(TaskBase::Ptr(new IncTask(counter)));
+	}
+    }
+  };
+
+  struct RunTaskThreadFunc {
+    LinearTaskQueue& taskQueue;
+
+    RunTaskThreadFunc(LinearTaskQueue& q)
+      : taskQueue(q)
+    {}
+
+    void operator()()
+    {
+      TaskBase::Ptr t = taskQueue.Pop();
+      t->Do();
+    }
+  };
+}
+
+TEST(LinearTaskQueueTestSuite, test_NormalUsage)
+{
+  LinearTaskQueue taskQueue;
+  ThreadSafeInt counter;
+  {
+    typedef shared_ptr<Thread> ThreadPtr;
+    vector<ThreadPtr> workers;
+
+    for (int i = 0; i < 10; ++i)
+      {
+	workers.push_back(ThreadPtr(
+	  new Thread((RunTaskThreadFunc(taskQueue)))));
+      }
+    Thread t2((PushIncTaskThreadFunc(taskQueue, 10, counter)));
+  }
+
+  ASSERT_EQ(10, counter.i);
 }
