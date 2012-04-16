@@ -63,7 +63,7 @@ namespace {
     
     void operator()()
     {
-      for (int i = 0; i < 10; ++i)
+      for (int i = 0; i < 2; ++i)
 	{
 	  {
 	    sync::MutexLocker l(mutex);
@@ -94,7 +94,7 @@ namespace {
 
       bool operator()()
       {
-	return counter >= 5;
+	return counter >= 1;
       }
     };
     
@@ -102,12 +102,13 @@ namespace {
     {
       sync::MutexWaitLocker(mutex,
 			  (GreaterThanFunc(counter)));
+      cout << "wait end: counter " << counter << endl;
       wakeCount = counter; // wakeCount should > 0 now
     }
   };
 }
 
-TEST(MutexTestSuite, test_MutexWaitWhen)
+TEST(MutexTestSuite, test_MutexWaitLocker)
 {
   int counter = 0;
   int wakeCount = -1;

@@ -3,6 +3,7 @@
 
 #include "TaskBase.h"
 #include <boost/shared_ptr.hpp>
+#include <cstdlib> // for size_t
 
 namespace tpool {
   class TaskQueueBase {
@@ -13,6 +14,7 @@ namespace tpool {
     
     virtual void Push(TaskBase::Ptr task) = 0;
     virtual TaskBase::Ptr Pop() = 0;
+    virtual size_t Size() const = 0;
   };
 }
 

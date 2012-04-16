@@ -7,6 +7,8 @@ namespace tpool {
   class TaskBase {
   public:
     typedef boost::shared_ptr<TaskBase> Ptr;
+
+    ~TaskBase() {}
     
     virtual void Do() = 0;
   };

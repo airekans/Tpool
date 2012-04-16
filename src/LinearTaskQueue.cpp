@@ -1,8 +1,11 @@
 #include "LinearTaskQueue.h"
+#include <boost/bind.hpp>
+#include <functional>
 
 using namespace tpool;
 using namespace tpool::sync;
 using namespace boost;
+using namespace std;
 
 void LinearTaskQueue::Push(TaskBase::Ptr task)
 {
@@ -12,9 +15,17 @@ void LinearTaskQueue::Push(TaskBase::Ptr task)
 
 TaskBase::Ptr LinearTaskQueue::Pop()
 {
-  MutexLocker l(m_mutex);
+  // wait until task queue is not empty
+  MutexWaitLocker l(m_mutex,
+		    bind(not1(mem_fun(&TaskQueueImpl::empty)),
+			 &m_tasks));
   TaskBase::Ptr task = m_tasks.front();
   m_tasks.pop();
   return task;
 }
 
+size_t LinearTaskQueue::Size() const
+{
+  MutexLocker l(m_mutex);
+  return m_tasks.size();
+}

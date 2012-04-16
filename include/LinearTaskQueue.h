@@ -10,10 +10,12 @@ namespace tpool {
   public:
     virtual void Push(TaskBase::Ptr task);
     virtual TaskBase::Ptr Pop();
+    virtual size_t Size() const;
 
   private:
-    std::queue<TaskBase::Ptr> m_tasks;
-    sync::Mutex m_mutex;
+    typedef std::queue<TaskBase::Ptr> TaskQueueImpl;
+    TaskQueueImpl m_tasks;
+    mutable sync::Mutex m_mutex;
   };
 }
 
