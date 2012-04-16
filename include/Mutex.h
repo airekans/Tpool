@@ -34,6 +34,19 @@ namespace tpool {
     private:
       Mutex* m_mutex;
     };
+
+    template<typename ConditionFunc>
+      void MutexWaitWhen(Mutex& m, ConditionFunc f)
+      {
+	while (true)
+	  {
+	    MutexLocker l(m);
+	    if (f())
+	      {
+		return;
+	      }
+	  }
+      }
   }
 }
 

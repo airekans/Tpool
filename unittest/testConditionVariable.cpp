@@ -2,31 +2,31 @@
 
 using namespace tpool;
 
-namespace {
-  int GLOBAL_COUNTER = 0;
-  bool WAIT_CONDITION = true;
+// namespace {
+//   int GLOBAL_COUNTER = 0;
+//   bool WAIT_CONDITION = true;
 
-  ConditionVariable cond;
+//   ConditionVariable cond;
   
-  struct WaitThreadFunc {
-    struct {
-      bool operator()()
-      {
-	return WAIT_CONDITION;
-      }
-    } waitCondition;
+//   struct WaitThreadFunc {
+//     struct {
+//       bool operator()()
+//       {
+// 	return WAIT_CONDITION;
+//       }
+//     } waitCondition;
     
-    void operator()()
-    {
-      sync::ConditionLocker l(cond);
-      l.WaitWhen(waitCondition);
+//     void operator()()
+//     {
+//       sync::ConditionLocker l(cond);
+//       l.WaitWhen(waitCondition);
 
-      GLOBAL_COUNTER = 1;
-    }
-  };
-}
+//       GLOBAL_COUNTER = 1;
+//     }
+//   };
+// }
 
-TEST(ConditionVariableTestSuite, test_signal)
-{
-  Thread t1();
-}
+// TEST(ConditionVariableTestSuite, test_signal)
+// {
+//   Thread t1();
+// }
