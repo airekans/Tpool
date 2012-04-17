@@ -2,16 +2,38 @@
 #define _TPOOL_THREAD_POOL_H_
 
 #include "WorkerThread.h"
+#include "LinearTaskQueue.h"
 #include <vector>
+#include <cstdlib> // for size_t
+#include <boost/foreach.hpp>
 
 namespace tpool {
-  template<class TaskQueue>
+  template<class TaskQueue = LinearTaskQueue>
     class ThreadPool {
   public:
+    ThreadPool(const size_t threadNum = 10)
+      : m_taskQueue(new TaskQueue),
+	m_threads(threadNum)
+    {
+      BOOST_FOREACH(WorkerThread::Ptr& t, m_threads)
+	{
+	  t.reset(new WorkerThread(m_taskQueue));
+	}
+    }
+
+    size_t GetThreadNum()
+    {
+      return m_threads.size();
+    }
+
+    void AddTask(TaskBase::Ptr task)
+    {
+      m_taskQueue->Push(task);
+    }
 
   private:
-    TaskQueue m_taskQueue;
-    std::vector<WorkerThread> m_threads;
+    TaskQueueBase::Ptr m_taskQueue;
+    std::vector<WorkerThread::Ptr> m_threads;
   };
 }
 
