@@ -4,19 +4,31 @@
 #include <pthread.h>
 #include <memory>
 #include <cstdlib>
+#include <stdexcept>
+
 
 namespace tpool {
   
   class Thread {
   private:
     template<class Func>
-      static void* thread_func(void* arg)
+      static void* ThreadFunction(void* arg)
       {
 	std::auto_ptr<Func> fp(static_cast<Func*>(arg));
-	(*fp)(); // call the functor
+
+	try
+	  {
+	    (*fp)(); // call the functor
+	  }
+	catch (const std::exception& e)
+	  {
+	    ProcessException(e);
+	  }
 	
 	return NULL;
       }
+
+    static void ProcessException(const std::exception& e);
 
   public:
     template<class Func>
@@ -26,11 +38,12 @@ namespace tpool {
 	std::auto_ptr<Func> fp(new Func(f));
 
 	if (pthread_create(&m_threadId, NULL,
-		       thread_func<Func>,
+		       ThreadFunction<Func>,
 		       fp.get())
 	    != 0)
 	  {
-	    exit(1);
+	    // TODO: check different error code.
+	    throw std::runtime_error("failed to create thread");
 	  }
 	
 	fp.release();
