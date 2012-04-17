@@ -6,19 +6,22 @@ using namespace tpool;
 using namespace tpool::sync;
 using namespace boost;
 
+namespace {
+  
+}
 
 void LinearTaskQueue::Push(TaskBase::Ptr task)
 {
-  MutexLocker l(m_mutex);
+  ConditionNotifyAllLocker l(m_mutexCond,
+			     bind(&TaskQueueImpl::empty, &m_tasks));
   m_tasks.push(task);
 }
 
 TaskBase::Ptr LinearTaskQueue::Pop()
 {
   // wait until task queue is not empty
-  MutexWaitLocker l(m_mutex,
-		    bind(not1(mem_fun(&TaskQueueImpl::empty)),
-			 &m_tasks));
+  ConditionWaitLocker l(m_mutexCond,
+			bind(not1(mem_fun(&TaskQueueImpl::empty)), &m_tasks));
 
   TaskBase::Ptr task = m_tasks.front();
   m_tasks.pop();
@@ -27,11 +30,7 @@ TaskBase::Ptr LinearTaskQueue::Pop()
 
 size_t LinearTaskQueue::Size() const
 {
-  MutexLocker l(m_mutex);
+  MutexLocker l(m_mutexCond);
   return m_tasks.size();
 }
 
-MutexConditionVariable::MutexConditionVariable()
-  : Mutex(), ConditionVariable(*static_cast<Mutex*>(this))
-{
-}

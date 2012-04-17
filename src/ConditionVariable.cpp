@@ -39,3 +39,8 @@ void ConditionVariable::Unlock()
 {
   m_mutex.Unlock();
 }
+
+MutexConditionVariable::MutexConditionVariable()
+  : Mutex(), ConditionVariable(*static_cast<Mutex*>(this))
+{
+}

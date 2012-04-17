@@ -15,7 +15,7 @@ namespace tpool {
   private:
     typedef std::queue<TaskBase::Ptr> TaskQueueImpl;
     TaskQueueImpl m_tasks;
-    mutable sync::Mutex m_mutex;
+    mutable sync::MutexConditionVariable m_mutexCond;
   };
 }
 
