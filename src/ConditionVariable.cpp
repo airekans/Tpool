@@ -5,7 +5,7 @@ using namespace tpool::sync;
 
 
 ConditionVariable::ConditionVariable(Mutex& m)
-  : m_mutex(&m)
+  : m_mutex(m)
 {
   pthread_cond_init(&m_cond, NULL);
 }
@@ -27,5 +27,15 @@ void ConditionVariable::NotifyAll()
 
 void ConditionVariable::Wait()
 {
-  pthread_cond_wait(&m_cond, &(m_mutex->m_mutex));
+  pthread_cond_wait(&m_cond, &(m_mutex.m_mutex));
+}
+
+void ConditionVariable::Lock()
+{
+  m_mutex.Lock();
+}
+
+void ConditionVariable::Unlock()
+{
+  m_mutex.Unlock();
 }

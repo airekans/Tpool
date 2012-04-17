@@ -2,7 +2,7 @@
 #define _TPOOL_LINEAR_TASK_QUEUE_H_
 
 #include "TaskQueueBase.h"
-#include "Mutex.h"
+#include "ConditionVariable.h"
 #include <queue>
 
 namespace tpool {

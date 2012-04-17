@@ -40,19 +40,19 @@ namespace tpool {
     class MutexWaitLocker {
     public:
       template<typename ConditionFunc>
-	MutexWaitLocker(Mutex& m, ConditionFunc f)
+      MutexWaitLocker(Mutex& m, ConditionFunc f)
 	: m_mutex(m)
-	{
-	  while (true)
-	    {
-	      m_mutex.Lock();
-	      if (f())
-		{
-		  break;
-		}
-	      m_mutex.Unlock();
-	    }
-	}
+      {
+	while (true)
+	  {
+	    m_mutex.Lock();
+	    if (f())
+	      {
+		break;
+	      }
+	    m_mutex.Unlock();
+	  }
+      }
 
       ~MutexWaitLocker();
 

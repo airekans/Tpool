@@ -6,6 +6,7 @@
 #include <boost/system/error_code.hpp>
 #include <ctime>
 #include <string>
+#include <cstdlib>
 
 using namespace tpool;
 using boost::asio::ip::tcp;
@@ -21,6 +22,8 @@ public:
   virtual void Do()
   {
     cout << "Process Daytime Request." << endl;
+
+    sleep(1); // simulate the 1 second delay.
     const string daytimeString = GetDaytimeString();
     
     boost::system::error_code ignored_error;

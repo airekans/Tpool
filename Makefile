@@ -28,12 +28,12 @@ $(TARGET): $(OBJS)
 include Makefile.rules
 
 test:
-	cd $(TEST_DIR); $(MAKE)
+	@cd $(TEST_DIR); $(MAKE)
 
 example:
-	cd $(EXAMPLE_DIR); $(MAKE)
+	@cd $(EXAMPLE_DIR); $(MAKE)
 
 clean:
 	rm -fv $(OBJS) $(TARGET).1.0 $(TARGET)
-	cd $(TEST_DIR); $(MAKE) clean
+	@cd $(TEST_DIR); $(MAKE) clean
 

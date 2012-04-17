@@ -30,3 +30,8 @@ size_t LinearTaskQueue::Size() const
   MutexLocker l(m_mutex);
   return m_tasks.size();
 }
+
+MutexConditionVariable::MutexConditionVariable()
+  : Mutex(), ConditionVariable(*static_cast<Mutex*>(this))
+{
+}
