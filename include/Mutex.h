@@ -8,10 +8,12 @@
 namespace tpool {
   namespace sync {
     class MutexLocker;
+    class ConditionVariable;
     
     class Mutex : private boost::noncopyable {
       friend class MutexLocker;
-      
+      friend class ConditionVariable;
+
     public:
       Mutex();
       ~Mutex();
