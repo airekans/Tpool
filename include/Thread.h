@@ -5,11 +5,12 @@
 #include <memory>
 #include <cstdlib>
 #include <stdexcept>
+#include <boost/noncopyable.hpp>
 
 
 namespace tpool {
   
-  class Thread {
+  class Thread : private boost::noncopyable {
   private:
     template<class Func>
       static void* ThreadFunction(void* arg)

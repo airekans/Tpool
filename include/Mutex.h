@@ -2,12 +2,14 @@
 #define _TPOOL_MUTEX_H_
 
 #include <pthread.h>
+#include <boost/noncopyable.hpp>
+
 
 namespace tpool {
   namespace sync {
     class MutexLocker;
     
-    class Mutex {
+    class Mutex : private boost::noncopyable {
       friend class MutexLocker;
       
     public:
@@ -15,9 +17,6 @@ namespace tpool {
       ~Mutex();
       
     private:
-      Mutex(const Mutex&);
-      Mutex& operator=(const Mutex&);
-
       // These two functions can only called by MutexLocker
       void Lock();
       void Unlock();
@@ -25,9 +24,9 @@ namespace tpool {
       pthread_mutex_t m_mutex;
     };
 
-    class MutexLocker {
+    class MutexLocker : private boost::noncopyable {
     public:
-      MutexLocker(Mutex& m);
+      explicit MutexLocker(Mutex& m);
       ~MutexLocker();
 
     private:
