@@ -11,8 +11,5 @@ TEST(WorkerThreadTestSuite, test_Ctor)
   {
     TaskQueueBase::Ptr q(new LinearTaskQueue);
     WorkerThread t(q);
-
   }
-  cout << "worker thread end" << endl;
-
 }

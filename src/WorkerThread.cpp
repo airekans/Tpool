@@ -2,11 +2,9 @@
 #include "Thread.h"
 #include "TaskQueueBase.h"
 #include "TaskBase.h"
-#include <iostream>
 
 using namespace tpool;
 using namespace boost;
-using namespace std;
 
 namespace {
   struct ThreadFunc {
@@ -26,12 +24,8 @@ namespace {
     {
       while (true)
 	{
-	  cout << "prepare to get pop" << endl;
-
 	  // 1. fetch task from task queue
 	  TaskBase::Ptr task = taskQueue->Pop();
-
-	  cout << "Got pop" << endl;
 
 	  // 2. perform the task
 	  if (task)
@@ -55,7 +49,7 @@ WorkerThread::WorkerThread(TaskQueueBase::Ptr taskQueue)
   m_thread.reset(new Thread(f));
 }
 
+// dtor has to be defined for pimpl idiom
 WorkerThread::~WorkerThread()
 {
-  cout << "~WorkerThread" << endl;
 }

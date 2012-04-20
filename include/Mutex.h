@@ -3,7 +3,6 @@
 
 #include <pthread.h>
 #include <boost/noncopyable.hpp>
-#include <iostream>
 
 
 namespace tpool {
@@ -49,12 +48,10 @@ namespace tpool {
 	      m_mutex.Lock();
 	      if (f())
 		{
-		  std::cout << "condition true" << std::endl;
 		  break;
 		}
 	      m_mutex.Unlock();
 	    }
-	  std::cout << "exit MutexWaitLocker" << std::endl;
 	}
 
       ~MutexWaitLocker();
