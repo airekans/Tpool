@@ -10,7 +10,7 @@ namespace tpool {
 
   class WorkerThread {
   public:
-    typedef std::auto_ptr<WorkerThread> Ptr;
+    typedef boost::shared_ptr<WorkerThread> Ptr;
 
     WorkerThread(TaskQueueBase::Ptr taskQueue);
     ~WorkerThread();

@@ -21,7 +21,10 @@ namespace tpool {
 	}
     }
 
-    size_t GetThreadNum()
+  ~ThreadPool();
+  
+
+    size_t GetThreadNum() const
     {
       return m_threads.size();
     }
@@ -35,6 +38,13 @@ namespace tpool {
     TaskQueueBase::Ptr m_taskQueue;
     std::vector<WorkerThread::Ptr> m_threads;
   };
+
+  // Implementation
+  template<class TaskQueue>
+    ThreadPool<TaskQueue>::~ThreadPool()
+    {
+      
+    }
 }
 
 
