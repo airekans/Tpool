@@ -1,0 +1,20 @@
+#### Variables ####
+# Automatically make dependency information
+DEPDIR := .deps
+df = $(DEPDIR)/$(*F)
+MAKEDEPEND = g++ $(CXXFLAGS) -MM -MT $*.o $<
+
+
+#### Rules ####
+# generate the dependency and compile
+%.o: %.cpp
+	@mkdir -p $(DEPDIR)
+	@$(MAKEDEPEND) > $(df).d; \
+	  cp $(df).d $(df).P; \
+	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+                -e '/^$$/ d' -e 's/$$/ :/' < $(df).d >> $(df).P; \
+          rm -f $(df).d
+	$(COMPILE.cpp) -o $@ $<
+
+#### Note that you have to define $(SRCDIR) first ####
+-include $(SRCS:$(SRCDIR)/%.cpp=$(DEPDIR)/%.P)
