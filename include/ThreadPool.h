@@ -3,6 +3,7 @@
 
 #include "WorkerThread.h"
 #include "LinearTaskQueue.h"
+#include "EndTask.h"
 #include <vector>
 #include <cstdlib> // for size_t
 #include <boost/foreach.hpp>
@@ -43,7 +44,11 @@ namespace tpool {
   template<class TaskQueue>
     ThreadPool<TaskQueue>::~ThreadPool()
     {
-      
+      const size_t threadNum = m_threads.size();
+      for (int i = 0; i < threadNum; ++i)
+	{
+	  m_taskQueue->Push(TaskBase::Ptr(new EndTask));
+	}
     }
 }
 
