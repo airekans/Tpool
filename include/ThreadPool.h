@@ -40,6 +40,8 @@ namespace tpool {
     std::vector<WorkerThread::Ptr> m_threads;
   };
 
+  typedef ThreadPool<> LThreadPool;
+
   // Implementation
   template<class TaskQueue>
     ThreadPool<TaskQueue>::~ThreadPool()
