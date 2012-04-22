@@ -3,6 +3,9 @@
 #include <exception>
 #include <iostream>
 #include <boost/asio.hpp>
+#include <boost/system/error_code.hpp>
+#include <ctime>
+#include <string>
 
 using namespace tpool;
 using boost::asio::ip::tcp;
@@ -17,11 +20,21 @@ public:
 
   virtual void Do()
   {
-
+    cout << "Process Daytime Request." << endl;
+    const string daytimeString = GetDaytimeString();
     
+    boost::system::error_code ignored_error;
+    boost::asio::write(*m_socket, boost::asio::buffer(daytimeString),
+		       boost::asio::transfer_all(), ignored_error);
   }
 
 private:
+  string GetDaytimeString() const
+  {
+    time_t now = time(0);
+    return ctime(&now);
+  }
+  
   shared_ptr<tcp::socket> m_socket;
 };
 

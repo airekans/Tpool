@@ -8,6 +8,7 @@ LDFLAGS += -pthread
 TARGET := libtpool.so
 
 TEST_DIR := unittest
+EXAMPLE_DIR := examples
 
 HDRDIR := include
 SRCDIR := src
@@ -28,6 +29,9 @@ include Makefile.rules
 
 test:
 	cd $(TEST_DIR); $(MAKE)
+
+example:
+	cd $(EXAMPLE_DIR); $(MAKE)
 
 clean:
 	rm -fv $(OBJS) $(TARGET).1.0 $(TARGET)
