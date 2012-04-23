@@ -94,7 +94,7 @@ namespace {
 
       bool operator()()
       {
-	return counter >= 1;
+	return counter < 1;
       }
     };
     

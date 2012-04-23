@@ -46,7 +46,7 @@ namespace tpool {
 	while (true)
 	  {
 	    m_mutex.Lock();
-	    if (f())
+	    if (!f()) // wait when the condition is true
 	      {
 		break;
 	      }
