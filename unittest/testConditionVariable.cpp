@@ -19,16 +19,16 @@ namespace {
       : condition(c)
     {}
     
-    struct {
+    struct WaitCondFunc{
       bool operator()()
       {
 	return WAIT_CONDITION;
       }
-    } waitCondition;
+    };
     
     void operator()()
     {
-      sync::ConditionWaitLocker(condition, waitCondition);
+      sync::ConditionWaitLocker l(condition, WaitCondFunc());
       ++GLOBAL_COUNTER;
     }
   };

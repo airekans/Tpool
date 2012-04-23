@@ -6,9 +6,6 @@ using namespace tpool;
 using namespace tpool::sync;
 using namespace boost;
 
-namespace {
-  
-}
 
 void LinearTaskQueue::Push(TaskBase::Ptr task)
 {
@@ -21,7 +18,7 @@ TaskBase::Ptr LinearTaskQueue::Pop()
 {
   // wait until task queue is not empty
   ConditionWaitLocker l(m_mutexCond,
-			bind(not1(mem_fun(&TaskQueueImpl::empty)), &m_tasks));
+			bind(&TaskQueueImpl::empty, &m_tasks));
 
   TaskBase::Ptr task = m_tasks.front();
   m_tasks.pop();
