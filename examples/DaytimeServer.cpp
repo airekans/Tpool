@@ -50,7 +50,8 @@ int main(int argc, char** argv)
       boost::asio::io_service io_service;
       tcp::acceptor acceptor(io_service,
 			     tcp::endpoint(tcp::v4(), 1234));
-
+      
+      int cnt = 0;
       while (true)
 	{
 	  shared_ptr<tcp::socket> socket(new tcp::socket(io_service));
@@ -58,6 +59,7 @@ int main(int argc, char** argv)
 
 	  // Add the task to thread pool
 	  threadPool.AddTask(TaskBase::Ptr(new DaytimeTask(socket)));
+	  cout << "Received Connection: " << ++cnt << endl;
 	}
     }
   catch (std::exception& e)
