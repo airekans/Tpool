@@ -42,19 +42,49 @@ namespace {
     void operator()()
     {
       m_num = 0;
-      throw runtime_error("exit thread function");
+      ThrowException();
       m_num = 1;
     }
 
+    virtual void ThrowException()
+    {
+      throw runtime_error("exit thread function");
+    }
+    
     int& m_num;
   };
 }
 
 TEST(BasicThreadTestSuite, test_threadFuncThrowException)
 {
-  int i = 0;
+  int i = -1;
   ThreadFuncThrowException f(i);
 
+  {
+    Thread t(f);
+  }
+
+  ASSERT_EQ(0, i);
+}
+
+namespace {
+  class ThreadFuncThrowUnknownException : public ThreadFuncThrowException {
+  public:
+    ThreadFuncThrowUnknownException(int& i)
+      : ThreadFuncThrowException(i)
+    {}
+
+    virtual void ThrowException()
+    {
+      throw 1;
+    }
+  };
+}
+
+TEST(BasicThreadTestSuite, test_threadFuncThrowUnknownException)
+{
+  int i = -1;
+  ThreadFuncThrowUnknownException f(i);
   {
     Thread t(f);
   }

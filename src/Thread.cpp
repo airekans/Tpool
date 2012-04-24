@@ -10,6 +10,11 @@ void Thread::ProcessException(const exception& e)
   cerr << e.what() << endl;
 }
 
+void Thread::ProcessUnknownException()
+{
+  cerr << "Caught Unexpected Excetion." << endl;
+}
+
 Thread::~Thread()
 {
   if (m_isStart)

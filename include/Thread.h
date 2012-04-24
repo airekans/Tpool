@@ -25,11 +25,16 @@ namespace tpool {
 	  {
 	    ProcessException(e);
 	  }
+	catch (...)
+	  {
+	    ProcessUnknownException();
+	  }
 	
 	return NULL;
       }
 
     static void ProcessException(const std::exception& e);
+    static void ProcessUnknownException();
 
   public:
     template<class Func>
