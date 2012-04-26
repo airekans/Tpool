@@ -23,7 +23,8 @@ namespace tpool {
   private:
     bool IsRequestCancel() const;
     void CheckCancellation() const;
-
+    void ThreadFunction();
+    
     TaskQueueBase::Ptr m_taskQueue;
     std::auto_ptr<Thread> m_thread;
     bool m_isRequestCancel;

@@ -32,55 +32,6 @@ namespace {
   private:
     string m_exitMessage;
   };
-
-  struct ThreadFunc {
-    TaskQueueBase::Ptr taskQueue;
-
-    ThreadFunc(TaskQueueBase::Ptr q)
-    {
-      taskQueue = q;
-    }
-    
-    ThreadFunc(const ThreadFunc& f)
-    {
-      taskQueue = f.taskQueue;
-    }
-
-    void operator()()
-    {
-      try
-	{
-	  while (true)
-	    {
-	      // 1. fetch task from task queue
-	      TaskBase::Ptr task = taskQueue->Pop();
-
-	      // 2. perform the task
-	      if (task)
-		{
-		  if (dynamic_cast<EndTask*>(task.get()) != NULL)
-		    {
-		      break; // stop the worker thread.
-		    }
-		  else
-		    {
-		      task->Run();
-		    }
-		}
-	      // 3. perform any post-task action
-	    }
-	}
-      catch (const WorkerThreadExitException&)
-	{
-	  ConditionNotifyLocker l(m_cancelCondition,
-				  bind(&WorkerThread::IsRequestCancel,
-				       this));
-	  m_isRequestCancel = false;
-	  // stop the worker thread.
-	}
-    }
-  };
-  
 }
 
 
@@ -88,15 +39,14 @@ WorkerThread::WorkerThread(TaskQueueBase::Ptr taskQueue)
 {
   m_taskQueue = taskQueue;
 
-  ThreadFunc f(taskQueue);
-
   // ensure that the thread is created successfully.
   while (true)
     {
       try
 	{
 	  // check for the creation exception
-	  m_thread.reset(new Thread(f));
+	  m_thread.reset(new Thread(bind(&WorkerThread::ThreadFunction,
+					 this)));
 	  break;
 	}
       catch (const runtime_error& e)
@@ -136,5 +86,39 @@ void WorkerThread::CheckCancellation() const
   if (m_isRequestCancel)
     {
       throw WorkerThreadExitException("cancelled");
+    }
+}
+
+void WorkerThread::ThreadFunction()
+{
+  try
+    {
+      while (true)
+	{
+	  // 1. fetch task from task queue
+	  TaskBase::Ptr task = m_taskQueue->Pop();
+
+	  // 2. perform the task
+	  if (task)
+	    {
+	      if (dynamic_cast<EndTask*>(task.get()) != NULL)
+		{
+		  break; // stop the worker thread.
+		}
+	      else
+		{
+		  task->Run();
+		}
+	    }
+	  // 3. perform any post-task action
+	}
+    }
+  catch (const WorkerThreadExitException&)
+    {
+      ConditionNotifyLocker l(m_cancelCondition,
+			      bind(&WorkerThread::IsRequestCancel,
+				   this));
+      m_isRequestCancel = false;
+      // stop the worker thread.
     }
 }
