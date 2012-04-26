@@ -8,6 +8,7 @@ namespace tpool {
   class TaskBase {
   public:
     typedef boost::shared_ptr<TaskBase> Ptr;
+
     enum State {
       INIT,
       RUNNING,
@@ -19,12 +20,17 @@ namespace tpool {
     ~TaskBase() {}
     
     void Run();
+    void Cancel();
     State GetState() const;
+
+  protected:
+    void CheckCancellation() const;
 
   private:
     virtual void DoRun() = 0;
 
     volatile State m_state;
+    volatile bool m_isRequestCancel;
   };
 }
 

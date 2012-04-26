@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #ifndef _TPOOL_FIXED_THREAD_POOL_H_
 #define _TPOOL_FIXED_THREAD_POOL_H_
 
