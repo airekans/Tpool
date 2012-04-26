@@ -10,7 +10,7 @@ using namespace std;
 
 namespace {
   struct EndTask : public TaskBase {
-    virtual void Do()
+    virtual void DoRun()
     {
       throw runtime_error("EndTask");
     }

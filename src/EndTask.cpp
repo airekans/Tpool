@@ -26,7 +26,7 @@ namespace {
   };
 }
 
-void EndTask::Do()
+void EndTask::DoRun()
 {
   throw ThreadExitException("exit thread");
 }

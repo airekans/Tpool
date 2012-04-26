@@ -30,7 +30,7 @@ namespace {
 	  // 2. perform the task
 	  if (task)
 	    {
-	      task->Do();
+	      task->Run();
 	    }
 	  // 3. perform any post-task action
 	}

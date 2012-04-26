@@ -19,7 +19,7 @@ TEST(FunctorTask, construct_for_function_pointer)
   
   GLOBAL_COUNTER = 0;
   FunctorTask<func> functorTask(&Increment);
-  functorTask.Do();
+  functorTask.DoRun();
 
   ASSERT_EQ(1, GLOBAL_COUNTER);
 }
@@ -38,7 +38,7 @@ TEST(FunctorTask, construct_for_functor)
 {
   GLOBAL_COUNTER_2 = 0;
   FunctorTask<IncrementFunc> functorTask((IncrementFunc()));
-  functorTask.Do();
+  functorTask.DoRun();
 
   ASSERT_EQ(1, GLOBAL_COUNTER_2);
 }
@@ -55,7 +55,7 @@ TEST(FunctorTask, construct_for_boost_bind)
 {
   GLOBAL_COUNTER_3 = 0;
   TaskBase::Ptr task = MakeFunctorTask(bind(&IncrementWith, &GLOBAL_COUNTER_3));
-  task->Do();
+  task->Run();
 
   ASSERT_EQ(1, GLOBAL_COUNTER_3);
 }

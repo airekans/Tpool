@@ -12,7 +12,7 @@ using namespace boost;
 
 namespace {
   struct EmptyTask : public TaskBase {
-    void Do() {}
+    void DoRun() {}
   };
 
   struct PushThreadFunc {
@@ -23,7 +23,7 @@ namespace {
       : taskQueue(q), num(n)
     {}
 
-    virtual void Do()
+    virtual void DoRun()
     {
       for (int i = 0; i < num; ++i)
 	{
@@ -33,7 +33,7 @@ namespace {
     
     void operator()()
     {
-      Do();
+      DoRun();
     }
   };
 }
@@ -98,7 +98,7 @@ namespace {
       : counter(i)
     {}
 
-    void Do()
+    void DoRun()
     {
       ++counter;
     }
@@ -111,7 +111,7 @@ namespace {
       : PushThreadFunc(q, n), counter(i)
     {}
 
-    virtual void Do()
+    virtual void DoRun()
     {
       for (int i = 0; i < num; ++i)
 	{
@@ -130,7 +130,7 @@ namespace {
     void operator()()
     {
       TaskBase::Ptr t = taskQueue.Pop();
-      t->Do();
+      t->Run();
     }
   };
 }

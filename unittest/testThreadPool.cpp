@@ -24,7 +24,7 @@ namespace {
     
     IncTask(int& i) : counter(i) {}
 
-    virtual void Do()
+    virtual void DoRun()
     {
       counter = 1;
     }

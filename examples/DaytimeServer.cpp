@@ -19,7 +19,7 @@ public:
     : m_socket(socket)
   {}
 
-  virtual void Do()
+  virtual void DoRun()
   {
     cout << "Process Daytime Request." << endl;
 

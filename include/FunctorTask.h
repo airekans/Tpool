@@ -9,7 +9,7 @@ namespace tpool {
   public:
     FunctorTask(Func f);
 
-    virtual void Do();
+    virtual void DoRun();
     
   private:
     Func m_functor;
@@ -29,7 +29,7 @@ namespace tpool {
   {}
 
   template<typename Func>
-  void FunctorTask<Func>::Do()
+  void FunctorTask<Func>::DoRun()
   {
     m_functor();
   }

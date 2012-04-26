@@ -6,7 +6,7 @@
 namespace tpool {
   class EndTask : public TaskBase {
   public:
-    virtual void Do();
+    virtual void DoRun();
   };
 }
 

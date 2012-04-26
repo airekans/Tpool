@@ -14,10 +14,16 @@ namespace tpool {
       CANCELED,
     };
 
+    TaskBase();
     ~TaskBase() {}
     
-    virtual void Do() = 0;
-    virtual State GetState() const;
+    void Run();
+    State GetState() const;
+
+  private:
+    virtual void DoRun() = 0;
+
+    volatile State m_state;
   };
 }
 
