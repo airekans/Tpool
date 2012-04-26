@@ -3,6 +3,7 @@ PROJECT_ROOT := ..
 DEPEND_LIB := $(PROJECT_ROOT)/libtpool.so
 
 CXXFLAGS += -I ../include
+CPPFLAGS += -D_DEBUG_
 
 LDFLAGS += -pthread
 LDFLAGS += -L /usr/local/lib/gtest -lgtest_main -lgtest

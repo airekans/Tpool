@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #ifndef _TPOOL_TASK_BASE_H_
 #define _TPOOL_TASK_BASE_H_
 
