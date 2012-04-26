@@ -1,4 +1,4 @@
-CXXFLAGS += -fPIC -Wall
+CXXFLAGS += -fPIC -Wall -Werror
 CXXFLAGS += -I ./include
 
 LIBTYPE := -shared

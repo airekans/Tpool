@@ -1,5 +1,5 @@
-#ifndef _TPOOL_THREAD_POOL_H_
-#define _TPOOL_THREAD_POOL_H_
+#ifndef _TPOOL_FIXED_THREAD_POOL_H_
+#define _TPOOL_FIXED_THREAD_POOL_H_
 
 #include "WorkerThread.h"
 #include "LinearTaskQueue.h"
@@ -10,9 +10,9 @@
 
 namespace tpool {
   template<class TaskQueue = LinearTaskQueue>
-    class ThreadPool {
+    class FixedThreadPool {
   public:
-    ThreadPool(const size_t threadNum = 10)
+    FixedThreadPool(const size_t threadNum = 10)
       : m_taskQueue(new TaskQueue),
 	m_threads(threadNum)
     {
@@ -22,7 +22,7 @@ namespace tpool {
 	}
     }
 
-  ~ThreadPool();
+  ~FixedThreadPool();
   
 
     size_t GetThreadNum() const
@@ -40,11 +40,11 @@ namespace tpool {
     std::vector<WorkerThread::Ptr> m_threads;
   };
 
-  typedef ThreadPool<> LThreadPool;
+  typedef FixedThreadPool<> LFixedThreadPool;
 
   // Implementation
   template<class TaskQueue>
-    ThreadPool<TaskQueue>::~ThreadPool()
+    FixedThreadPool<TaskQueue>::~FixedThreadPool()
     {
       const size_t threadNum = m_threads.size();
       for (int i = 0; i < threadNum; ++i)

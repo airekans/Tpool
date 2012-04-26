@@ -1,4 +1,4 @@
-#include "ThreadPool.h"
+#include "FixedThreadPool.h"
 #include "TaskBase.h"
 #include <exception>
 #include <iostream>
@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 {
   try
     {
-      LThreadPool threadPool;
+      LFixedThreadPool threadPool;
       boost::asio::io_service io_service;
       tcp::acceptor acceptor(io_service,
 			     tcp::endpoint(tcp::v4(), 1234));
