@@ -63,3 +63,32 @@ TEST(WorkerThread, test_CancelAsync)
     ASSERT_EQ(0, counter);
   }
 }
+
+namespace {
+  struct FinishAction
+  {
+    int& counter;
+    
+    FinishAction(int& i)
+      : counter(i)
+    {}
+
+    void operator()()
+    {
+      ++counter;
+    }
+  };
+}
+
+TEST(WorkerThread, test_ctor_with_FinishAction)
+{
+  int counter = 0;
+
+  TaskQueueBase::Ptr q(new LinearTaskQueue);
+  {
+    WorkerThread t(q, FinishAction(counter));
+    q->Push(TaskBase::Ptr(new TestTask(counter)));
+    q->Push(TaskBase::Ptr(new EndTask));
+  }
+  ASSERT_EQ(2, counter);
+}

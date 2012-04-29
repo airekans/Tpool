@@ -4,14 +4,13 @@
 
 #include "TaskQueueBase.h"
 #include "ConditionVariable.h"
+#include "Thread.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/bind.hpp>
 #include <memory>
 #include <exception>
 
 namespace tpool {
-  class Thread;
-
   class WorkerThread {
   public:
     typedef boost::shared_ptr<WorkerThread> Ptr;
