@@ -3,6 +3,7 @@
 
 #include "WorkerThread.h"
 #include "LinearTaskQueue.h"
+#include "FunctorTask.h"
 #include "EndTask.h"
 #include <vector>
 #include <cstdlib> // for size_t
@@ -35,6 +36,9 @@ namespace tpool {
       m_taskQueue->Push(task);
     }
 
+    template<typename Func>
+    void AddTask(Func f);
+
   private:
     TaskQueueBase::Ptr m_taskQueue;
     std::vector<WorkerThread::Ptr> m_threads;
@@ -52,6 +56,13 @@ namespace tpool {
 	  m_taskQueue->Push(TaskBase::Ptr(new EndTask));
 	}
     }
+
+  template<class TaskQueue>
+  template<typename Func>
+  void FixedThreadPool<TaskQueue>::AddTask(Func f)
+  {
+    m_taskQueue->Push(MakeFunctorTask(f));
+  }
 }
 
 
