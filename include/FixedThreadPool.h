@@ -42,15 +42,54 @@ namespace tpool {
     typedef std::vector<WorkerThread::Ptr> WorkerThreads;
     
     TaskQueueBase::Ptr m_taskQueue;
-    WorkerThreads m_threads;
     size_t m_stoppedThreadNum;
     volatile bool m_isRequestStop;
     mutable sync::MutexConditionVariable m_stopCondition;
+    WorkerThreads m_threads;
   };
 
   typedef FixedThreadPool<> LFixedThreadPool;
 
   // Implementation
+  template <typename TaskQueue>
+  struct FixedThreadPool<TaskQueue>::MemberFunction
+  {
+    typedef FixedThreadPool<TaskQueue> ThreadPool;
+    typedef void (ThreadPool::*memberFunc)();
+    memberFunc m_f;
+    ThreadPool* m_p;
+    
+    MemberFunction(memberFunc f, ThreadPool* p)
+      : m_f(f), m_p(p)
+    {}
+
+    void operator()()
+    {
+      (m_p->*m_f)();
+    }
+  };
+
+  template<class TaskQueue>
+  FixedThreadPool<TaskQueue>::FixedThreadPool(const size_t threadNum)
+    : m_taskQueue(new TaskQueue),
+      m_threads(threadNum),
+      m_stoppedThreadNum(0),
+      m_isRequestStop(false)
+  {
+    using boost::bind;
+
+    MemberFunction m(&FixedThreadPool::NotifyWhenThreadsStop, this);
+    BOOST_FOREACH(WorkerThread::Ptr& t, m_threads)
+      {
+	t.reset(new WorkerThread(m_taskQueue,
+				 // bind(&FixedThreadPool<TaskQueue>::
+				 //      NotifyWhenThreadsStop, this)));
+				 m));
+      }
+
+    bind(&FixedThreadPool::NotifyWhenThreadsStop, this);
+  }
+  
   template<class TaskQueue>
   FixedThreadPool<TaskQueue>::~FixedThreadPool()
   {
@@ -134,43 +173,6 @@ namespace tpool {
       }
   }
 
-  template <typename TaskQueue>
-  struct FixedThreadPool<TaskQueue>::MemberFunction
-  {
-    typedef FixedThreadPool<TaskQueue> ThreadPool;
-    typedef void (ThreadPool::*memberFunc)();
-    memberFunc m_f;
-    ThreadPool* m_p;
-    
-    MemberFunction(memberFunc f, ThreadPool* p)
-      : m_f(f), m_p(p)
-    {}
-
-    void operator()()
-    {
-      (m_p->*m_f)();
-    }
-  };
-
-  template<class TaskQueue>
-  FixedThreadPool<TaskQueue>::FixedThreadPool(const size_t threadNum)
-    : m_taskQueue(new TaskQueue),
-      m_threads(threadNum),
-      m_stoppedThreadNum(0),
-      m_isRequestStop(false)
-  {
-    using boost::bind;
-
-    MemberFunction m(&FixedThreadPool::NotifyWhenThreadsStop, this);
-    BOOST_FOREACH(WorkerThread::Ptr& t, m_threads)
-      {
-	t.reset(new WorkerThread(m_taskQueue,
-				 // bind(&FixedThreadPool<TaskQueue>::
-				 //      NotifyWhenThreadsStop, this)));
-				 m));
-      }
-  }
-  
 
 }
 
