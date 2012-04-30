@@ -1,6 +1,7 @@
 #include "FixedThreadPool.h"
 #include <gtest/gtest.h>
 #include <boost/bind.hpp>
+#include <unistd.h>
 
 using namespace tpool;
 using namespace boost;
@@ -56,4 +57,43 @@ TEST(FixedThreadPoolTestSuite, test_template_AddTask)
     threadPool.AddTask(bind(IncrementWith, &counter));
   }
   ASSERT_EQ(1, counter);
+}
+
+namespace {
+  struct SleepFunc {
+    void operator()()
+    {
+      sleep(1);
+    }
+  };
+
+  struct SleepAndIncTask : public IncTask {
+    SleepAndIncTask(int& i)
+      : IncTask(i)
+    {}
+    
+    virtual void DoRun()
+    {
+      sleep(1);
+      IncTask::DoRun();
+    }
+  };
+}
+
+TEST(FixedThreadPool, test_StopAsync)
+{
+  {
+    LFixedThreadPool threadPool;
+    threadPool.AddTask(SleepFunc());
+    threadPool.StopAsync();
+    EXPECT_FALSE(threadPool.AddTask(SleepFunc()));
+  }
+
+  int counter = 0;
+  {
+    LFixedThreadPool threadPool;
+    threadPool.AddTask(TaskBase::Ptr(new SleepAndIncTask(counter)));
+    threadPool.StopAsync();
+  }
+  EXPECT_EQ(1, counter);
 }
