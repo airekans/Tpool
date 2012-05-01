@@ -12,11 +12,19 @@
 #include <boost/foreach.hpp>
 #include <boost/bind.hpp>
 #include <boost/bind/protect.hpp>
+#include <functional>
 
 namespace tpool {
   
   template<class TaskQueue = LinearTaskQueue>
   class FixedThreadPool {
+  private:
+    enum State {
+      INIT,
+      RUNNING,
+      FINISHED,
+    };
+
   public:
     FixedThreadPool(const size_t threadNum = 10);
     ~FixedThreadPool();
@@ -36,13 +44,18 @@ namespace tpool {
     bool DoAddTask(TaskBase::Ptr task);
     bool IsRequestStop() const;
     void NotifyWhenThreadsStop();
+    bool IsFinished() const;
+    bool DoIsFinished() const;
+    void SetState(const State state);
+    void DoSetState(const State state);
 
     typedef std::vector<WorkerThread::Ptr> WorkerThreads;
     
     TaskQueueBase::Ptr m_taskQueue;
     size_t m_stoppedThreadNum;
+    State m_state;
+    mutable sync::MutexConditionVariable m_stateGuard;
     volatile bool m_isRequestStop;
-    mutable sync::MutexConditionVariable m_stopCondition;
     WorkerThreads m_threads;
   };
 
@@ -54,6 +67,7 @@ namespace tpool {
     : m_taskQueue(new TaskQueue),
       m_threads(threadNum),
       m_stoppedThreadNum(0),
+      m_state(INIT),
       m_isRequestStop(false)
   {
     using boost::bind;
@@ -66,6 +80,8 @@ namespace tpool {
 					      NotifyWhenThreadsStop, this))
 				 ));
       }
+
+    SetState(RUNNING);
   }
   
   template<class TaskQueue>
@@ -100,22 +116,32 @@ namespace tpool {
   void FixedThreadPool<TaskQueue>::Stop()
   {
     using boost::bind;
+    using std::mem_fun;
+    using std::not1;
 
-    StopAsync();
+    if (!m_isRequestStop)
+      {
+	StopAsync();
 
-    // wait until all worker threads stop
-    sync::ConditionWaitLocker l(m_stopCondition,
-				bind(&FixedThreadPool::IsRequestStop, this));
+	// wait until all worker threads stop
+	sync::ConditionWaitLocker l(m_stateGuard,
+				    bind(not1(mem_fun(&FixedThreadPool::
+						      DoIsFinished)),
+					 this));
+      }
   }
 
   template<class TaskQueue>
   void FixedThreadPool<TaskQueue>::StopAsync()
   {
-    m_isRequestStop = true;
-    const size_t threadNum = m_threads.size();
-    for (size_t i = 0; i < threadNum; ++i)
+    if (!m_isRequestStop)
       {
-	m_taskQueue->Push(TaskBase::Ptr(new EndTask));
+	m_isRequestStop = true;
+	const size_t threadNum = m_threads.size();
+	for (size_t i = 0; i < threadNum; ++i)
+	  {
+	    m_taskQueue->Push(TaskBase::Ptr(new EndTask));
+	  }
       }
   }
 
@@ -144,14 +170,38 @@ namespace tpool {
 
     if (++m_stoppedThreadNum >= m_threads.size())
       {
-    	sync::ConditionNotifyLocker l(m_stopCondition,
+    	sync::ConditionNotifyLocker l(m_stateGuard,
     				      bind(&FixedThreadPool::IsRequestStop,
     					   this));
-    	m_isRequestStop = false;
+	DoSetState(FINISHED);
       }
   }
 
+  template<class TaskQueue>
+  bool FixedThreadPool<TaskQueue>::IsFinished() const
+  {
+    sync::MutexLocker l(m_stateGuard);
+    return DoIsFinished();
+  }
 
+  template<class TaskQueue>
+  bool FixedThreadPool<TaskQueue>::DoIsFinished() const
+  {
+    return m_state == FINISHED;
+  }
+
+  template<class TaskQueue>
+  void FixedThreadPool<TaskQueue>::SetState(const State state)
+  {
+    sync::MutexLocker l(m_stateGuard);
+    DoSetState(state);
+  }
+
+  template<class TaskQueue>
+  void FixedThreadPool<TaskQueue>::DoSetState(const State state)
+  {
+    m_state = state;
+  }
 }
 
 
