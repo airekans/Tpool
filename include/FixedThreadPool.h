@@ -146,6 +146,15 @@ namespace tpool {
   }
 
   template<class TaskQueue>
+  void FixedThreadPool<TaskQueue>::StopNow()
+  {
+    BOOST_FOREACH(WorkerThread::Ptr& t, m_threads)
+      {
+	t->CancelNow();
+      }
+  }
+
+  template<class TaskQueue>
   bool FixedThreadPool<TaskQueue>::DoAddTask(TaskBase::Ptr task)
   {
     if (m_isRequestStop)
