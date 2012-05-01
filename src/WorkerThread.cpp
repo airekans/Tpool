@@ -70,6 +70,22 @@ void WorkerThread::CancelAsync()
   m_isRequestCancel = true;
 }
 
+void WorkerThread::CancelNow()
+{
+  {
+    MutexLocker l(m_runningTaskGuard);
+    if (m_runningTask)
+      {
+	m_runningTask->CancelAsync();
+      }
+    CancelAsync();
+  }
+  ConditionWaitLocker l(m_stateGuard,
+			bind(not1(mem_fun(&WorkerThread::
+					  DoIsFinished)),
+			     this));
+}
+
 void WorkerThread::ProcessError(const std::exception& e)
 {
   cerr << "WorkerThread ctor" << endl;
@@ -156,4 +172,10 @@ void WorkerThread::SetState(const State state)
 void WorkerThread::DoSetState(const State state)
 {
   m_state = state;
+}
+
+void WorkerThread::GetTaskFromTaskQueue()
+{
+  MutexLocker l(m_runningTaskGuard);
+  m_runningTask = m_taskQueue->Pop();
 }
