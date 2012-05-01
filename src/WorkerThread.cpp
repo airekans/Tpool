@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <boost/bind.hpp>
+#include <functional>
 
 using namespace std;
 using namespace tpool;
@@ -41,7 +42,8 @@ namespace {
 
 
 WorkerThread::WorkerThread(TaskQueueBase::Ptr taskQueue)
-  : m_isRequestCancel(false)
+  : m_state(INIT),
+    m_isRequestCancel(false)
 {
   Init(taskQueue, NoOp());
 }
@@ -53,10 +55,14 @@ WorkerThread::~WorkerThread()
 
 void WorkerThread::Cancel()
 {
-  m_isRequestCancel = true;
-
-  ConditionWaitLocker l(m_cancelCondition,
-			bind(&WorkerThread::IsRequestCancel, this));
+  if (!m_isRequestCancel)
+    {
+      m_isRequestCancel = true;
+      ConditionWaitLocker l(m_stateGuard,
+			    bind(not1(mem_fun(&WorkerThread::
+					      DoIsFinished)),
+				 this));
+    }
 }
 
 void WorkerThread::CancelAsync()
@@ -86,6 +92,7 @@ void WorkerThread::CheckCancellation() const
 
 void WorkerThread::WorkFunction()
 {
+  SetState(RUNNING);
   while (true)
     {
       try
@@ -115,10 +122,10 @@ void WorkerThread::WorkFunction()
 	}
       catch (const WorkerThreadExitException&)
 	{
-	  ConditionNotifyLocker l(m_cancelCondition,
+	  ConditionNotifyLocker l(m_stateGuard,
 				  bind(&WorkerThread::IsRequestCancel,
 				       this));
-	  m_isRequestCancel = false;
+	  DoSetState(FINISHED);
 	  // stop the worker thread.
 	  break;
 	}
@@ -127,4 +134,26 @@ void WorkerThread::WorkFunction()
 	  // continue
 	}
     }
+}
+
+bool WorkerThread::IsFinished() const
+{
+  MutexLocker l(m_stateGuard);
+  return DoIsFinished();
+}
+
+bool WorkerThread::DoIsFinished() const
+{
+  return m_state == FINISHED;
+}
+
+void WorkerThread::SetState(const State state)
+{
+  MutexLocker l(m_stateGuard);
+  DoSetState(state);
+}
+
+void WorkerThread::DoSetState(const State state)
+{
+  m_state = state;
 }

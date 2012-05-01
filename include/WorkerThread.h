@@ -12,6 +12,13 @@
 
 namespace tpool {
   class WorkerThread {
+  private:
+    enum State {
+      INIT,
+      RUNNING,
+      FINISHED,
+    };
+    
   public:
     typedef boost::shared_ptr<WorkerThread> Ptr;
 
@@ -33,11 +40,17 @@ namespace tpool {
     void WorkFunction();
     template <typename FinishAction>
     void ThreadFunction(FinishAction action);
+    bool IsFinished() const;
+    bool DoIsFinished() const;
+    void SetState(const State state);
+    void DoSetState(const State state);
     
     TaskQueueBase::Ptr m_taskQueue;
     TaskBase::Ptr m_runningTask;
+    mutable sync::Mutex m_runningTaskGuard;
+    State m_state;
+    mutable sync::MutexConditionVariable m_stateGuard;
     volatile bool m_isRequestCancel;
-    mutable sync::MutexConditionVariable m_cancelCondition;
     std::auto_ptr<Thread> m_thread; // Thread must be the last variable
   };
 
@@ -71,7 +84,8 @@ namespace tpool {
   template <typename FinishAction>
   WorkerThread::WorkerThread(TaskQueueBase::Ptr taskQueue,
 			     FinishAction action)
-    : m_isRequestCancel(false)
+    : m_state(INIT),
+      m_isRequestCancel(false)
   {
     Init(taskQueue, action);
   }
