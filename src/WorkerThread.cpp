@@ -117,7 +117,7 @@ void WorkerThread::WorkFunction()
 	  CheckCancellation();
 
 	  // 2. fetch task from task queue
-	  m_runningTask = m_taskQueue->Pop();
+	  GetTaskFromTaskQueue();
 
 	  // 2.5. check cancel request again
 	  CheckCancellation();
@@ -138,10 +138,6 @@ void WorkerThread::WorkFunction()
 	}
       catch (const WorkerThreadExitException&)
 	{
-	  ConditionNotifyLocker l(m_stateGuard,
-				  bind(&WorkerThread::IsRequestCancel,
-				       this));
-	  DoSetState(FINISHED);
 	  // stop the worker thread.
 	  break;
 	}
@@ -150,6 +146,11 @@ void WorkerThread::WorkFunction()
 	  // continue
 	}
     }
+  
+  ConditionNotifyLocker l(m_stateGuard,
+			  bind(&WorkerThread::IsRequestCancel,
+			       this));
+  DoSetState(FINISHED);
 }
 
 bool WorkerThread::IsFinished() const
