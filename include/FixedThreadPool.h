@@ -52,6 +52,7 @@ namespace tpool {
     typedef std::vector<WorkerThread::Ptr> WorkerThreads;
     
     TaskQueueBase::Ptr m_taskQueue;
+    sync::Mutex m_stoppedThreadNumGuard;
     size_t m_stoppedThreadNum;
     State m_state;
     mutable sync::MutexConditionVariable m_stateGuard;
@@ -148,6 +149,12 @@ namespace tpool {
   template<class TaskQueue>
   void FixedThreadPool<TaskQueue>::StopNow()
   {
+    m_isRequestStop = true;
+    BOOST_FOREACH(WorkerThread::Ptr& t, m_threads)
+      {
+	t->CancelAsync();
+      }
+    
     BOOST_FOREACH(WorkerThread::Ptr& t, m_threads)
       {
 	t->CancelNow();
@@ -177,7 +184,12 @@ namespace tpool {
   {
     using boost::bind;
 
-    if (++m_stoppedThreadNum >= m_threads.size())
+    {
+      sync::MutexLocker l(m_stoppedThreadNumGuard);
+      ++m_stoppedThreadNum;
+    }
+
+    if (m_stoppedThreadNum >= m_threads.size())
       {
     	sync::ConditionNotifyLocker l(m_stateGuard,
     				      bind(&FixedThreadPool::IsRequestStop,

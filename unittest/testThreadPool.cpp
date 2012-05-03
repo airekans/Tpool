@@ -2,9 +2,12 @@
 #include <gtest/gtest.h>
 #include <boost/bind.hpp>
 #include <unistd.h>
+#include <iostream>
 
 using namespace tpool;
 using namespace boost;
+using namespace std;
+
 
 TEST(FixedThreadPool, test_Construction)
 {
@@ -112,7 +115,39 @@ TEST(FixedThreadPool, test_Stop)
   }
 }
 
+namespace {
+  struct LoopSleepAndIncTask : public SleepAndIncTask {
+    LoopSleepAndIncTask(int& i)
+      : SleepAndIncTask(i)
+    {}
+    
+    virtual void DoRun()
+    {
+      for (int i = 0; i < 2; ++i)
+	{
+	  SleepAndIncTask::DoRun();
+	  sleep(1);
+	  CheckCancellation();
+	}
+    }
+  };
+}
+
 TEST(FixedThreadPool, test_StopNow)
 {
-  
+  int counter = 0;
+  {
+    LFixedThreadPool threadPool;
+    const size_t num = threadPool.GetThreadNum();
+    for (size_t i = 0; i < num; ++i)
+      {
+	threadPool.AddTask(TaskBase::Ptr(new LoopSleepAndIncTask(counter)));
+      }
+    sleep(1);
+    threadPool.StopNow();
+    cout << "StopNow()" << endl;
+
+    EXPECT_EQ(num, counter);
+    EXPECT_FALSE(threadPool.AddTask(TaskBase::Ptr(new IncTask(counter))));
+  }
 }
