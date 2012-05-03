@@ -41,7 +41,7 @@ void TaskBase::Run()
     }
   catch (const TaskCancelException&)
     {
-      m_state = CANCELED;
+      m_state = CANCELLED;
     }
 }
 

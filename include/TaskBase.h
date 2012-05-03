@@ -13,7 +13,7 @@ namespace tpool {
       INIT,
       RUNNING,
       FINISHED,
-      CANCELED,
+      CANCELLED,
     };
 
     TaskBase();
