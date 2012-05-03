@@ -45,6 +45,7 @@ namespace tpool {
     void SetState(const State state);
     void DoSetState(const State state);
     void GetTaskFromTaskQueue();
+    void NotifyFinished();
     
     TaskQueueBase::Ptr m_taskQueue;
     TaskBase::Ptr m_runningTask;
@@ -96,6 +97,7 @@ namespace tpool {
   {
     WorkFunction();
     action(); // WorkerThread finished.
+    NotifyFinished();
   }
 }
 

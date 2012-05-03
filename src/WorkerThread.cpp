@@ -146,11 +146,6 @@ void WorkerThread::WorkFunction()
 	  // continue
 	}
     }
-  
-  ConditionNotifyLocker l(m_stateGuard,
-			  bind(&WorkerThread::IsRequestCancel,
-			       this));
-  DoSetState(FINISHED);
 }
 
 bool WorkerThread::IsFinished() const
@@ -179,4 +174,12 @@ void WorkerThread::GetTaskFromTaskQueue()
 {
   MutexLocker l(m_runningTaskGuard);
   m_runningTask = m_taskQueue->Pop();
+}
+
+void WorkerThread::NotifyFinished()
+{
+  ConditionNotifyLocker l(m_stateGuard,
+			  bind(&WorkerThread::IsRequestCancel,
+			       this));
+  DoSetState(FINISHED);
 }

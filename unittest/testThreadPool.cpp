@@ -2,7 +2,6 @@
 #include <gtest/gtest.h>
 #include <boost/bind.hpp>
 #include <unistd.h>
-#include <iostream>
 
 using namespace tpool;
 using namespace boost;
@@ -23,6 +22,8 @@ TEST(FixedThreadPool, test_Construction)
 }
 
 namespace {
+  sync::Mutex GLOBAL_MUTEX;
+  
   struct IncTask : public TaskBase {
     int& counter;
     
@@ -30,7 +31,8 @@ namespace {
 
     virtual void DoRun()
     {
-      counter = 1;
+      sync::MutexLocker l(GLOBAL_MUTEX);
+      ++counter;
     }
   };
 }
@@ -145,9 +147,8 @@ TEST(FixedThreadPool, test_StopNow)
       }
     sleep(1);
     threadPool.StopNow();
-    cout << "StopNow()" << endl;
 
-    EXPECT_EQ(num, counter);
+    EXPECT_GT(counter, num);
     EXPECT_FALSE(threadPool.AddTask(TaskBase::Ptr(new IncTask(counter))));
   }
 }

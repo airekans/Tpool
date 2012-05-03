@@ -158,3 +158,32 @@ TEST(WorkerThread, test_multiple_CancelNow)
     EXPECT_EQ(1, finishFlag);
   }
 }
+
+namespace {
+  struct SleepFinishAction : public FinishAction {
+    SleepFinishAction(int& i)
+      : FinishAction(i)
+    {}
+    
+    void operator()()
+    {
+      sleep(1);
+      FinishAction::operator()();
+    }
+  };
+}
+
+TEST(WorkerThread, test_FinishAcion_execute_before_Finished)
+{
+  int counter = 0;
+  int finishFlag = 0;
+  TaskQueueBase::Ptr q(new LinearTaskQueue);
+  {
+    WorkerThread t(q, FinishAction(finishFlag));
+    q->Push(TaskBase::Ptr(new LoopTask(counter)));
+    sleep(1);
+    t.CancelNow();
+    EXPECT_EQ(1, counter);
+    EXPECT_EQ(1, finishFlag);
+  }
+}
