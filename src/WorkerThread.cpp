@@ -2,7 +2,10 @@
 #include "Thread.h"
 #include "TaskQueueBase.h"
 #include "TaskBase.h"
+#include <stdexcept>
+#include <iostream>
 
+using namespace std;
 using namespace tpool;
 using namespace boost;
 
@@ -46,7 +49,22 @@ WorkerThread::WorkerThread(TaskQueueBase::Ptr taskQueue)
 
   ThreadFunc f(taskQueue);
 
-  m_thread.reset(new Thread(f));
+  // ensure that the thread is created successfully.
+  while (true)
+    {
+      try
+	{
+	  // check for the creation exception
+	  m_thread.reset(new Thread(f));
+	  break;
+	}
+      catch (const runtime_error& e)
+	{
+	  cerr << "WorkerThread ctor" << endl;
+	  cerr << e.what() << endl;
+	  cerr << "Try again." << endl;
+	}    
+    }
 }
 
 // dtor has to be defined for pimpl idiom
