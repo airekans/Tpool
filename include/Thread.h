@@ -22,9 +22,10 @@ namespace tpool {
     template<class Func>
     static void* ThreadFunction(void* arg);
 
+    void ProcessCreateError(const int error);
     static void ProcessException(const std::exception& e);
     static void ProcessUnknownException();
-
+    
 
     pthread_t m_threadId;
     bool m_isStart;
@@ -38,13 +39,11 @@ namespace tpool {
   {
     std::auto_ptr<Func> fp(new Func(f));
 
-    if (pthread_create(&m_threadId, NULL,
-		       ThreadFunction<Func>,
-		       fp.get())
-	!= 0)
+    int error =  pthread_create(&m_threadId, NULL,
+		       ThreadFunction<Func>, fp.get());
+    if (error != 0)
       {
-	// TODO: check different error code.
-	throw std::runtime_error("failed to create thread");
+	ProcessCreateError(error);
       }
 	
     fp.release();
