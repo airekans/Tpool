@@ -4,6 +4,7 @@
 
 using namespace std;
 using namespace tpool;
+using namespace tpool::sync;
 
 namespace {
   class TaskCancelException : public exception {
@@ -23,6 +24,13 @@ namespace {
   private:
     string m_cancelMessage;
   };
+
+  // "Stop" means state == FINISHED or state == CANCELLED
+  bool IsStopState(TaskBase& task)
+  {
+    return task.GetState() == TaskBase::FINISHED ||
+      task.GetState() == TaskBase::CANCELLED;
+  }
 }
 
 TaskBase::TaskBase()
@@ -36,6 +44,7 @@ void TaskBase::Run()
   m_state = RUNNING;
   try
     {
+      CheckCancellation(); // check before running the task.
       DoRun();
       m_state = FINISHED;
     }
@@ -46,6 +55,13 @@ void TaskBase::Run()
 }
 
 void TaskBase::Cancel()
+{
+  m_isRequestCancel = true;
+
+  // wait until the task is cancelled.
+}
+
+void TaskBase::CancelAsync()
 {
   m_isRequestCancel = true;
 }

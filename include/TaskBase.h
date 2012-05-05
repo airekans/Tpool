@@ -2,6 +2,7 @@
 #ifndef _TPOOL_TASK_BASE_H_
 #define _TPOOL_TASK_BASE_H_
 
+#include "ConditionVariable.h"
 #include <boost/shared_ptr.hpp>
 
 namespace tpool {
@@ -21,6 +22,7 @@ namespace tpool {
     
     void Run();
     void Cancel();
+    void CancelAsync();
     State GetState() const;
 
   protected:
@@ -28,9 +30,11 @@ namespace tpool {
 
   private:
     virtual void DoRun() = 0;
+    void SetState(const State state);
 
     volatile State m_state;
     volatile bool m_isRequestCancel;
+    sync::MutexConditionVariable m_cancelCondition;
   };
 }
 

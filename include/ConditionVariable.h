@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #ifndef _TPOOL_CONDITION_VARIABLE_H_
 #define _TPOOL_CONDITION_VARIABLE_H_
 
