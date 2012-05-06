@@ -67,3 +67,30 @@ TEST(TaskBase, test_Cancel)
   }
   EXPECT_EQ(TaskBase::CANCELLED, task.GetState());
 }
+
+namespace {
+  struct NotRunningTask : public TaskBase {
+    bool& running;
+
+    NotRunningTask(bool& r)
+      : running(r)
+    {}
+
+    virtual void DoRun()
+    {
+      running = true;
+    }
+  };
+}
+
+TEST(TaskBase, test_Cancel_before_Run)
+{
+  bool running = false;
+
+  NotRunningTask task(running);
+  task.CancelAsync();
+  task.Run();
+
+  EXPECT_EQ(false, running);
+  EXPECT_EQ(TaskBase::CANCELLED, task.GetState());
+}

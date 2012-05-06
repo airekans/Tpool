@@ -23,7 +23,12 @@ namespace tpool {
     void Run();
     void Cancel();
     void CancelAsync();
+    
     State GetState() const;
+    bool IsRunning() const;
+    bool IsFinished() const;
+    bool IsCancelled() const;
+    bool IsStopped() const;
 
   protected:
     void CheckCancellation() const;
@@ -31,10 +36,12 @@ namespace tpool {
   private:
     virtual void DoRun() = 0;
     void SetState(const State state);
+    bool IsStopState() const;
 
-    volatile State m_state;
+    State m_state;
+    mutable sync::Mutex m_stateGuard;
     volatile bool m_isRequestCancel;
-    sync::MutexConditionVariable m_cancelCondition;
+    sync::ConditionVariable m_cancelCondition;
   };
 }
 

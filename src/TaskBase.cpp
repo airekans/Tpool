@@ -1,6 +1,8 @@
 #include "TaskBase.h"
 #include <exception>
 #include <string>
+#include <functional>
+#include <boost/bind.hpp>
 
 using namespace std;
 using namespace tpool;
@@ -24,34 +26,32 @@ namespace {
   private:
     string m_cancelMessage;
   };
-
-  // "Stop" means state == FINISHED or state == CANCELLED
-  bool IsStopState(TaskBase& task)
-  {
-    return task.GetState() == TaskBase::FINISHED ||
-      task.GetState() == TaskBase::CANCELLED;
-  }
 }
 
 TaskBase::TaskBase()
-  : m_state(INIT), m_isRequestCancel(false)
+  : m_state(INIT), m_isRequestCancel(false), m_cancelCondition(m_stateGuard)
 {
   
 }
 
 void TaskBase::Run()
 {
-  m_state = RUNNING;
   try
     {
       CheckCancellation(); // check before running the task.
+      
+      SetState(RUNNING);
       DoRun();
-      m_state = FINISHED;
+      SetState(FINISHED);
     }
   catch (const TaskCancelException&)
     {
-      m_state = CANCELLED;
+      SetState(CANCELLED);
     }
+
+  // wake up the waiting thread it is cancelling this task.
+  ConditionNotifyLocker(m_cancelCondition,
+			boost::bind(&TaskBase::IsStopState, this));
 }
 
 void TaskBase::Cancel()
@@ -59,6 +59,9 @@ void TaskBase::Cancel()
   m_isRequestCancel = true;
 
   // wait until the task is cancelled.
+  ConditionWaitLocker(m_cancelCondition,
+		      boost::bind(not1(mem_fun(&TaskBase::IsStopState)),
+				  this));
 }
 
 void TaskBase::CancelAsync()
@@ -68,7 +71,33 @@ void TaskBase::CancelAsync()
 
 TaskBase::State TaskBase::GetState() const
 {
+  MutexLocker l(m_stateGuard);
   return m_state;
+}
+
+bool TaskBase::IsRunning() const
+{
+  return GetState() == RUNNING;
+}
+
+bool TaskBase::IsFinished() const
+{
+  return GetState() == FINISHED;
+}
+
+bool TaskBase::IsCancelled() const
+{
+  return GetState() == CANCELLED;
+}
+
+// "Stop" means state == FINISHED or state == CANCELLED
+bool TaskBase::IsStopped() const
+{
+  // Cannot use GetState() here because we must ensure
+  // this whole function is atomic. If we use GetState(),
+  // extra lock will cause deadlock.
+  MutexLocker l(m_stateGuard);
+  return IsStopState();
 }
 
 void TaskBase::CheckCancellation() const
@@ -77,4 +106,15 @@ void TaskBase::CheckCancellation() const
     {
       throw TaskCancelException("cancel task");
     }
+}
+
+void TaskBase::SetState(const State state)
+{
+  MutexLocker l(m_stateGuard);
+  m_state = state;
+}
+
+bool TaskBase::IsStopState() const
+{
+  return m_state == FINISHED || m_state == CANCELLED;
 }
