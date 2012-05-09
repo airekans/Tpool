@@ -26,9 +26,9 @@ namespace tpool {
     void ThreadFunction();
     
     TaskQueueBase::Ptr m_taskQueue;
-    std::auto_ptr<Thread> m_thread;
-    bool m_isRequestCancel;
-    sync::MutexConditionVariable m_cancelCondition;
+    volatile bool m_isRequestCancel;
+    mutable sync::MutexConditionVariable m_cancelCondition;
+    std::auto_ptr<Thread> m_thread; // Thread must be the last variable
   };
 }
 

@@ -6,7 +6,6 @@
 #include <pthread.h>
 #include <boost/noncopyable.hpp>
 
-
 namespace tpool {
   namespace sync {
     class ConditionWaitLocker;

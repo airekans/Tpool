@@ -36,6 +36,7 @@ namespace {
 
 
 WorkerThread::WorkerThread(TaskQueueBase::Ptr taskQueue)
+  : m_isRequestCancel(false)
 {
   m_taskQueue = taskQueue;
 
@@ -91,14 +92,17 @@ void WorkerThread::CheckCancellation() const
 
 void WorkerThread::ThreadFunction()
 {
-  try
+  while (true)
     {
-      while (true)
+      try
 	{
-	  // 1. fetch task from task queue
+	  // 1. check cancel request
+	  CheckCancellation();
+
+	  // 2. fetch task from task queue
 	  TaskBase::Ptr task = m_taskQueue->Pop();
 
-	  // 2. perform the task
+	  // 3. perform the task
 	  if (task)
 	    {
 	      if (dynamic_cast<EndTask*>(task.get()) != NULL)
@@ -110,15 +114,20 @@ void WorkerThread::ThreadFunction()
 		  task->Run();
 		}
 	    }
-	  // 3. perform any post-task action
+	  // 4. perform any post-task action
 	}
-    }
-  catch (const WorkerThreadExitException&)
-    {
-      ConditionNotifyLocker l(m_cancelCondition,
-			      bind(&WorkerThread::IsRequestCancel,
-				   this));
-      m_isRequestCancel = false;
-      // stop the worker thread.
+      catch (const WorkerThreadExitException&)
+	{
+	  ConditionNotifyLocker l(m_cancelCondition,
+				  bind(&WorkerThread::IsRequestCancel,
+				       this));
+	  m_isRequestCancel = false;
+	  // stop the worker thread.
+	  break;
+	}
+      catch (...) // caught other exception
+	{
+	  // continue
+	}
     }
 }
