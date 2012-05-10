@@ -32,31 +32,18 @@ namespace {
   private:
     string m_exitMessage;
   };
+
+  struct NoOp {
+    void operator()()
+    {}
+  };
 }
 
 
 WorkerThread::WorkerThread(TaskQueueBase::Ptr taskQueue)
   : m_isRequestCancel(false)
 {
-  m_taskQueue = taskQueue;
-
-  // ensure that the thread is created successfully.
-  while (true)
-    {
-      try
-	{
-	  // check for the creation exception
-	  m_thread.reset(new Thread(bind(&WorkerThread::ThreadFunction,
-					 this)));
-	  break;
-	}
-      catch (const runtime_error& e)
-	{
-	  cerr << "WorkerThread ctor" << endl;
-	  cerr << e.what() << endl;
-	  cerr << "Try again." << endl;
-	}    
-    }
+  Init(taskQueue, NoOp());
 }
 
 // dtor has to be defined for pimpl idiom
@@ -77,6 +64,13 @@ void WorkerThread::CancelAsync()
   m_isRequestCancel = true;
 }
 
+void WorkerThread::ProcessError(const std::exception& e)
+{
+  cerr << "WorkerThread ctor" << endl;
+  cerr << e.what() << endl;
+  cerr << "Try again." << endl;
+}
+
 bool WorkerThread::IsRequestCancel() const
 {
   return m_isRequestCancel;
@@ -90,7 +84,7 @@ void WorkerThread::CheckCancellation() const
     }
 }
 
-void WorkerThread::ThreadFunction()
+void WorkerThread::WorkFunction()
 {
   while (true)
     {

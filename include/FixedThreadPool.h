@@ -6,9 +6,11 @@
 #include "LinearTaskQueue.h"
 #include "FunctorTask.h"
 #include "EndTask.h"
+#include "ConditionVariable.h"
 #include <vector>
 #include <cstdlib> // for size_t
 #include <boost/foreach.hpp>
+#include <boost/bind.hpp>
 
 namespace tpool {
   template<class TaskQueue = LinearTaskQueue>
@@ -19,17 +21,23 @@ namespace tpool {
   
 
     size_t GetThreadNum() const;
-    void AddTask(TaskBase::Ptr task);
+    bool AddTask(TaskBase::Ptr task);
 
     template<typename Func>
-    void AddTask(Func f);
+    bool AddTask(Func f);
 
     void Stop();
     void StopAsync();
+    void StopNow();
     
   private:
+    bool DoAddTask(TaskBase::Ptr task);
+    bool IsRequestStop() const;
+
     TaskQueueBase::Ptr m_taskQueue;
     std::vector<WorkerThread::Ptr> m_threads;
+    volatile bool m_isRequestStop;
+    mutable sync::MutexConditionVariable m_stopCondition;
   };
 
   typedef FixedThreadPool<> LFixedThreadPool;
@@ -38,7 +46,8 @@ namespace tpool {
   template<class TaskQueue>
   FixedThreadPool<TaskQueue>::FixedThreadPool(const size_t threadNum)
     : m_taskQueue(new TaskQueue),
-      m_threads(threadNum)
+      m_threads(threadNum),
+      m_isRequestStop(false)
   {
     BOOST_FOREACH(WorkerThread::Ptr& t, m_threads)
       {
@@ -49,6 +58,8 @@ namespace tpool {
   template<class TaskQueue>
   FixedThreadPool<TaskQueue>::~FixedThreadPool()
   {
+    // keep other thread from pushing more tasks
+    StopAsync();
     const size_t threadNum = m_threads.size();
     for (int i = 0; i < threadNum; ++i)
       {
@@ -63,16 +74,53 @@ namespace tpool {
   }
 
   template<class TaskQueue>
-  void FixedThreadPool<TaskQueue>::AddTask(TaskBase::Ptr task)
+  bool FixedThreadPool<TaskQueue>::AddTask(TaskBase::Ptr task)
   {
-    m_taskQueue->Push(task);
+    return DoAddTask(task);
   }
 
   template<class TaskQueue>
   template<typename Func>
-  void FixedThreadPool<TaskQueue>::AddTask(Func f)
+  bool FixedThreadPool<TaskQueue>::AddTask(Func f)
   {
-    m_taskQueue->Push(MakeFunctorTask(f));
+    return DoAddTask(MakeFunctorTask(f));
+  }
+
+  // TODO: finish this function
+  template<class TaskQueue>
+  void FixedThreadPool<TaskQueue>::Stop()
+  {
+    using boost::bind;
+
+    m_isRequestStop = true;
+
+    // wait until all worker threads stop
+    sync::ConditionWaitLocker l(m_stopCondition,
+				bind(&FixedThreadPool::IsRequestStop, this));
+  }
+
+  template<class TaskQueue>
+  void FixedThreadPool<TaskQueue>::StopAsync()
+  {
+    m_isRequestStop = true;
+  }
+
+  template<class TaskQueue>
+  bool FixedThreadPool<TaskQueue>::DoAddTask(TaskBase::Ptr task)
+  {
+    if (m_isRequestStop)
+      {
+	return false;
+      }
+    
+    m_taskQueue->Push(task);
+    return true;
+  }
+
+  template<class TaskQueue>
+  bool FixedThreadPool<TaskQueue>::IsRequestStop() const
+  {
+    return m_isRequestStop;
   }
 }
 
