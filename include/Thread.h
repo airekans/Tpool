@@ -40,7 +40,7 @@ namespace tpool {
     std::auto_ptr<Func> fp(new Func(f));
 
     int error =  pthread_create(&m_threadId, NULL,
-		       ThreadFunction<Func>, fp.get());
+				ThreadFunction<Func>, fp.get());
     if (error != 0)
       {
 	ProcessCreateError(error);
