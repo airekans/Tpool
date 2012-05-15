@@ -6,7 +6,7 @@
 using namespace tpool;
 using namespace boost;
 
-TEST(FixedThreadPoolTestSuite, test_Construction)
+TEST(FixedThreadPool, test_Construction)
 {
   {
     LFixedThreadPool threadPool;
@@ -32,7 +32,7 @@ namespace {
   };
 }
 
-TEST(FixedThreadPoolTestSuite, test_AddTask)
+TEST(FixedThreadPool, test_AddTask)
 {
   int counter = 0;
   {
@@ -49,7 +49,7 @@ namespace {
   }
 }
 
-TEST(FixedThreadPoolTestSuite, test_template_AddTask)
+TEST(FixedThreadPool, test_template_AddTask)
 {
   int counter = 0;
   {
@@ -94,6 +94,25 @@ TEST(FixedThreadPool, test_StopAsync)
     LFixedThreadPool threadPool;
     threadPool.AddTask(TaskBase::Ptr(new SleepAndIncTask(counter)));
     threadPool.StopAsync();
+    EXPECT_EQ(0, counter);
   }
   EXPECT_EQ(1, counter);
+}
+
+TEST(FixedThreadPool, test_Stop)
+{
+  int counter = 0;
+  {
+    LFixedThreadPool threadPool;
+    threadPool.AddTask(TaskBase::Ptr(new SleepAndIncTask(counter)));
+    EXPECT_EQ(0, counter);
+    threadPool.Stop();
+    EXPECT_EQ(1, counter);
+    EXPECT_FALSE(threadPool.AddTask(TaskBase::Ptr(new IncTask(counter))));
+  }
+}
+
+TEST(FixedThreadPool, test_StopNow)
+{
+  
 }

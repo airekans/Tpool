@@ -22,6 +22,7 @@ namespace tpool {
 
     void Cancel();
     void CancelAsync();
+    void CancelNow();
 
   private:
     template <typename FinishAction>
@@ -34,6 +35,7 @@ namespace tpool {
     void ThreadFunction(FinishAction action);
     
     TaskQueueBase::Ptr m_taskQueue;
+    TaskBase::Ptr m_runningTask;
     volatile bool m_isRequestCancel;
     mutable sync::MutexConditionVariable m_cancelCondition;
     std::auto_ptr<Thread> m_thread; // Thread must be the last variable

@@ -56,17 +56,23 @@ void TaskBase::Run()
 
 void TaskBase::Cancel()
 {
-  m_isRequestCancel = true;
+  if (!IsStopState())
+    {
+      m_isRequestCancel = true;
 
-  // wait until the task is cancelled.
-  ConditionWaitLocker(m_cancelCondition,
-		      boost::bind(not1(mem_fun(&TaskBase::IsStopState)),
-				  this));
+      // wait until the task is cancelled.
+      ConditionWaitLocker(m_cancelCondition,
+			  boost::bind(not1(mem_fun(&TaskBase::IsStopState)),
+				      this));
+    }
 }
 
 void TaskBase::CancelAsync()
 {
-  m_isRequestCancel = true;
+  if (!IsStopState())
+    {
+      m_isRequestCancel = true;
+    }
 }
 
 TaskBase::State TaskBase::GetState() const

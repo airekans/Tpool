@@ -94,18 +94,21 @@ void WorkerThread::WorkFunction()
 	  CheckCancellation();
 
 	  // 2. fetch task from task queue
-	  TaskBase::Ptr task = m_taskQueue->Pop();
+	  m_runningTask = m_taskQueue->Pop();
 
+	  // 2.5. check cancel request again
+	  CheckCancellation();
+	  
 	  // 3. perform the task
-	  if (task)
+	  if (m_runningTask)
 	    {
-	      if (dynamic_cast<EndTask*>(task.get()) != NULL)
+	      if (dynamic_cast<EndTask*>(m_runningTask.get()) != NULL)
 		{
 		  break; // stop the worker thread.
 		}
 	      else
 		{
-		  task->Run();
+		  m_runningTask->Run();
 		}
 	    }
 	  // 4. perform any post-task action
