@@ -45,8 +45,10 @@ TEST(WorkerThread, test_Cancel)
     sleep(1);
     t.Cancel();
     // expect WorkerThread run only one task
+    ASSERT_EQ(1, counter);
   }
   ASSERT_EQ(1, counter);
+  ASSERT_EQ(1, q->Size());
 }
 
 TEST(WorkerThread, test_multiple_Cancel)
