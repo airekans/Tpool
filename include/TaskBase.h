@@ -18,7 +18,7 @@ namespace tpool {
     };
 
     TaskBase();
-    ~TaskBase() {}
+    virtual ~TaskBase() {}
     
     void Run();
     void Cancel();
