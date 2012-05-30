@@ -7,6 +7,7 @@
 #include <ctime>
 #include <string>
 #include <cstdlib>
+#include <signal.h>
 
 using namespace tpool;
 using boost::asio::ip::tcp;
@@ -41,9 +42,36 @@ private:
   shared_ptr<tcp::socket> m_socket;
 };
 
+class SignalHandlerRegister {
+public:
+  SignalHandlerRegister()
+  {
+    struct sigaction newHandler;
+    newHandler.sa_handler = &SignalHandler;
+    sigaddset(&newHandler.sa_mask, SIGQUIT);
+    newHandler.sa_flags = 0;
+
+    sigaction(SIGINT, &newHandler, &m_oldHandler);
+  }
+
+  ~SignalHandlerRegister()
+  {
+    sigaction(SIGINT, &m_oldHandler, NULL);
+  }
+
+private:
+  static void SignalHandler(int sigNum)
+  {
+    cout << "recv SIGINT." << endl;
+  }
+  
+  struct sigaction m_oldHandler;
+};
 
 int main(int argc, char** argv)
 {
+  SignalHandlerRegister signalHdlRegister;
+  
   try
     {
       LFixedThreadPool threadPool;
