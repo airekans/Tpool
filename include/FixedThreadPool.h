@@ -31,17 +31,17 @@ namespace tpool {
   
 
     size_t GetThreadNum() const;
-    bool AddTask(TaskBase::Ptr task);
+    TaskBase::Ptr AddTask(TaskBase::Ptr task);
 
     template<typename Func>
-    bool AddTask(Func f);
+    TaskBase::Ptr AddTask(Func f);
 
     void Stop();
     void StopAsync();
     void StopNow();
     
   private:
-    bool DoAddTask(TaskBase::Ptr task);
+    TaskBase::Ptr DoAddTask(TaskBase::Ptr task);
     bool IsRequestStop() const;
     void NotifyWhenThreadsStop();
     bool IsFinished() const;
@@ -100,14 +100,14 @@ namespace tpool {
   }
 
   template<class TaskQueue>
-  bool FixedThreadPool<TaskQueue>::AddTask(TaskBase::Ptr task)
+  TaskBase::Ptr FixedThreadPool<TaskQueue>::AddTask(TaskBase::Ptr task)
   {
     return DoAddTask(task);
   }
 
   template<class TaskQueue>
   template<typename Func>
-  bool FixedThreadPool<TaskQueue>::AddTask(Func f)
+  TaskBase::Ptr FixedThreadPool<TaskQueue>::AddTask(Func f)
   {
     return DoAddTask(MakeFunctorTask(f));
   }
@@ -162,15 +162,15 @@ namespace tpool {
   }
 
   template<class TaskQueue>
-  bool FixedThreadPool<TaskQueue>::DoAddTask(TaskBase::Ptr task)
+  TaskBase::Ptr FixedThreadPool<TaskQueue>::DoAddTask(TaskBase::Ptr task)
   {
     if (m_isRequestStop)
       {
-	return false;
+	return TaskBase::Ptr();
       }
     
     m_taskQueue->Push(task);
-    return true;
+    return task;
   }
 
   template<class TaskQueue>
