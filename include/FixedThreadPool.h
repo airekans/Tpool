@@ -149,7 +149,8 @@ namespace tpool {
   template<class TaskQueue>
   void FixedThreadPool<TaskQueue>::StopNow()
   {
-    m_isRequestStop = true;
+    StopAsync();
+
     BOOST_FOREACH(WorkerThread::Ptr& t, m_threads)
       {
 	t->CancelAsync();

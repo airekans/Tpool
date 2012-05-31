@@ -83,7 +83,15 @@ int main(int argc, char** argv)
       while (true)
 	{
 	  shared_ptr<tcp::socket> socket(new tcp::socket(io_service));
-	  acceptor.accept(*socket);
+	  try
+	    {
+	      acceptor.accept(*socket);
+	    }
+	  catch (boost::system::system_error&)
+	    {
+	      threadPool.StopNow();
+	      break;
+	    }
 
 	  // Add the task to thread pool
 	  threadPool.AddTask(TaskBase::Ptr(new DaytimeTask(socket)));

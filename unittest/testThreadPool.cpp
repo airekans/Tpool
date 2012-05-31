@@ -117,6 +117,14 @@ TEST(FixedThreadPool, test_Stop)
   }
 }
 
+TEST(FixedThreadPool, test_Stop_when_TaskQueue_empty)
+{
+  {
+    LFixedThreadPool threadPool;
+    threadPool.Stop();
+  }
+}
+
 namespace {
   struct LoopSleepAndIncTask : public SleepAndIncTask {
     LoopSleepAndIncTask(int& i)
@@ -150,5 +158,13 @@ TEST(FixedThreadPool, test_StopNow)
 
     EXPECT_GT(counter, num);
     EXPECT_FALSE(threadPool.AddTask(TaskBase::Ptr(new IncTask(counter))));
+  }
+}
+
+TEST(FixedThreadPool, test_StopNow_when_TaskQueue_empty)
+{
+  {
+    LFixedThreadPool threadPool;
+    threadPool.StopNow();
   }
 }
