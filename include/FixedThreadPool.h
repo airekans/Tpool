@@ -7,6 +7,7 @@
 #include "FunctorTask.h"
 #include "EndTask.h"
 #include "ConditionVariable.h"
+#include "Atomic.h"
 #include <vector>
 #include <cstdlib> // for size_t
 #include <boost/foreach.hpp>
@@ -56,7 +57,7 @@ namespace tpool {
     size_t m_stoppedThreadNum;
     State m_state;
     mutable sync::MutexConditionVariable m_stateGuard;
-    volatile bool m_isRequestStop;
+    Atomic<bool> m_isRequestStop;
     WorkerThreads m_threads;
   };
 
@@ -193,8 +194,8 @@ namespace tpool {
     if (m_stoppedThreadNum >= m_threads.size())
       {
     	sync::ConditionNotifyLocker l(m_stateGuard,
-    				      bind(&FixedThreadPool::IsRequestStop,
-    					   this));
+    				      bind(&Atomic<bool>::GetData,
+    					   &m_isRequestStop));
 	DoSetState(FINISHED);
       }
   }

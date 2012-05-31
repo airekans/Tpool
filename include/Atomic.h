@@ -17,6 +17,8 @@ namespace tpool {
     Atomic& operator=(const T& i);
     Atomic& operator=(const Atomic& atom);
     operator T() const;
+    const T& GetData() const;
+    const T& GetRawData() const;
 
   private:
     T m_data;
@@ -70,10 +72,21 @@ namespace tpool {
   template<typename T>
   Atomic<T>::operator T() const
   {
+    return GetData();
+  }
+
+  template <typename T>
+  const T& Atomic<T>::GetData() const
+  {
     sync::MutexLocker l(m_mutex);
     return m_data;
   }
-  
+
+  template <typename T>
+  const T& Atomic<T>::GetRawData() const
+  {
+    return m_data;
+  }
 }
 
 #endif
