@@ -43,7 +43,6 @@ namespace tpool {
     
   private:
     TaskBase::Ptr DoAddTask(TaskBase::Ptr task);
-    bool IsRequestStop() const;
     void NotifyWhenThreadsStop();
     bool IsFinished() const;
     bool DoIsFinished() const;
@@ -173,12 +172,6 @@ namespace tpool {
     
     m_taskQueue->Push(task);
     return task;
-  }
-
-  template<class TaskQueue>
-  bool FixedThreadPool<TaskQueue>::IsRequestStop() const
-  {
-    return m_isRequestStop;
   }
 
   template<class TaskQueue>

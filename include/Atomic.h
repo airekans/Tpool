@@ -25,6 +25,25 @@ namespace tpool {
     mutable sync::Mutex m_mutex;
   };
 
+  // Partial specialization
+  template <>
+  class Atomic<unsigned int>
+  {
+  public:
+    explicit Atomic(const unsigned int& data);
+    Atomic(const Atomic& atom);
+    virtual ~Atomic();
+
+    Atomic& operator=(const Atomic& atom);
+    int operator++();
+    int operator--();
+    Atomic& operator+=(const unsigned int& data);
+
+  private:
+    int m_data;
+    mutable sync::Mutex m_mutex;
+  };
+  
   // Implementation
   template<typename T>
   Atomic<T>::Atomic(const T& i)
