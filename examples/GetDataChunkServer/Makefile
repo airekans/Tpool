@@ -1,10 +1,10 @@
-PROJECT_ROOT := ..
+PROJECT_ROOT := ../..
 DEPEND_LIB := $(PROJECT_ROOT)/libtpool.so
 
-CXXFLAGS += -I ../include
+CXXFLAGS += -I $(PROJECT_ROOT)/include
 
 LDFLAGS += -pthread
-LDFLAGS += -L .. -ltpool
+LDFLAGS += -L $(PROJECT_ROOT) -ltpool
 LDFLAGS += -lboost_system
 
 SRCDIR := .
@@ -12,21 +12,15 @@ OBJDIR := .
 SRCS := $(wildcard $(SRCDIR)/*.cpp)
 OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
-TARGETS := $(OBJS:%.o=%.test)
-SUBDIRS = $(shell find . -type d -and -regex '\./[^.].*')
+TARGET := GetDataChunkServer.test
 
 #### Rules ####
-all: $(TARGETS) $(SUBDIRS)
+all: $(TARGET)
 
-%.test: %.o $(DEPEND_LIB)
+$(TARGET): $(OBJS) $(DEPEND_LIB)
 	g++ -o $@ $< $(LDFLAGS)
-
-$(SUBDIRS):
-	cd $@; $(MAKE)
 
 clean:
 	@rm -fv $(OBJS) $(TARGETS)
-
-.PHONY: $(SUBDIRS)
 
 include $(PROJECT_ROOT)/Makefile.rules
