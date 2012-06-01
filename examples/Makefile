@@ -13,7 +13,7 @@ SRCS := $(wildcard $(SRCDIR)/*.cpp)
 OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 TARGETS := $(OBJS:%.o=%.test)
-SUBDIRS = $(shell find . -type d -and -regex '\./[^.].*')
+SUBDIRS = $(shell find . -maxdepth 1 -type d -and -regex '\./[^.].*')
 
 #### Rules ####
 all: $(TARGETS) $(SUBDIRS)
@@ -26,6 +26,10 @@ $(SUBDIRS):
 
 clean:
 	@rm -fv $(OBJS) $(TARGETS)
+	for d in $(SUBDIRS); \
+	do \
+		(cd $$d; $(MAKE) clean;) \
+	done
 
 .PHONY: $(SUBDIRS)
 
