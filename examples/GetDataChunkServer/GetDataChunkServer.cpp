@@ -1,5 +1,6 @@
 #include "FixedThreadPool.h"
 #include "TaskBase.h"
+#include "DataChunk.pb.h"
 #include <exception>
 #include <iostream>
 #include <boost/asio.hpp>
@@ -54,33 +55,63 @@ private:
 };
 
 
+void ProcessMessagePackage(shared_ptr<tcp::socket> socket, LFixedThreadPool& tp,
+			   const int packageLength)
+{
+  char packageBuffer[packageLength];
+  boost::system::error_code error;
+  const int length = socket->read_some(boost::asio::buffer(packageBuffer, packageLength), error);
+
+  const char* bufferPtr = packageBuffer;
+  const int messageNameLength = *(int*) bufferPtr; // should convert the number;
+  const int messageLength = packageLength - messageNameLength;
+  bufferPtr += sizeof(messageNameLength);
+
+  const string MessageName = bufferPtr; // '\0' terminated string
+  bufferPtr += messageNameLength;
+}
+
+
+void ReadCommandLoop(shared_ptr<tcp::socket> socket, LFixedThreadPool& tp)
+{
+  char lengthBuffer[sizeof(int)] = {0};
+  boost::system::error_code error;
+
+  size_t length = socket->read_some(boost::asio::buffer(lengthBuffer), error);
+  const int packageLength = *(int*) lengthBuffer; // should convert the number;
+
+  ProcessMessagePackage(socket, tp, packageLength);
+}
+
+
+
 int main(int argc, char** argv)
 {
+  const unsigned int SERVER_PORT = 29995;
+  
   try
     {
       LFixedThreadPool threadPool;
       boost::asio::io_service io_service;
       tcp::acceptor acceptor(io_service,
-			     tcp::endpoint(tcp::v4(), 29994));
+			     tcp::endpoint(tcp::v4(), SERVER_PORT));
+      cout << "Server starts listening port " << SERVER_PORT << endl;
       
-      int cnt = 0;
-      while (true)
+      shared_ptr<tcp::socket> socket(new tcp::socket(io_service));
+      acceptor.accept(*socket);
+
+      
+      
+      // Add the task to thread pool
+      TaskBase::Ptr task(new DownloadTask(socket));
+      threadPool.AddTask(task);
+
+      // wait 5 seconds, then cancel the task
+      sleep(5);
+      if (TaskBase::FINISHED != task->GetState())
 	{
-	  shared_ptr<tcp::socket> socket(new tcp::socket(io_service));
-	  acceptor.accept(*socket);
-
-	  // Add the task to thread pool
-	  TaskBase::Ptr task(new DownloadTask(socket));
-	  threadPool.AddTask(task);
-	  cout << "Received Connection: " << ++cnt << endl;
-
-	  // wait 5 seconds, then cancel the task
-	  sleep(5);
-	  if (TaskBase::FINISHED != task->GetState())
-	    {
-	      task->Cancel();
-	      cout << "DownloadTask is cancelled." << endl;
-	    }
+	  task->Cancel();
+	  cout << "DownloadTask is cancelled." << endl;
 	}
     }
   catch (std::exception& e)

@@ -1,10 +1,10 @@
 package simple;
 
-message GetSimpleDataChunk {
-  required int32 size = 1;
+message GetSimpleDataChunkRequest {
+  required int32 num = 1;
 }
 
-message SimpleDataChunk {
+message SimpleDataChunkResponse {
   message DataChunk {
     required double x = 1;
     required double y = 2;
