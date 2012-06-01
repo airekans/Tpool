@@ -1,0 +1,14 @@
+package simple;
+
+message GetSimpleDataChunk {
+  required int32 size = 1;
+}
+
+message SimpleDataChunk {
+  message DataChunk {
+    required double x = 1;
+    required double y = 2;
+  }
+
+  repeated DataChunk chunks = 1;
+}
