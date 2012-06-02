@@ -69,6 +69,37 @@ TEST(TaskBase, test_Cancel)
 }
 
 namespace {
+  struct CancelFunction {
+    TaskBase& m_task;
+
+    CancelFunction(TaskBase& task)
+      : m_task(task)
+    {}
+
+    void operator()()
+    {
+      m_task.Cancel();
+    }
+  };
+}
+
+TEST(TaskBase, test_multiple_Cancel_simultunuously)
+{
+  CancelTask task;
+
+  EXPECT_EQ(TaskBase::INIT, task.GetState());
+
+  {
+    Thread t((ThreadFunc(task)));
+    sleep(1);
+    EXPECT_EQ(TaskBase::RUNNING, task.GetState());
+    Thread t1((CancelFunction(task)));
+    task.Cancel();
+  }
+  EXPECT_EQ(TaskBase::CANCELLED, task.GetState());
+}
+
+namespace {
   struct NotRunningTask : public TaskBase {
     bool& running;
 

@@ -3,6 +3,7 @@
 #define _TPOOL_TASK_BASE_H_
 
 #include "ConditionVariable.h"
+#include "Atomic.h"
 #include <boost/shared_ptr.hpp>
 
 namespace tpool {
@@ -40,7 +41,7 @@ namespace tpool {
 
     State m_state;
     mutable sync::Mutex m_stateGuard;
-    volatile bool m_isRequestCancel;
+    Atomic<bool> m_isRequestCancel;
     sync::ConditionVariable m_cancelCondition;
   };
 }
