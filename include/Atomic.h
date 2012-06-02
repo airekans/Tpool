@@ -16,6 +16,7 @@ namespace tpool {
 
     Atomic& operator=(const T& i);
     Atomic& operator=(const Atomic& atom);
+    bool CompareAndSet(const T& compare, const T& newValue);
     operator T() const;
     const T& GetData() const;
     const T& GetRawData() const;
@@ -88,6 +89,18 @@ namespace tpool {
     return *this;
   }
 
+  template <typename T>
+  bool Atomic<T>::CompareAndSet(const T& compare, const T& newValue)
+  {
+    sync::MutexLocker l(m_mutex);
+    if (m_data == compare)
+      {
+	m_data = newValue;
+	return true;
+      }
+    return false;
+  }
+  
   template<typename T>
   Atomic<T>::operator T() const
   {

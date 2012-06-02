@@ -126,6 +126,30 @@ TEST(FixedThreadPool, test_Stop_when_TaskQueue_empty)
 }
 
 namespace {
+  struct StopFunction {
+    LFixedThreadPool& m_threadPool;
+
+    StopFunction(LFixedThreadPool& threadPool)
+      : m_threadPool(threadPool)
+    {}
+    
+    void operator()()
+    {
+      m_threadPool.Stop();
+    }
+  };
+}
+
+TEST(FixedThreadPool, test_multiple_Stop_simultinuously)
+{
+  {
+    LFixedThreadPool threadPool;
+    Thread t((StopFunction(threadPool)));
+    threadPool.Stop();
+  }
+}
+
+namespace {
   struct LoopSleepAndIncTask : public SleepAndIncTask {
     LoopSleepAndIncTask(int& i)
       : SleepAndIncTask(i)

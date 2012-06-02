@@ -112,7 +112,6 @@ namespace tpool {
     return DoAddTask(MakeFunctorTask(f));
   }
 
-  // TODO: finish this function
   template<class TaskQueue>
   void FixedThreadPool<TaskQueue>::Stop()
   {
@@ -120,24 +119,20 @@ namespace tpool {
     using std::mem_fun;
     using std::not1;
 
-    if (!m_isRequestStop)
-      {
-	StopAsync();
+    StopAsync();
 
-	// wait until all worker threads stop
-	sync::ConditionWaitLocker l(m_stateGuard,
-				    bind(not1(mem_fun(&FixedThreadPool::
-						      DoIsFinished)),
-					 this));
-      }
+    // wait until all worker threads stop
+    sync::ConditionWaitLocker l(m_stateGuard,
+				bind(not1(mem_fun(&FixedThreadPool::
+						  DoIsFinished)),
+				     this));
   }
 
   template<class TaskQueue>
   void FixedThreadPool<TaskQueue>::StopAsync()
   {
-    if (!m_isRequestStop)
+    if (m_isRequestStop.CompareAndSet(false, true))
       {
-	m_isRequestStop = true;
 	const size_t threadNum = m_threads.size();
 	for (size_t i = 0; i < threadNum; ++i)
 	  {
@@ -186,7 +181,7 @@ namespace tpool {
 
     if (m_stoppedThreadNum >= m_threads.size())
       {
-    	sync::ConditionNotifyLocker l(m_stateGuard,
+    	sync::ConditionNotifyAllLocker l(m_stateGuard,
     				      bind(&Atomic<bool>::GetData,
     					   &m_isRequestStop));
 	DoSetState(FINISHED);
