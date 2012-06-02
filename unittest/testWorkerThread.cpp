@@ -67,6 +67,37 @@ TEST(WorkerThread, test_multiple_Cancel)
   ASSERT_EQ(1, counter);
 }
 
+namespace {
+  struct CancelFunction {
+    WorkerThread& m_workerThread;
+
+    CancelFunction(WorkerThread& workerThread)
+      : m_workerThread(workerThread)
+    {}
+
+    void operator()()
+    {
+      m_workerThread.Cancel();
+    }
+  };
+}
+
+TEST(WorkerThread, test_multiple_Cancel_simultunuously)
+{
+  int counter = 0;
+  TaskQueueBase::Ptr q(new LinearTaskQueue);
+  {
+    WorkerThread t(q);
+    q->Push(TaskBase::Ptr(new TestTask(counter)));
+    q->Push(TaskBase::Ptr(new TestTask(counter)));
+    sleep(1);
+    Thread t1((CancelFunction(t)));
+    t.Cancel();
+    // expect WorkerThread run only one task
+  }
+  ASSERT_EQ(1, counter);
+}
+
 TEST(WorkerThread, test_CancelAsync)
 {
   int counter = 0;

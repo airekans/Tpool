@@ -170,7 +170,7 @@ void WorkerThread::GetTaskFromTaskQueue()
 
 void WorkerThread::NotifyFinished()
 {
-  ConditionNotifyLocker l(m_stateGuard,
+  ConditionNotifyAllLocker l(m_stateGuard,
 			  bind(&Atomic<bool>::GetData,
 			       &m_isRequestCancel));
   DoSetState(FINISHED);
