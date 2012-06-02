@@ -7,15 +7,16 @@ LDFLAGS += -pthread
 LDFLAGS += -L $(PROJECT_ROOT) -ltpool
 LDFLAGS += -lboost_system -lprotobuf
 
-SRCDIR := .
-OBJDIR := .
-SRCS := $(wildcard $(SRCDIR)/*.cpp)
-OBJS = $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
-
 PROTODIR = .
 PROTOS = $(wildcard $(PROTODIR)/*.proto)
 PROTO_SRCS = $(PROTOS:$(PROTODIR)/%.proto=$(SRCDIR)/%.pb.cc)
+PROTO_HDRS = $(PROTOS:$(PROTODIR)/%.proto=$(SRCDIR)/%.pb.h)
 OBJS += $(PROTO_SRCS:$(SRCDIR)/%.cc=$(OBJDIR)/%.o)
+
+SRCDIR := .
+OBJDIR := .
+SRCS := $(wildcard $(SRCDIR)/*.cpp)
+OBJS += $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 TARGET := GetDataChunkServer.test
 
@@ -29,6 +30,6 @@ $(SRCDIR)/%.pb.cc: $(PROTODIR)/%.proto
 	protoc -I=$(PROTODIR) --cpp_out=$(SRCDIR) $^
 
 clean:
-	@rm -fv $(OBJS) $(TARGETS)
+	@rm -fv $(OBJS) $(TARGETS) $(PROTO_SRCS) $(PROTO_HDRS)
 
 include $(PROJECT_ROOT)/Makefile.rules
