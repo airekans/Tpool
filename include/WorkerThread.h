@@ -5,6 +5,7 @@
 #include "TaskQueueBase.h"
 #include "ConditionVariable.h"
 #include "Thread.h"
+#include "Atomic.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/bind.hpp>
 #include <memory>
@@ -35,7 +36,6 @@ namespace tpool {
     template <typename FinishAction>
     void Init(TaskQueueBase::Ptr taskQueue, FinishAction action);
     void ProcessError(const std::exception& e);
-    bool IsRequestCancel() const;
     void CheckCancellation() const;
     void WorkFunction();
     template <typename FinishAction>
@@ -52,7 +52,7 @@ namespace tpool {
     mutable sync::Mutex m_runningTaskGuard;
     State m_state;
     mutable sync::MutexConditionVariable m_stateGuard;
-    volatile bool m_isRequestCancel;
+    Atomic<bool> m_isRequestCancel;
     std::auto_ptr<Thread> m_thread; // Thread must be the last variable
   };
 

@@ -55,14 +55,11 @@ WorkerThread::~WorkerThread()
 
 void WorkerThread::Cancel()
 {
-  if (!m_isRequestCancel)
-    {
-      m_isRequestCancel = true;
-      ConditionWaitLocker l(m_stateGuard,
-			    bind(not1(mem_fun(&WorkerThread::
-					      DoIsFinished)),
-				 this));
-    }
+  CancelAsync();
+  ConditionWaitLocker l(m_stateGuard,
+			bind(not1(mem_fun(&WorkerThread::
+					  DoIsFinished)),
+			     this));
 }
 
 void WorkerThread::CancelAsync()
@@ -91,11 +88,6 @@ void WorkerThread::ProcessError(const std::exception& e)
   cerr << "WorkerThread ctor" << endl;
   cerr << e.what() << endl;
   cerr << "Try again." << endl;
-}
-
-bool WorkerThread::IsRequestCancel() const
-{
-  return m_isRequestCancel;
 }
 
 void WorkerThread::CheckCancellation() const
@@ -179,7 +171,7 @@ void WorkerThread::GetTaskFromTaskQueue()
 void WorkerThread::NotifyFinished()
 {
   ConditionNotifyLocker l(m_stateGuard,
-			  bind(&WorkerThread::IsRequestCancel,
-			       this));
+			  bind(&Atomic<bool>::GetData,
+			       &m_isRequestCancel));
   DoSetState(FINISHED);
 }
