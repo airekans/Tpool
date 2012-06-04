@@ -10,30 +10,35 @@ BUFSIZ = 1024
 ADDR = (HOST, PORT)
 
 def get_package(message):
-    package_header = ""
-    message_name = message.DESCRIPTOR.name + "\x00"
+    message_name = message.DESCRIPTOR.full_name + "\0"
+
+    print "message old len: %d" % len(message.DESCRIPTOR.name)
+    print len(message_name)
+    
     message_name_length = len(message_name)
     encoded_message = message.SerializeToString()
-    
-    package = struct.pack('!I', 10)
-    package += "123456789\x00"
-    
-    for i in range(length - 10 - 4):
-        package += "a"
-    return package
+    package_length = 4 + message_name_length + len(encoded_message)
+    package = struct.pack('!II', package_length, message_name_length)
+    package += message_name + encoded_message
 
+    print "message len: %d" % len(encoded_message)
+
+    return package
+    
 tcpCliSock = socket(AF_INET, SOCK_STREAM)
 tcpCliSock.connect(ADDR)
 
 while True:
-    num = raw_input('> ')
-    data_chunk = DataChunk_pb2.GetSimpleDataChunkRequest()
-    data_chunk.num = int(num)
-    data = struct.pack('!I', long(num))
-    data += get_package(int(num))
-    print "length: %d" % len(data)
-    if not data:
+    try:
+        num = int(raw_input('> '))
+        data_chunk = DataChunk_pb2.GetSimpleDataChunkRequest()
+        data_chunk.num = num
+        package = get_package(data_chunk)
+        print "length: %d" % len(package)
+        if not package:
+            break
+        tcpCliSock.send(package)
+        num = raw_input('continue...')
+    except EOFError:
         break
-    tcpCliSock.send('%s' % data)
-    num = raw_input('continue...')
 tcpCliSock.close()
