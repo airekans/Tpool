@@ -102,11 +102,6 @@ void MessageDispatcher::SetMessageHandler(MessageHandler messageHandler)
   m_messageHandlers[T::default_instance().GetDescriptor()] = messageHandler;
 }
 
-void Dispatch(google::protobuf::Message* message)
-{
-  
-}
-
 void MessageReader::Loop()
 {
   using boost::asio::detail::socket_ops::network_to_host_long;
