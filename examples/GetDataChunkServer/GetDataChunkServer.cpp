@@ -5,6 +5,7 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/typeof/typeof.hpp>
+#include <boost/bind/protect.hpp>
 #include <boost/system/error_code.hpp>
 #include <ctime>
 #include <string>
@@ -35,10 +36,11 @@ namespace {
 
 class MessageDispatcher {
 public:
-  typedef function<void (const Message* message)> MessageHandler;
+  typedef function<void (Message* message)> MessageHandler;
   
-  void Dispatch(const Message* message);
-  void SetMessageHandler(const Descriptor* descriptor, MessageHandler& messageHandler);
+  void Dispatch(Message* message);
+  template <typename T>
+  void SetMessageHandler(MessageHandler messageHandler);
 
   static MessageDispatcher& GetInstance()
   {
@@ -47,7 +49,23 @@ public:
   }
   
 private:
-  map<Descriptor*, MessageHandler> m_messageHandlers;
+  void DefaultHandler(Message* message) const
+  {
+    using simple::GetSimpleDataChunkRequest;
+    
+    cout << "default handler" << endl;
+    GetSimpleDataChunkRequest* request =
+      dynamic_cast<GetSimpleDataChunkRequest*>(message);
+    if (request != NULL)
+      {
+	cout << "Request: " << request->num() << endl;
+      }
+  }
+  
+  typedef map<const Descriptor*, MessageHandler> HandlerMap;
+  
+  HandlerMap m_messageHandlers;
+  LFixedThreadPool m_threadPool;
 };
 
 class MessageReader {
@@ -62,21 +80,29 @@ private:
   void ProcessMessagePackage(const long packageLength);
   
   shared_ptr<tcp::socket> m_socket;
-  LFixedThreadPool m_threadPool;
 };
 
-void MessageDispatcher::Dispatch(const Message* message)
+// Imlementation
+void MessageDispatcher::Dispatch(Message* message)
 {
-  
+  HandlerMap::const_iterator handler = m_messageHandlers.find(message->GetDescriptor());
+  if (handler != m_messageHandlers.end())
+    {
+      m_threadPool.AddTask(boost::protect(boost::bind(handler->second, message)));
+    }
+  else
+    {
+      DefaultHandler(message);
+    }
 }
 
-void MessageDispatcher::SetMessageHandler(const Descriptor* descriptor,
-					  MessageHandler& messageHandler)
+template <typename T>
+void MessageDispatcher::SetMessageHandler(MessageHandler messageHandler)
 {
-  
+  m_messageHandlers[T::default_instance().GetDescriptor()] = messageHandler;
 }
 
-void Dispatch(const google::protobuf::Message* message)
+void Dispatch(google::protobuf::Message* message)
 {
   
 }
@@ -141,74 +167,10 @@ void MessageReader::ProcessMessagePackage(const long packageLength)
   MessageDispatcher::GetInstance().Dispatch(message);
 }
 
-void DispatchMessage(const Message* message)
+void HandleSimpleDataChunkRequest(const int, Message* message)
 {
-  
+  cout << "In HandleSimpleDataChunkRequest" << endl;
 }
-
-void ProcessMessagePackage(shared_ptr<tcp::socket> socket,
-			   const long packageLength)
-{
-  using boost::asio::detail::socket_ops::network_to_host_long;
-
-  char packageBuffer[packageLength];
-  boost::system::error_code error;
-  const int length = socket->read_some(boost::asio::buffer(packageBuffer, packageLength), error);
-
-  cout << "received buffer contents: ";
-  for (int i = 0; i < length; ++i)
-    {
-      cout << packageBuffer[i];
-    }
-  cout << endl;
-  
-  const char* bufferPtr = packageBuffer;
-  const long messageNameLengthNetwork = *(long*) bufferPtr;
-  const long messageNameLength = network_to_host_long(messageNameLengthNetwork);
-
-  cout << "messageName Length: " << messageNameLength << endl;
-  
-  const int messageLength = packageLength - sizeof(messageNameLength) - messageNameLength;
-  bufferPtr += sizeof(messageNameLength);
-
-  const string messageName = bufferPtr; // '\0' terminated string
-  bufferPtr += messageNameLength;
-
-  cout << "messageName: " << messageName << endl;
-  cout << "messageLength: " << messageLength << endl;
-
-  const google::protobuf::Descriptor* descriptor =
-    google::protobuf::DescriptorPool::generated_pool()->FindMessageTypeByName(messageName);
-  const google::protobuf::Message* prototype =
-    google::protobuf::MessageFactory::generated_factory()->GetPrototype(descriptor);
-  google::protobuf::Message* message = prototype->New();
-
-  message->ParseFromArray(bufferPtr, messageLength);
-
-  DispatchMessage(message);
-}
-
-
-void ReadCommandLoop(shared_ptr<tcp::socket> socket)
-{
-  using boost::asio::detail::socket_ops::network_to_host_long;
-
-  char lengthBuffer[sizeof(long)] = {0};
-  boost::system::error_code error;
-
-  while (true)
-    {
-      size_t length = socket->read_some(boost::asio::buffer(lengthBuffer), error);
-      const long packageLengthNetwork = *(long*) lengthBuffer;
-      const long packageLength = network_to_host_long(packageLengthNetwork);
-
-      cout << "received " << packageLength << " bytes" << endl;
-
-      ProcessMessagePackage(socket, packageLength);
-    }
-}
-
-
 
 int main(int argc, char** argv)
 {
@@ -224,6 +186,10 @@ int main(int argc, char** argv)
       shared_ptr<tcp::socket> socket(new tcp::socket(io_service));
       acceptor.accept(*socket);
 
+      MessageDispatcher::GetInstance().
+	SetMessageHandler<simple::GetSimpleDataChunkRequest>
+	(MessageDispatcher::MessageHandler(boost::bind(&HandleSimpleDataChunkRequest, 0, _1)));
+      
       MessageReader reader(socket);
       reader.Loop();
     }
