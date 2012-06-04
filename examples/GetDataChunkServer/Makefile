@@ -29,6 +29,9 @@ $(TARGET): $(OBJS) $(DEPEND_LIB)
 $(SRCDIR)/%.pb.cc: $(PROTODIR)/%.proto
 	protoc -I=$(PROTODIR) --cpp_out=$(SRCDIR) $^
 
+run: $(TARGET)
+	LD_LIBRARY_PATH=$(PROJECT_ROOT) ./$(TARGET)
+
 clean:
 	@rm -fv $(OBJS) $(TARGETS) $(PROTO_SRCS) $(PROTO_HDRS)
 

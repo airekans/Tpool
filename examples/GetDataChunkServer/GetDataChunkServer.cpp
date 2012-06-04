@@ -16,71 +16,64 @@ using namespace std;
 
 const size_t MAX_LENGTH = 1024;
 
-class DownloadTask : public TaskBase {
-public:
-  DownloadTask(shared_ptr<tcp::socket> socket)
-    : m_socket(socket)
-  {}
-
-  virtual void DoRun()
+namespace {
+  LFixedThreadPool& GetThreadPool()
   {
-    cout << "Process Download Request." << endl;
-
-    char data[MAX_LENGTH] = {0};
-
-    while (true)
-      {
-	CheckCancellation();
-
-	boost::system::error_code error;
-	size_t length = m_socket->read_some(boost::asio::buffer(data), error);
-	if (error == boost::asio::error::eof)
-	  break; // Connection closed cleanly by peer.
-	else if (error)
-	  throw boost::system::system_error(error); // Some other error.
-
-	ProcessData(data);
-      }
+    static LFixedThreadPool threadPool;
+    return threadPool;
   }
-
-private:
-  void ProcessData(char data[])
-  {
-    // Save the data to file. Here I ignore the data and
-    // just output it to terminal
-    cout << "received data" << endl;
-  }
-  
-  shared_ptr<tcp::socket> m_socket;
-};
+}
 
 
-void ProcessMessagePackage(shared_ptr<tcp::socket> socket, LFixedThreadPool& tp,
-			   const int packageLength)
+void ProcessMessagePackage(shared_ptr<tcp::socket> socket,
+			   const long packageLength)
 {
+  using boost::asio::detail::socket_ops::network_to_host_long;
+
   char packageBuffer[packageLength];
   boost::system::error_code error;
   const int length = socket->read_some(boost::asio::buffer(packageBuffer, packageLength), error);
 
+  cout << "received buffer contents: ";
+  for (int i = 0; i < length; ++i)
+    {
+      cout << packageBuffer[i];
+    }
+  cout << endl;
+  
   const char* bufferPtr = packageBuffer;
-  const int messageNameLength = *(int*) bufferPtr; // should convert the number;
-  const int messageLength = packageLength - messageNameLength;
+  const long messageNameLengthNetwork = *(long*) bufferPtr;
+  const long messageNameLength = network_to_host_long(messageNameLengthNetwork);
+
+  cout << "messageName Length: " << messageNameLength << endl;
+  
+  const int messageLength = packageLength - sizeof(messageNameLength) - messageNameLength;
   bufferPtr += sizeof(messageNameLength);
 
-  const string MessageName = bufferPtr; // '\0' terminated string
+  const string messageName = bufferPtr; // '\0' terminated string
   bufferPtr += messageNameLength;
+
+  cout << "messageName: " << messageName << endl;
 }
 
 
-void ReadCommandLoop(shared_ptr<tcp::socket> socket, LFixedThreadPool& tp)
+void ReadCommandLoop(shared_ptr<tcp::socket> socket)
 {
-  char lengthBuffer[sizeof(int)] = {0};
+  using boost::asio::detail::socket_ops::network_to_host_long;
+
+  char lengthBuffer[sizeof(long)] = {0};
   boost::system::error_code error;
 
-  size_t length = socket->read_some(boost::asio::buffer(lengthBuffer), error);
-  const int packageLength = *(int*) lengthBuffer; // should convert the number;
+  while (true)
+    {
+      size_t length = socket->read_some(boost::asio::buffer(lengthBuffer), error);
+      const long packageLengthNetwork = *(long*) lengthBuffer;
+      const long packageLength = network_to_host_long(packageLengthNetwork);
 
-  ProcessMessagePackage(socket, tp, packageLength);
+      cout << "received " << packageLength << " bytes" << endl;
+
+      ProcessMessagePackage(socket, packageLength);
+    }
 }
 
 
@@ -91,7 +84,6 @@ int main(int argc, char** argv)
   
   try
     {
-      LFixedThreadPool threadPool;
       boost::asio::io_service io_service;
       tcp::acceptor acceptor(io_service,
 			     tcp::endpoint(tcp::v4(), SERVER_PORT));
@@ -100,19 +92,7 @@ int main(int argc, char** argv)
       shared_ptr<tcp::socket> socket(new tcp::socket(io_service));
       acceptor.accept(*socket);
 
-      
-      
-      // Add the task to thread pool
-      TaskBase::Ptr task(new DownloadTask(socket));
-      threadPool.AddTask(task);
-
-      // wait 5 seconds, then cancel the task
-      sleep(5);
-      if (TaskBase::FINISHED != task->GetState())
-	{
-	  task->Cancel();
-	  cout << "DownloadTask is cancelled." << endl;
-	}
+      ReadCommandLoop(socket);
     }
   catch (std::exception& e)
     {
