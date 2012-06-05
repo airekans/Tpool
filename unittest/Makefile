@@ -1,6 +1,6 @@
 TARGET := tpool.test
 PROJECT_ROOT := ..
-DEPEND_LIB := $(PROJECT_ROOT)/libtpool.so
+DEPEND_LIB := $(wildcard $(PROJECT_ROOT)/libtpool.*)
 
 CXXFLAGS += -I ../include
 CPPFLAGS += -D_DEBUG_

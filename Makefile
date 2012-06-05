@@ -1,11 +1,18 @@
-CXXFLAGS += -fPIC -Wall -Werror
-CXXFLAGS += -I ./include
-
+ifdef STATIC
+LIBTYPE :=
+LIB_SUFFIX := .a
+else
 LIBTYPE := -shared
+CXXFLAGS += -fPIC
+LIB_SUFFIX := .so
+endif
+
+CXXFLAGS += -Wall -Werror
+CXXFLAGS += -I ./include
 
 LDFLAGS += -pthread
 
-TARGET := libtpool.so
+TARGET := libtpool$(LIB_SUFFIX)
 
 TEST_DIR := unittest
 EXAMPLE_DIR := examples
@@ -21,9 +28,14 @@ OBJS = $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 #### Rules ####
 all: $(TARGET)
 
+ifdef STATIC
+$(TARGET): $(OBJS)
+	$(AR) rcs $@ $^
+else
 $(TARGET): $(OBJS)
 	$(LINK.cpp) $(LIBTYPE) -Wl,-soname,$@ -o $@.1.0 $^ $(LDFLAGS)
 	ln -fs $@.1.0 $@
+endif
 
 include Makefile.rules
 

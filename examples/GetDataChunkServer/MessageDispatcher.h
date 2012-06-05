@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #ifndef _GET_DATA_CHUNK_SERVER_MESSAGE_DISPATCHER_H_
 #define _GET_DATA_CHUNK_SERVER_MESSAGE_DISPATCHER_H_
 
@@ -17,11 +18,7 @@ public:
   template <typename T>
   void SetMessageHandler(MessageHandler messageHandler);
 
-  static MessageDispatcher& GetInstance()
-  {
-    static MessageDispatcher dispatcher;
-    return dispatcher;
-  }
+  static MessageDispatcher& GetInstance();
   
 private:
   void DefaultHandler(google::protobuf::Message* message) const;
@@ -32,5 +29,10 @@ private:
   tpool::LFixedThreadPool m_threadPool;
 };
 
+template <typename T>
+void MessageDispatcher::SetMessageHandler(MessageHandler messageHandler)
+{
+  m_messageHandlers[T::default_instance().GetDescriptor()] = messageHandler;
+}
 
 #endif
