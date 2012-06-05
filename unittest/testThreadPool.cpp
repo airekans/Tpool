@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 using namespace tpool;
+using namespace tpool::sync;
 using namespace boost;
 using namespace std;
 
@@ -22,7 +23,7 @@ TEST(FixedThreadPool, test_Construction)
 }
 
 namespace {
-  sync::Mutex GLOBAL_MUTEX;
+  Mutex GLOBAL_MUTEX;
   
   struct IncTask : public TaskBase {
     int& counter;
@@ -31,7 +32,7 @@ namespace {
 
     virtual void DoRun()
     {
-      sync::MutexLocker l(GLOBAL_MUTEX);
+      MutexLocker l(GLOBAL_MUTEX);
       ++counter;
     }
   };

@@ -8,13 +8,14 @@
 
 using namespace std;
 using namespace tpool;
+using namespace tpool::sync;
 
 namespace {
   int GLOBAL_COUNTER = 0;
-  sync::Mutex mutex;
+  Mutex mutex;
   
   struct ThreadFunctor {
-    ThreadFunctor(sync::Mutex& mutex)
+    ThreadFunctor(Mutex& mutex)
       : m(mutex)
     {
       
@@ -24,12 +25,12 @@ namespace {
     {
       for (int i = 0; i < 20; ++i)
 	{
-	  sync::MutexLocker l(m);
+	  MutexLocker l(m);
 	  ++GLOBAL_COUNTER;
 	}
     }
 
-    sync::Mutex& m;
+    Mutex& m;
   };
 
 }
@@ -43,7 +44,7 @@ TEST(MutexTestSuite, test_MutexLocker)
 
     for (int i = 0; i < 20; ++i)
       {
-	sync::MutexLocker l(mutex);
+	MutexLocker l(mutex);
 	  ++GLOBAL_COUNTER;
       }
   }
@@ -53,10 +54,10 @@ TEST(MutexTestSuite, test_MutexLocker)
 
 namespace {
   struct IncThreadFunc {
-    sync::Mutex& mutex;
+    Mutex& mutex;
     int& counter;
     
-    IncThreadFunc(sync::Mutex& m, int& i)
+    IncThreadFunc(Mutex& m, int& i)
       : mutex(m), counter(i)
     {
     }
@@ -66,7 +67,7 @@ namespace {
       for (int i = 0; i < 2; ++i)
 	{
 	  {
-	    sync::MutexLocker l(mutex);
+	    MutexLocker l(mutex);
 	    ++counter;
 	  }
 	  sleep(1);
@@ -77,9 +78,9 @@ namespace {
   struct WaitThreadFunc {
     int& wakeCount;
     int& counter;
-    sync::Mutex& mutex;
+    Mutex& mutex;
 
-    WaitThreadFunc(sync::Mutex& m, int& i, int& wc)
+    WaitThreadFunc(Mutex& m, int& i, int& wc)
       : mutex(m), counter(i), wakeCount(wc)
     {
       wakeCount = -1;
@@ -100,7 +101,7 @@ namespace {
     
     void operator()()
     {
-      sync::MutexWaitLocker(mutex,
+      MutexWaitLocker(mutex,
 			  (GreaterThanFunc(counter)));
       cout << "wait end: counter " << counter << endl;
       wakeCount = counter; // wakeCount should > 0 now
@@ -112,7 +113,7 @@ TEST(MutexTestSuite, test_MutexWaitLocker)
 {
   int counter = 0;
   int wakeCount = -1;
-  sync::Mutex m;
+  Mutex m;
   {
     Thread t1((WaitThreadFunc(m, counter, wakeCount)));
     Thread t2((IncThreadFunc(m, counter)));

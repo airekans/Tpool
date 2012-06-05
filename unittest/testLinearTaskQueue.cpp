@@ -8,6 +8,7 @@
 
 using namespace std;
 using namespace tpool;
+using namespace tpool::sync;
 using namespace boost;
 
 namespace {
@@ -80,12 +81,12 @@ TEST(LinearTaskQueueTestSuite, test_PopWait)
 namespace {
   struct ThreadSafeInt {
     int i;
-    sync::Mutex mutex;
+    Mutex mutex;
 
     ThreadSafeInt() : i(0) {}
     ThreadSafeInt& operator++()
     {
-      sync::MutexLocker l(mutex);
+      MutexLocker l(mutex);
       ++i;
       return *this;
     }

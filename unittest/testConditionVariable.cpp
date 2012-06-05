@@ -4,18 +4,19 @@
 #include <unistd.h>
 
 using namespace tpool;
+using namespace tpool::sync;
 
 namespace {
   int GLOBAL_COUNTER = 0;
   bool WAIT_CONDITION = true;
 
-  sync::Mutex m;
-  sync::ConditionVariable cond(m);
+  Mutex m;
+  ConditionVariable cond(m);
   
   struct WaitThreadFunc {
-    sync::ConditionVariable& condition;
+    ConditionVariable& condition;
 
-    WaitThreadFunc(sync::ConditionVariable& c)
+    WaitThreadFunc(ConditionVariable& c)
       : condition(c)
     {}
     
@@ -28,7 +29,7 @@ namespace {
     
     void operator()()
     {
-      sync::ConditionWaitLocker l(condition, WaitCondFunc());
+      ConditionWaitLocker l(condition, WaitCondFunc());
       ++GLOBAL_COUNTER;
     }
   };
@@ -48,7 +49,7 @@ TEST(ConditionVariableTestSuite, test_wait_and_notify)
   {
     Thread t((WaitThreadFunc(cond)));
     {
-      sync::ConditionNotifyLocker l(cond, NotifyFunc());
+      ConditionNotifyLocker l(cond, NotifyFunc());
       WAIT_CONDITION = false;
       GLOBAL_COUNTER = 0;
     }
@@ -63,7 +64,7 @@ TEST(ConditionVariableTestSuite, test_wait_and_notify_all)
     Thread t1((WaitThreadFunc(cond)));
     Thread t2((WaitThreadFunc(cond)));
     {
-      sync::ConditionNotifyAllLocker l(cond, NotifyFunc());
+      ConditionNotifyAllLocker l(cond, NotifyFunc());
       WAIT_CONDITION = false;
       GLOBAL_COUNTER = 0;
     }
@@ -74,18 +75,18 @@ TEST(ConditionVariableTestSuite, test_wait_and_notify_all)
 TEST(ConditionVariableTestSuite, test_MutexCondition_wait)
 {
   WAIT_CONDITION = true;
-  sync::MutexConditionVariable condition;
+  MutexConditionVariable condition;
   {
     Thread t((WaitThreadFunc(condition)));
     {
-      sync::ConditionNotifyLocker l(condition, NotifyFunc());
+      ConditionNotifyLocker l(condition, NotifyFunc());
       WAIT_CONDITION = false;
       GLOBAL_COUNTER = 0;
     }
     {
       // ensure condition can be used both as Mutex
       // and ConditionVariable
-      sync::MutexLocker l(condition);
+      MutexLocker l(condition);
       int tmp = 1;
     }
   }
