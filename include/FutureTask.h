@@ -12,7 +12,21 @@ namespace tpool {
     virtual ~FutureTask();
 
     T GetResult();
+    
+  private:
+    virtual void DoRun();
+    virtual T Call() = 0;
+
+    T m_result;
   };
+
+  // Partial specialization for void, which forbids
+  // users from defining a method returning void.
+  template <>
+  class FutureTask<void>;
+
+  // Implementation
+  
 }
 
 #endif
