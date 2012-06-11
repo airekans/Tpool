@@ -38,7 +38,22 @@ while True:
         if not package:
             break
         tcpCliSock.send(package)
+
+        response_str = ""
+        while True:
+            recv_chunk = tcpCliSock.recv(1024)
+            response_str += recv_chunk
+            if len(recv_chunk) < 1024:
+                break
+
+        response = DataChunk_pb2.SimpleDataChunkResponse()
+        response.ParseFromString(response_str)
+        
+        for i, chunk in enumerate(response.chunks):
+            print "[%d] x: %d, y: %d" % (i, chunk.x, chunk.y)
+            
         num = raw_input('continue...')
     except EOFError:
         break
+
 tcpCliSock.close()
