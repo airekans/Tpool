@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #ifndef _TPOOL_MUTEX_H_
 #define _TPOOL_MUTEX_H_
 
@@ -24,8 +25,10 @@ namespace tpool {
       // These two functions can only called by MutexLocker
       void Lock();
       void Unlock();
-      
+      void Init();
+
       pthread_mutex_t m_mutex;
+      volatile bool m_isInit;
     };
 
     class MutexLocker : private boost::noncopyable {

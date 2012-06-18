@@ -1,12 +1,16 @@
 #include "Mutex.h"
 #include <cstdlib>
 #include <stdexcept>
+#include <iostream>
 
 using namespace tpool::sync;
 using namespace std;
 
 Mutex::Mutex()
+  : m_isInit(false)
 {
+  Init();
+  
   // TODO: check the return code.
   if (pthread_mutex_init(&m_mutex, NULL) != 0)
     {
@@ -17,17 +21,53 @@ Mutex::Mutex()
 Mutex::~Mutex()
 {
   // TODO: check whether the mutex is in unlocked state.
-  pthread_mutex_destroy(&m_mutex);
+  if (!m_isInit)
+    {
+      cerr << "WARNING: mutex is uninitialized." << endl;
+    }
+  else
+    {
+      pthread_mutex_destroy(&m_mutex);
+    }
 }
 
 void Mutex::Lock()
 {
-  pthread_mutex_lock(&m_mutex);
+  if (!m_isInit)
+    {
+      cerr << "WARNING: mutex is uninitialized." << endl;
+    }
+  else
+    {
+      pthread_mutex_lock(&m_mutex);
+    }
 }
 
 void Mutex::Unlock()
 {
-  pthread_mutex_unlock(&m_mutex);
+  if (!m_isInit)
+    {
+      cerr << "WARNING: mutex is uninitialized." << endl;
+    }
+  else
+    {
+      pthread_mutex_unlock(&m_mutex);
+    }
+}
+
+void Mutex::Init()
+{
+  if (!m_isInit)
+    {
+      if (pthread_mutex_init(&m_mutex, NULL) != 0)
+	{
+	  cerr << "failed to initialize mutex" << endl;
+	}
+      else
+	{
+	  m_isInit = true;
+	}
+    }
 }
 
 MutexLocker::MutexLocker(Mutex& m)
