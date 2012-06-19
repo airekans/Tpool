@@ -33,6 +33,7 @@ namespace tpool {
 
   protected:
     void CheckCancellation() const;
+    virtual void OnCancel();
 
   private:
     virtual void DoRun() = 0;

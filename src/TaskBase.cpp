@@ -47,6 +47,7 @@ void TaskBase::Run()
   catch (const TaskCancelException&)
     {
       SetState(CANCELLED);
+      OnCancel();
     }
 
   // wake up the waiting threads that is cancelling this task.
@@ -107,6 +108,11 @@ void TaskBase::CheckCancellation() const
     {
       throw TaskCancelException("cancel task");
     }
+}
+
+void TaskBase::OnCancel()
+{
+  // The default cancal action is doing nothing.
 }
 
 void TaskBase::SetState(const State state)

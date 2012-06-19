@@ -101,15 +101,15 @@ TEST(TaskBase, test_multiple_Cancel_simultunuously)
 
 namespace {
   struct NotRunningTask : public TaskBase {
-    bool& running;
+    bool& m_running;
 
     NotRunningTask(bool& r)
-      : running(r)
+      : m_running(r)
     {}
 
     virtual void DoRun()
     {
-      running = true;
+      m_running = true;
     }
   };
 }
@@ -122,6 +122,68 @@ TEST(TaskBase, test_Cancel_before_Run)
   task.CancelAsync();
   task.Run();
 
-  EXPECT_EQ(false, running);
+  EXPECT_FALSE(running);
   EXPECT_EQ(TaskBase::CANCELLED, task.GetState());
 }
+
+namespace {
+  struct NotRunningTaskWithOnCancel : public NotRunningTask {
+    bool& m_onCancelFlag;
+    
+    NotRunningTaskWithOnCancel(bool& onCancelFlag, bool& r)
+      : NotRunningTask(r), m_onCancelFlag(onCancelFlag)
+    {}
+
+    virtual void OnCancel()
+    {
+      m_onCancelFlag = true;
+    }
+  };
+}
+
+TEST(TaskBase, test_OnCancel_before_Run)
+{
+  bool running = false;
+  bool onCancelFlag = false;
+
+  NotRunningTaskWithOnCancel task(onCancelFlag, running);
+  task.CancelAsync();
+  task.Run();
+
+  EXPECT_FALSE(running);
+  EXPECT_TRUE(onCancelFlag);
+  EXPECT_EQ(TaskBase::CANCELLED, task.GetState());
+}
+
+namespace {
+  struct RunningTaskWithOnCancel : public NotRunningTaskWithOnCancel {
+    RunningTaskWithOnCancel(bool& onCancelFlag, bool& r)
+      : NotRunningTaskWithOnCancel(onCancelFlag, r)
+    {}
+
+    virtual void DoRun()
+    {
+      NotRunningTaskWithOnCancel::DoRun();
+      sleep(2);
+      CheckCancellation();
+    }      
+  };
+}
+
+TEST(TaskBase, test_OnCancel_when_running)
+{
+  bool running = false;
+  bool onCancelFlag = false;
+
+  RunningTaskWithOnCancel task(onCancelFlag, running);
+  {
+    Thread t((ThreadFunc(task)));
+    sleep(1);
+    task.Cancel();
+  }
+
+  EXPECT_TRUE(running);
+  EXPECT_TRUE(onCancelFlag);
+  EXPECT_EQ(TaskBase::CANCELLED, task.GetState());
+}
+
