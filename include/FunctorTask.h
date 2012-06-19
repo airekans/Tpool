@@ -1,3 +1,4 @@
+// -*- mode: c++ -*-
 #ifndef _TPOOL_FUNCTOR_TASK_H_
 #define _TPOOL_FUNCTOR_TASK_H_
 
