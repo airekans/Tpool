@@ -1,8 +1,19 @@
 #include "FutureTask.h"
 #include <gtest/gtest.h>
 
-TEST(FutureTask, test_ctor)
-{
-  
+using namespace tpool;
+
+namespace {
+  struct TestFutureTask: public FutureTask<int>
+  {
+    virtual int Call()
+    {
+      return 1;
+    }
+  };
 }
 
+TEST(FutureTask, test_Ctor)
+{
+  TestFutureTask task;
+}

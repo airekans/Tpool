@@ -25,8 +25,27 @@ namespace tpool {
   template <>
   class FutureTask<void>;
 
+
   // Implementation
-  
+  template <typename T>
+  FutureTask<T>::FutureTask()
+  {}
+
+  template <typename T>
+  FutureTask<T>::~FutureTask()
+  {}
+
+  template <typename T>
+  T FutureTask<T>::GetResult()
+  {
+    return m_result;
+  }
+
+  template <typename T>
+  void FutureTask<T>::DoRun()
+  {
+    m_result = Call();
+  }
 }
 
 #endif
