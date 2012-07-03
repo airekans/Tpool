@@ -6,6 +6,7 @@ CXXFLAGS += -I ../include
 LDFLAGS += -pthread
 LDFLAGS += -L .. -ltpool
 LDFLAGS += -lboost_system
+LDFLAGS += -lssh
 
 SRCDIR := .
 OBJDIR := .
