@@ -58,6 +58,10 @@ namespace tpool {
   template <typename T>
   void FutureTask<T>::DoRun()
   {
+    using std::not1;
+    using std::mem_fun;
+    using boost::bind;
+
     sync::ConditionNotifyAllLocker l(m_resultCondition,
 				     bind(not1(mem_fun(&FutureTask::IsResultReturned)),
 					  this));
