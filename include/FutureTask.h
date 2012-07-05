@@ -5,12 +5,15 @@
 #include "TaskBase.h"
 #include "ConditionVariable.h"
 #include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
 #include <functional>
 
 namespace tpool {
   template <typename T>
   class FutureTask : public TaskBase {
   public:
+    typedef boost::shared_ptr<FutureTask> Ptr;
+    
     FutureTask();
     virtual ~FutureTask();
 
