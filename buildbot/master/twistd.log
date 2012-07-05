@@ -1,0 +1,645 @@
+2012-06-18 22:19:02+0800 [-] Log opened.
+2012-06-18 22:19:02+0800 [-] twistd 12.0.0 (/usr/bin/python 2.6.5) starting up.
+2012-06-18 22:19:02+0800 [-] reactor class: twisted.internet.pollreactor.PollReactor.
+2012-06-18 22:19:02+0800 [-] Starting BuildMaster -- buildbot.version: 0.8.6p1
+2012-06-18 22:19:02+0800 [-] Loading configuration from '/home/airekans/programming/buildbot/master/master.cfg'
+2012-06-18 22:19:04+0800 [-] Setting up database with URL 'sqlite:///state.sqlite'
+2012-06-18 22:19:04+0800 [-] setting database journal mode to 'wal'
+2012-06-18 22:19:04+0800 [-] Using SQLite Version (3, 6, 22)
+2012-06-18 22:19:04+0800 [-] NOTE: this old version of SQLite does not support WAL journal mode; a busy master may encounter 'Database is locked' errors.  Consider upgrading.
+2012-06-18 22:19:05+0800 [-] adding 1 new changesources, removing 0
+2012-06-18 22:19:05+0800 [-] gitpoller: using workdir '/home/airekans/programming/buildbot/master/gitpoller-workdir'
+2012-06-18 22:19:05+0800 [-] gitpoller: initializing working dir from /home/airekans/programming/Tpool
+2012-06-18 22:19:05+0800 [-] adding 1 new slaves, removing 0
+2012-06-18 22:19:05+0800 [-] adding 1 new builders, removing 0
+2012-06-18 22:19:05+0800 [-] trying to load status pickle from /home/airekans/programming/buildbot/master/runtests/builder
+2012-06-18 22:19:05+0800 [-] no saved status pickle, creating a new one
+2012-06-18 22:19:05+0800 [-] added builder runtests in category 
+2012-06-18 22:19:05+0800 [-] PBServerFactory starting on 9989
+2012-06-18 22:19:05+0800 [-] Starting factory <twisted.spread.pb.PBServerFactory instance at 0x9ad38ac>
+2012-06-18 22:19:05+0800 [-] adding scheduler 'all'
+2012-06-18 22:19:05+0800 [-] adding scheduler 'force'
+2012-06-18 22:19:06+0800 [-] RotateLogSite starting on 8010
+2012-06-18 22:19:06+0800 [-] Starting factory <buildbot.status.web.baseweb.RotateLogSite instance at 0x9b3f6cc>
+2012-06-18 22:19:06+0800 [-] Setting up http.log rotating 10 files of 10000000 bytes each
+2012-06-18 22:19:06+0800 [-] WebStatus using (/home/airekans/programming/buildbot/master/public_html)
+2012-06-18 22:19:06+0800 [-] BuildMaster is running
+2012-06-18 22:19:10+0800 [-] gitpoller: checking out master
+2012-06-18 22:19:10+0800 [-] gitpoller: finished initializing working dir from /home/airekans/programming/Tpool at rev fee6d3c1ee75ae40ecf89518234bbd6e3aef4125
+2012-06-18 22:19:18+0800 [Broker,0,127.0.0.1] slave 'example-slave' attaching from IPv4Address(TCP, '127.0.0.1', 60883)
+2012-06-18 22:19:18+0800 [Broker,0,127.0.0.1] Starting buildslave keepalive timer for 'example-slave'
+2012-06-18 22:19:19+0800 [Broker,0,127.0.0.1] Got slaveinfo from 'example-slave'
+2012-06-18 22:19:19+0800 [Broker,0,127.0.0.1] bot attached
+2012-06-18 22:19:19+0800 [Broker,0,127.0.0.1] Buildslave example-slave attached to runtests
+2012-06-18 22:24:05+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:24:05+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:29:05+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:29:05+0800 [-] gitpoller: processing 1 changes: ['b8692a180c2cdfd57fe2b4b335003ef724c4d522'] in "/home/airekans/programming/buildbot/master/gitpoller-workdir"
+2012-06-18 22:29:05+0800 [-] checking for User Object from git Change for: Yaolong Huang <airekans@gmail.com>
+2012-06-18 22:29:05+0800 [-] added change Change(revision=u'b8692a180c2cdfd57fe2b4b335003ef724c4d522', who=u'Yaolong Huang <airekans@gmail.com>', branch=u'master', comments=u'Add a comment to README.', when=1340029499, category=None, project=u'', repository=u'/home/airekans/programming/Tpool') to database
+2012-06-18 22:29:05+0800 [-] gitpoller: catching up tracking branch
+2012-06-18 22:29:06+0800 [-] added buildset 1 to database
+2012-06-18 22:29:06+0800 [-] starting build <Build runtests> using slave <SlaveBuilder builder='runtests' slave='example-slave'>
+2012-06-18 22:29:06+0800 [-] acquireLocks(slave <BuildSlave 'example-slave'>, locks [])
+2012-06-18 22:29:06+0800 [-] starting build <Build runtests>.. pinging the slave <SlaveBuilder builder='runtests' slave='example-slave'>
+2012-06-18 22:29:06+0800 [-] sending ping
+2012-06-18 22:29:06+0800 [Broker,0,127.0.0.1] ping finished: success
+2012-06-18 22:29:06+0800 [-] <Build runtests>.startBuild
+2012-06-18 22:29:06+0800 [-] ShellCommand.startCommand(cmd=<RemoteCommand 'git' at 162957196>)
+2012-06-18 22:29:06+0800 [-]   cmd.args = {'ignore_ignores': None, 'retry': None, 'env': None, 'reference': None, 'submodules': False, 'shallow': False, 'patch': None, 'repourl': '/home/airekans/programming/Tpool', 'workdir': 'build', 'mode': 'copy', 'timeout': 1200, 'branch': u'master', 'progress': False, 'logEnviron': True, 'revision': u'b8692a180c2cdfd57fe2b4b335003ef724c4d522'}
+2012-06-18 22:29:06+0800 [-] <RemoteCommand 'git' at 162957196>: RemoteCommand.run [0]
+2012-06-18 22:29:08+0800 [Broker,0,127.0.0.1] <RemoteCommand 'git' at 162957196> rc=0
+2012-06-18 22:29:08+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0x9b5d9ec>
+2012-06-18 22:29:08+0800 [-] releaseLocks(<buildbot.steps.source.oldsource.Git instance at 0x9b689cc>): []
+2012-06-18 22:29:08+0800 [-]  step 'git' complete: success
+2012-06-18 22:29:08+0800 [-] ShellCommand.startCommand(cmd=<RemoteShellCommand '['make']'>)
+2012-06-18 22:29:08+0800 [-]   cmd.args = {'workdir': 'build', 'timeout': 1200, 'env': None, 'want_stdout': 1, 'usePTY': 'slave-config', 'maxTime': None, 'logEnviron': True, 'want_stderr': 1, 'logfiles': {}}
+2012-06-18 22:29:08+0800 [-] <RemoteShellCommand '['make']'>: RemoteCommand.run [1]
+2012-06-18 22:29:08+0800 [-] command '['make']' in dir 'build'
+2012-06-18 22:29:18+0800 [Broker,0,127.0.0.1] <RemoteShellCommand '['make']'> rc=0
+2012-06-18 22:29:18+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0x9b53fec>
+2012-06-18 22:29:18+0800 [-] releaseLocks(<buildbot.steps.shell.ShellCommand instance at 0x9b62fec>): []
+2012-06-18 22:29:18+0800 [-]  step 'shell' complete: success
+2012-06-18 22:29:18+0800 [-]  <Build runtests>: build finished
+2012-06-18 22:29:18+0800 [-]  setting expectations for next time
+2012-06-18 22:29:18+0800 [-] new expectations: 12.3017756939 seconds
+2012-06-18 22:29:18+0800 [-] releaseLocks(<BuildSlave 'example-slave'>): []
+2012-06-18 22:31:13+0800 [-] beginning configuration update
+2012-06-18 22:31:13+0800 [-] Loading configuration from '/home/airekans/programming/buildbot/master/master.cfg'
+2012-06-18 22:31:13+0800 [-] adding 1 new changesources, removing 1
+2012-06-18 22:31:13+0800 [-] gitpoller: using workdir '/home/airekans/programming/buildbot/master/gitpoller-workdir'
+2012-06-18 22:31:13+0800 [-] GitPoller repository already exists
+2012-06-18 22:31:13+0800 [-] (TCP Port 8010 Closed)
+2012-06-18 22:31:13+0800 [-] Stopping factory <buildbot.status.web.baseweb.RotateLogSite instance at 0x9b3f6cc>
+2012-06-18 22:31:13+0800 [-] RotateLogSite starting on 8010
+2012-06-18 22:31:13+0800 [-] Starting factory <buildbot.status.web.baseweb.RotateLogSite instance at 0x9c351ec>
+2012-06-18 22:31:13+0800 [-] Setting up http.log rotating 10 files of 10000000 bytes each
+2012-06-18 22:31:13+0800 [-] WebStatus using (/home/airekans/programming/buildbot/master/public_html)
+2012-06-18 22:31:13+0800 [-] configuration update complete
+2012-06-18 22:31:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:31:44+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:32:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:32:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:32:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:32:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:33:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:33:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:33:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:33:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:34:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:34:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:34:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:34:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:35:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:35:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:35:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:35:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:36:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:36:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:36:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:36:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:37:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:37:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:37:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:37:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:38:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:38:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:38:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:38:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:39:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:39:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:39:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:39:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:40:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:40:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:40:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:40:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:41:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:41:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:41:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:41:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:42:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:42:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:42:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:42:44+0800 [-] gitpoller: processing 1 changes: ['381c0a51231e2b9292369ebe15c7e3a45ae184a1'] in "/home/airekans/programming/buildbot/master/gitpoller-workdir"
+2012-06-18 22:42:44+0800 [-] checking for User Object from git Change for: Yaolong Huang <airekans@gmail.com>
+2012-06-18 22:42:44+0800 [-] added change Change(revision=u'381c0a51231e2b9292369ebe15c7e3a45ae184a1', who=u'Yaolong Huang <airekans@gmail.com>', branch=u'master', comments=u'Add cpplint to lint source files.', when=1340030519, category=None, project=u'', repository=u'/home/airekans/programming/Tpool') to database
+2012-06-18 22:42:44+0800 [-] gitpoller: catching up tracking branch
+2012-06-18 22:42:44+0800 [-] added buildset 2 to database
+2012-06-18 22:42:45+0800 [-] starting build <Build runtests> using slave <SlaveBuilder builder='runtests' slave='example-slave'>
+2012-06-18 22:42:45+0800 [-] acquireLocks(slave <BuildSlave 'example-slave'>, locks [])
+2012-06-18 22:42:45+0800 [-] starting build <Build runtests>.. pinging the slave <SlaveBuilder builder='runtests' slave='example-slave'>
+2012-06-18 22:42:45+0800 [-] sending ping
+2012-06-18 22:42:45+0800 [Broker,0,127.0.0.1] ping finished: success
+2012-06-18 22:42:45+0800 [-] <Build runtests>.startBuild
+2012-06-18 22:42:45+0800 [-] ShellCommand.startCommand(cmd=<RemoteCommand 'git' at 163916748>)
+2012-06-18 22:42:45+0800 [-]   cmd.args = {'ignore_ignores': None, 'retry': None, 'env': None, 'reference': None, 'submodules': False, 'shallow': False, 'patch': None, 'repourl': '/home/airekans/programming/Tpool', 'workdir': 'build', 'mode': 'copy', 'timeout': 1200, 'branch': u'master', 'progress': False, 'logEnviron': True, 'revision': u'381c0a51231e2b9292369ebe15c7e3a45ae184a1'}
+2012-06-18 22:42:45+0800 [-] <RemoteCommand 'git' at 163916748>: RemoteCommand.run [2]
+2012-06-18 22:42:45+0800 [Broker,0,127.0.0.1] <RemoteCommand 'git' at 163916748> rc=0
+2012-06-18 22:42:45+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0x9c52d8c>
+2012-06-18 22:42:45+0800 [-] releaseLocks(<buildbot.steps.source.oldsource.Git instance at 0x9b6824c>): []
+2012-06-18 22:42:45+0800 [-]  step 'git' complete: success
+2012-06-18 22:42:45+0800 [-] ShellCommand.startCommand(cmd=<RemoteShellCommand '['make']'>)
+2012-06-18 22:42:45+0800 [-]   cmd.args = {'workdir': 'build', 'timeout': 1200, 'env': None, 'want_stdout': 1, 'usePTY': 'slave-config', 'maxTime': None, 'logEnviron': True, 'want_stderr': 1, 'logfiles': {}}
+2012-06-18 22:42:45+0800 [-] <RemoteShellCommand '['make']'>: RemoteCommand.run [3]
+2012-06-18 22:42:45+0800 [-] command '['make']' in dir 'build'
+2012-06-18 22:42:53+0800 [Broker,0,127.0.0.1] <RemoteShellCommand '['make']'> rc=0
+2012-06-18 22:42:53+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0x9c527ac>
+2012-06-18 22:42:53+0800 [-] releaseLocks(<buildbot.steps.shell.ShellCommand instance at 0x9b5334c>): []
+2012-06-18 22:42:53+0800 [-]  step 'shell' complete: success
+2012-06-18 22:42:53+0800 [-]  <Build runtests>: build finished
+2012-06-18 22:42:53+0800 [-]  setting expectations for next time
+2012-06-18 22:42:53+0800 [-] new expectations: 10.1717977524 seconds
+2012-06-18 22:42:53+0800 [-] releaseLocks(<BuildSlave 'example-slave'>): []
+2012-06-18 22:43:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:43:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:43:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:43:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:44:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:44:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:44:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:44:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:45:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:45:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:45:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:45:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:46:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:46:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:46:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:46:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:47:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:47:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:47:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:47:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:48:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:48:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:48:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:48:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:49:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:49:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:49:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:49:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:50:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:50:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:50:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:50:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:51:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:51:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:51:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:51:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:52:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:52:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:52:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:52:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:53:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:53:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:53:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:53:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:54:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:54:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:54:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:54:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:55:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:55:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:55:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:55:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:56:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:56:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:56:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:56:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:57:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:57:14+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:57:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:57:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:58:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:58:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:58:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:58:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:59:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:59:14+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 22:59:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 22:59:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 23:00:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 23:00:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 23:00:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 23:00:44+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 23:01:13+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 23:01:13+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 23:01:43+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-18 23:01:43+0800 [-] gitpoller: no changes, no catch_up
+2012-06-18 23:02:07+0800 [-] Received SIGTERM, shutting down.
+2012-06-18 23:02:07+0800 [Broker,0,127.0.0.1] BuildSlave.detached(example-slave)
+2012-06-18 23:02:07+0800 [Broker,0,127.0.0.1] releaseLocks(<BuildSlave 'example-slave'>): []
+2012-06-18 23:02:07+0800 [Broker,0,127.0.0.1] Buildslave example-slave detached from runtests
+2012-06-18 23:02:07+0800 [buildbot.status.web.baseweb.RotateLogSite] (TCP Port 8010 Closed)
+2012-06-18 23:02:07+0800 [buildbot.status.web.baseweb.RotateLogSite] Stopping factory <buildbot.status.web.baseweb.RotateLogSite instance at 0x9c351ec>
+2012-06-18 23:02:07+0800 [twisted.spread.pb.PBServerFactory] (TCP Port 9989 Closed)
+2012-06-18 23:02:07+0800 [twisted.spread.pb.PBServerFactory] Stopping factory <twisted.spread.pb.PBServerFactory instance at 0x9ad38ac>
+2012-06-18 23:02:07+0800 [-] Main loop terminated.
+2012-06-18 23:02:07+0800 [-] Server Shut Down.
+2012-06-19 21:55:14+0800 [-] Log opened.
+2012-06-19 21:55:14+0800 [-] twistd 12.0.0 (/usr/bin/python 2.6.5) starting up.
+2012-06-19 21:55:14+0800 [-] reactor class: twisted.internet.pollreactor.PollReactor.
+2012-06-19 21:55:14+0800 [-] Starting BuildMaster -- buildbot.version: 0.8.6p1
+2012-06-19 21:55:14+0800 [-] Loading configuration from '/home/airekans/programming/buildbot/master/master.cfg'
+2012-06-19 21:55:15+0800 [-] Setting up database with URL 'sqlite:///state.sqlite'
+2012-06-19 21:55:15+0800 [-] setting database journal mode to 'wal'
+2012-06-19 21:55:15+0800 [-] Using SQLite Version (3, 6, 22)
+2012-06-19 21:55:15+0800 [-] NOTE: this old version of SQLite does not support WAL journal mode; a busy master may encounter 'Database is locked' errors.  Consider upgrading.
+2012-06-19 21:55:16+0800 [-] adding 1 new changesources, removing 0
+2012-06-19 21:55:16+0800 [-] gitpoller: using workdir '/home/airekans/programming/buildbot/master/gitpoller-workdir'
+2012-06-19 21:55:16+0800 [-] GitPoller repository already exists
+2012-06-19 21:55:16+0800 [-] adding 1 new slaves, removing 0
+2012-06-19 21:55:16+0800 [-] adding 1 new builders, removing 0
+2012-06-19 21:55:16+0800 [-] trying to load status pickle from /home/airekans/programming/buildbot/master/runtests/builder
+2012-06-19 21:55:16+0800 [-] no saved status pickle, creating a new one
+2012-06-19 21:55:16+0800 [-] added builder runtests in category 
+2012-06-19 21:55:16+0800 [-] PBServerFactory starting on 9989
+2012-06-19 21:55:16+0800 [-] Starting factory <twisted.spread.pb.PBServerFactory instance at 0xa29564c>
+2012-06-19 21:55:16+0800 [-] adding scheduler 'all'
+2012-06-19 21:55:16+0800 [-] adding scheduler 'force'
+2012-06-19 21:55:16+0800 [-] RotateLogSite starting on 8010
+2012-06-19 21:55:16+0800 [-] Starting factory <buildbot.status.web.baseweb.RotateLogSite instance at 0xa2f3fac>
+2012-06-19 21:55:16+0800 [-] Setting up http.log rotating 10 files of 10000000 bytes each
+2012-06-19 21:55:16+0800 [-] WebStatus using (/home/airekans/programming/buildbot/master/public_html)
+2012-06-19 21:55:16+0800 [-] Loading builder runtests's build 1 from on-disk pickle
+2012-06-19 21:55:16+0800 [-] BuildMaster is running
+2012-06-19 21:55:30+0800 [Broker,0,127.0.0.1] slave 'example-slave' attaching from IPv4Address(TCP, '127.0.0.1', 36873)
+2012-06-19 21:55:30+0800 [Broker,0,127.0.0.1] Starting buildslave keepalive timer for 'example-slave'
+2012-06-19 21:55:30+0800 [Broker,0,127.0.0.1] Got slaveinfo from 'example-slave'
+2012-06-19 21:55:30+0800 [Broker,0,127.0.0.1] bot attached
+2012-06-19 21:55:30+0800 [Broker,0,127.0.0.1] Buildslave example-slave attached to runtests
+2012-06-19 21:55:45+0800 [-] Loading builder runtests's build 0 from on-disk pickle
+2012-06-19 21:55:46+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 21:55:47+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 21:56:16+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 21:56:16+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 21:56:46+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 21:56:46+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 21:57:16+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 21:57:16+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 21:57:46+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 21:57:46+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 21:58:16+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 21:58:16+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 21:58:38+0800 [-] beginning configuration update
+2012-06-19 21:58:38+0800 [-] Loading configuration from '/home/airekans/programming/buildbot/master/master.cfg'
+2012-06-19 21:58:38+0800 [-] adding 1 new changesources, removing 1
+2012-06-19 21:58:38+0800 [-] gitpoller: using workdir '/home/airekans/programming/buildbot/master/gitpoller-workdir'
+2012-06-19 21:58:38+0800 [-] GitPoller repository already exists
+2012-06-19 21:58:38+0800 [-] (TCP Port 8010 Closed)
+2012-06-19 21:58:38+0800 [-] Stopping factory <buildbot.status.web.baseweb.RotateLogSite instance at 0xa2f3fac>
+2012-06-19 21:58:38+0800 [-] RotateLogSite starting on 8010
+2012-06-19 21:58:38+0800 [-] Starting factory <buildbot.status.web.baseweb.RotateLogSite instance at 0xa32676c>
+2012-06-19 21:58:38+0800 [-] Setting up http.log rotating 10 files of 10000000 bytes each
+2012-06-19 21:58:38+0800 [-] WebStatus using (/home/airekans/programming/buildbot/master/public_html)
+2012-06-19 21:58:38+0800 [-] configuration update complete
+2012-06-19 21:59:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 21:59:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 21:59:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 21:59:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:00:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:00:08+0800 [-] gitpoller: processing 4 changes: ['ba54abdf8788862eab5354355fc1ca0cb75869df', 'a8f91ae8eb7295a7d2e1130fabd7a8e85fd31951', 'bfbc8c45f020822073e3690197e0259e226ae0bf', '6ca2cee38f14a58388b98d8daa32419ac22a6cef'] in "/home/airekans/programming/buildbot/master/gitpoller-workdir"
+2012-06-19 22:00:08+0800 [-] checking for User Object from git Change for: Yaolong Huang <airekans@gmail.com>
+2012-06-19 22:00:09+0800 [-] added change Change(revision=u'ba54abdf8788862eab5354355fc1ca0cb75869df', who=u'Yaolong Huang <airekans@gmail.com>', branch=u'master', comments=u'Add OnCancel method to TaskBase and FutureTask.', when=1339057098, category=None, project=u'', repository=u'/home/airekans/programming/Tpool') to database
+2012-06-19 22:00:09+0800 [-] checking for User Object from git Change for: Yaolong Huang <airekans@gmail.com>
+2012-06-19 22:00:09+0800 [-] added buildset 3 to database
+2012-06-19 22:00:09+0800 [-] starting build <Build runtests> using slave <SlaveBuilder builder='runtests' slave='example-slave'>
+2012-06-19 22:00:09+0800 [-] acquireLocks(slave <BuildSlave 'example-slave'>, locks [])
+2012-06-19 22:00:09+0800 [-] starting build <Build runtests>.. pinging the slave <SlaveBuilder builder='runtests' slave='example-slave'>
+2012-06-19 22:00:09+0800 [-] sending ping
+2012-06-19 22:00:09+0800 [Broker,0,127.0.0.1] ping finished: success
+2012-06-19 22:00:09+0800 [-] added change Change(revision=u'a8f91ae8eb7295a7d2e1130fabd7a8e85fd31951', who=u'Yaolong Huang <airekans@gmail.com>', branch=u'master', comments=u'Add unittest for OnCancel of TaskBase.', when=1339059482, category=None, project=u'', repository=u'/home/airekans/programming/Tpool') to database
+2012-06-19 22:00:10+0800 [-] <Build runtests>.startBuild
+2012-06-19 22:00:10+0800 [-] ShellCommand.startCommand(cmd=<RemoteCommand 'git' at 171042828>)
+2012-06-19 22:00:10+0800 [-]   cmd.args = {'ignore_ignores': None, 'retry': None, 'env': None, 'reference': None, 'submodules': False, 'shallow': False, 'patch': None, 'repourl': '/home/airekans/programming/Tpool', 'workdir': 'build', 'mode': 'copy', 'timeout': 1200, 'branch': u'master', 'progress': False, 'logEnviron': True, 'revision': u'ba54abdf8788862eab5354355fc1ca0cb75869df'}
+2012-06-19 22:00:10+0800 [-] <RemoteCommand 'git' at 171042828>: RemoteCommand.run [0]
+2012-06-19 22:00:10+0800 [-] checking for User Object from git Change for: Yaolong Huang <airekans@gmail.com>
+2012-06-19 22:00:10+0800 [-] added buildset 4 to database
+2012-06-19 22:00:10+0800 [-] added change Change(revision=u'bfbc8c45f020822073e3690197e0259e226ae0bf', who=u'Yaolong Huang <airekans@gmail.com>', branch=u'master', comments=u'Add response for GetDataChunkServer.', when=1339385087, category=None, project=u'', repository=u'/home/airekans/programming/Tpool') to database
+2012-06-19 22:00:11+0800 [-] checking for User Object from git Change for: Yaolong Huang <airekans@gmail.com>
+2012-06-19 22:00:11+0800 [Broker,0,127.0.0.1] <RemoteCommand 'git' at 171042828> rc=0
+2012-06-19 22:00:11+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa3efaac>
+2012-06-19 22:00:11+0800 [-] releaseLocks(<buildbot.steps.source.oldsource.Git instance at 0xa0d07ec>): []
+2012-06-19 22:00:11+0800 [-]  step 'git' complete: success
+2012-06-19 22:00:11+0800 [-] ShellCommand.startCommand(cmd=<RemoteShellCommand '['make', 'lint']'>)
+2012-06-19 22:00:11+0800 [-]   cmd.args = {'workdir': 'build', 'timeout': 1200, 'env': None, 'want_stdout': 1, 'usePTY': 'slave-config', 'maxTime': None, 'logEnviron': True, 'want_stderr': 1, 'logfiles': {}}
+2012-06-19 22:00:11+0800 [-] <RemoteShellCommand '['make', 'lint']'>: RemoteCommand.run [1]
+2012-06-19 22:00:11+0800 [-] command '['make', 'lint']' in dir 'build'
+2012-06-19 22:00:11+0800 [-] added change Change(revision=u'6ca2cee38f14a58388b98d8daa32419ac22a6cef', who=u'Yaolong Huang <airekans@gmail.com>', branch=u'master', comments=u"Merge branch 'master' of https://github.com/airekans/Tpool", when=1340114393, category=None, project=u'', repository=u'/home/airekans/programming/Tpool') to database
+2012-06-19 22:00:11+0800 [-] gitpoller: catching up tracking branch
+2012-06-19 22:00:11+0800 [Broker,0,127.0.0.1] <RemoteShellCommand '['make', 'lint']'> rc=2
+2012-06-19 22:00:11+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa3eda6c>
+2012-06-19 22:00:11+0800 [-] releaseLocks(<buildbot.steps.shell.ShellCommand instance at 0xa3efd8c>): []
+2012-06-19 22:00:11+0800 [-]  step 'shell' complete: failure
+2012-06-19 22:00:11+0800 [-] ShellCommand.startCommand(cmd=<RemoteShellCommand '['make']'>)
+2012-06-19 22:00:11+0800 [-]   cmd.args = {'workdir': 'build', 'timeout': 1200, 'env': None, 'want_stdout': 1, 'usePTY': 'slave-config', 'maxTime': None, 'logEnviron': True, 'want_stderr': 1, 'logfiles': {}}
+2012-06-19 22:00:11+0800 [-] <RemoteShellCommand '['make']'>: RemoteCommand.run [2]
+2012-06-19 22:00:11+0800 [-] command '['make']' in dir 'build'
+2012-06-19 22:00:11+0800 [-] added buildset 5 to database
+2012-06-19 22:00:13+0800 [-] added buildset 6 to database
+2012-06-19 22:00:23+0800 [Broker,0,127.0.0.1] <RemoteShellCommand '['make']'> rc=0
+2012-06-19 22:00:23+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa3edf6c>
+2012-06-19 22:00:23+0800 [-] releaseLocks(<buildbot.steps.shell.ShellCommand instance at 0xa3ef0ac>): []
+2012-06-19 22:00:23+0800 [-]  step 'shell_1' complete: success
+2012-06-19 22:00:23+0800 [-] ShellCommand.startCommand(cmd=<RemoteShellCommand '['make', 'test']'>)
+2012-06-19 22:00:23+0800 [-]   cmd.args = {'workdir': 'build', 'timeout': 1200, 'env': None, 'want_stdout': 1, 'usePTY': 'slave-config', 'maxTime': None, 'logEnviron': True, 'want_stderr': 1, 'logfiles': {}}
+2012-06-19 22:00:23+0800 [-] <RemoteShellCommand '['make', 'test']'>: RemoteCommand.run [3]
+2012-06-19 22:00:23+0800 [-] command '['make', 'test']' in dir 'build'
+2012-06-19 22:00:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:00:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:01:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:01:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:01:26+0800 [Broker,0,127.0.0.1] <RemoteShellCommand '['make', 'test']'> rc=0
+2012-06-19 22:01:26+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa30970c>
+2012-06-19 22:01:26+0800 [-] releaseLocks(<buildbot.steps.shell.ShellCommand instance at 0xa326d6c>): []
+2012-06-19 22:01:26+0800 [-]  step 'shell_2' complete: success
+2012-06-19 22:01:26+0800 [-]  <Build runtests>: build finished
+2012-06-19 22:01:26+0800 [-] releaseLocks(<BuildSlave 'example-slave'>): []
+2012-06-19 22:01:27+0800 [-] starting build <Build runtests> using slave <SlaveBuilder builder='runtests' slave='example-slave'>
+2012-06-19 22:01:27+0800 [-] acquireLocks(slave <BuildSlave 'example-slave'>, locks [])
+2012-06-19 22:01:27+0800 [-] starting build <Build runtests>.. pinging the slave <SlaveBuilder builder='runtests' slave='example-slave'>
+2012-06-19 22:01:27+0800 [-] sending ping
+2012-06-19 22:01:27+0800 [Broker,0,127.0.0.1] ping finished: success
+2012-06-19 22:01:27+0800 [-] <Build runtests>.startBuild
+2012-06-19 22:01:27+0800 [-] ShellCommand.startCommand(cmd=<RemoteCommand 'git' at 171845612>)
+2012-06-19 22:01:27+0800 [-]   cmd.args = {'ignore_ignores': None, 'retry': None, 'env': None, 'reference': None, 'submodules': False, 'shallow': False, 'patch': None, 'repourl': '/home/airekans/programming/Tpool', 'workdir': 'build', 'mode': 'copy', 'timeout': 1200, 'branch': u'master', 'progress': False, 'logEnviron': True, 'revision': u'6ca2cee38f14a58388b98d8daa32419ac22a6cef'}
+2012-06-19 22:01:27+0800 [-] <RemoteCommand 'git' at 171845612>: RemoteCommand.run [4]
+2012-06-19 22:01:27+0800 [Broker,0,127.0.0.1] <RemoteCommand 'git' at 171845612> rc=0
+2012-06-19 22:01:27+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa3e2eac>
+2012-06-19 22:01:27+0800 [-] releaseLocks(<buildbot.steps.source.oldsource.Git instance at 0xa15bbec>): []
+2012-06-19 22:01:27+0800 [-]  step 'git' complete: success
+2012-06-19 22:01:27+0800 [-] ShellCommand.startCommand(cmd=<RemoteShellCommand '['make', 'lint']'>)
+2012-06-19 22:01:27+0800 [-]   cmd.args = {'workdir': 'build', 'timeout': 1200, 'env': None, 'want_stdout': 1, 'usePTY': 'slave-config', 'maxTime': None, 'logEnviron': True, 'want_stderr': 1, 'logfiles': {}}
+2012-06-19 22:01:27+0800 [-] <RemoteShellCommand '['make', 'lint']'>: RemoteCommand.run [5]
+2012-06-19 22:01:27+0800 [-] command '['make', 'lint']' in dir 'build'
+2012-06-19 22:01:35+0800 [Broker,0,127.0.0.1] <RemoteShellCommand '['make', 'lint']'> rc=0
+2012-06-19 22:01:35+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa31ed0c>
+2012-06-19 22:01:35+0800 [-] releaseLocks(<buildbot.steps.shell.ShellCommand instance at 0x966688c>): []
+2012-06-19 22:01:35+0800 [-]  step 'shell' complete: success
+2012-06-19 22:01:35+0800 [-] ShellCommand.startCommand(cmd=<RemoteShellCommand '['make']'>)
+2012-06-19 22:01:35+0800 [-]   cmd.args = {'workdir': 'build', 'timeout': 1200, 'env': None, 'want_stdout': 1, 'usePTY': 'slave-config', 'maxTime': None, 'logEnviron': True, 'want_stderr': 1, 'logfiles': {}}
+2012-06-19 22:01:35+0800 [-] <RemoteShellCommand '['make']'>: RemoteCommand.run [6]
+2012-06-19 22:01:35+0800 [-] command '['make']' in dir 'build'
+2012-06-19 22:01:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:01:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:01:42+0800 [Broker,0,127.0.0.1] <RemoteShellCommand '['make']'> rc=0
+2012-06-19 22:01:42+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa3e23cc>
+2012-06-19 22:01:42+0800 [-] releaseLocks(<buildbot.steps.shell.ShellCommand instance at 0xa3ed0ac>): []
+2012-06-19 22:01:42+0800 [-]  step 'shell_1' complete: success
+2012-06-19 22:01:42+0800 [-] ShellCommand.startCommand(cmd=<RemoteShellCommand '['make', 'test']'>)
+2012-06-19 22:01:42+0800 [-]   cmd.args = {'workdir': 'build', 'timeout': 1200, 'env': None, 'want_stdout': 1, 'usePTY': 'slave-config', 'maxTime': None, 'logEnviron': True, 'want_stderr': 1, 'logfiles': {}}
+2012-06-19 22:01:42+0800 [-] <RemoteShellCommand '['make', 'test']'>: RemoteCommand.run [7]
+2012-06-19 22:01:42+0800 [-] command '['make', 'test']' in dir 'build'
+2012-06-19 22:02:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:02:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:02:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:02:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:02:43+0800 [Broker,0,127.0.0.1] <RemoteShellCommand '['make', 'test']'> rc=0
+2012-06-19 22:02:43+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa40760c>
+2012-06-19 22:02:43+0800 [-] releaseLocks(<buildbot.steps.shell.ShellCommand instance at 0xa3ed28c>): []
+2012-06-19 22:02:43+0800 [-]  step 'shell_2' complete: success
+2012-06-19 22:02:43+0800 [-]  <Build runtests>: build finished
+2012-06-19 22:02:43+0800 [-]  setting expectations for next time
+2012-06-19 22:02:43+0800 [-] new expectations: 75.6738955975 seconds
+2012-06-19 22:02:43+0800 [-] releaseLocks(<BuildSlave 'example-slave'>): []
+2012-06-19 22:03:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:03:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:03:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:03:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:04:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:04:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:04:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:04:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:05:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:05:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:05:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:05:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:06:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:06:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:06:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:06:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:07:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:07:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:07:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:07:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:08:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:08:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:08:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:08:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:09:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:09:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:09:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:09:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:10:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:10:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:10:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:10:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:11:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:11:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:11:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:11:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:12:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:12:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:12:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:12:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:13:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:13:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:13:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:13:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:14:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:14:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:14:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:14:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:15:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:15:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:15:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:15:38+0800 [-] gitpoller: processing 1 changes: ['7e6f8840c20c6d731c23850a4572a3d03fc50f6b'] in "/home/airekans/programming/buildbot/master/gitpoller-workdir"
+2012-06-19 22:15:39+0800 [-] checking for User Object from git Change for: Yaolong Huang <airekans@gmail.com>
+2012-06-19 22:15:39+0800 [-] added change Change(revision=u'7e6f8840c20c6d731c23850a4572a3d03fc50f6b', who=u'Yaolong Huang <airekans@gmail.com>', branch=u'master', comments=u'Implement FutureTask.', when=1340115320, category=None, project=u'', repository=u'/home/airekans/programming/Tpool') to database
+2012-06-19 22:15:39+0800 [-] gitpoller: catching up tracking branch
+2012-06-19 22:15:39+0800 [-] added buildset 7 to database
+2012-06-19 22:15:40+0800 [-] starting build <Build runtests> using slave <SlaveBuilder builder='runtests' slave='example-slave'>
+2012-06-19 22:15:40+0800 [-] acquireLocks(slave <BuildSlave 'example-slave'>, locks [])
+2012-06-19 22:15:40+0800 [-] starting build <Build runtests>.. pinging the slave <SlaveBuilder builder='runtests' slave='example-slave'>
+2012-06-19 22:15:40+0800 [-] sending ping
+2012-06-19 22:15:40+0800 [Broker,0,127.0.0.1] ping finished: success
+2012-06-19 22:15:40+0800 [-] <Build runtests>.startBuild
+2012-06-19 22:15:40+0800 [-] ShellCommand.startCommand(cmd=<RemoteCommand 'git' at 172091692>)
+2012-06-19 22:15:40+0800 [-]   cmd.args = {'ignore_ignores': None, 'retry': None, 'env': None, 'reference': None, 'submodules': False, 'shallow': False, 'patch': None, 'repourl': '/home/airekans/programming/Tpool', 'workdir': 'build', 'mode': 'copy', 'timeout': 1200, 'branch': u'master', 'progress': False, 'logEnviron': True, 'revision': u'7e6f8840c20c6d731c23850a4572a3d03fc50f6b'}
+2012-06-19 22:15:40+0800 [-] <RemoteCommand 'git' at 172091692>: RemoteCommand.run [8]
+2012-06-19 22:15:40+0800 [Broker,0,127.0.0.1] <RemoteCommand 'git' at 172091692> rc=0
+2012-06-19 22:15:40+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa41e50c>
+2012-06-19 22:15:40+0800 [-] releaseLocks(<buildbot.steps.source.oldsource.Git instance at 0xa3131ac>): []
+2012-06-19 22:15:40+0800 [-]  step 'git' complete: success
+2012-06-19 22:15:40+0800 [-] ShellCommand.startCommand(cmd=<RemoteShellCommand '['make', 'lint']'>)
+2012-06-19 22:15:40+0800 [-]   cmd.args = {'workdir': 'build', 'timeout': 1200, 'env': None, 'want_stdout': 1, 'usePTY': 'slave-config', 'maxTime': None, 'logEnviron': True, 'want_stderr': 1, 'logfiles': {}}
+2012-06-19 22:15:40+0800 [-] <RemoteShellCommand '['make', 'lint']'>: RemoteCommand.run [9]
+2012-06-19 22:15:40+0800 [-] command '['make', 'lint']' in dir 'build'
+2012-06-19 22:15:47+0800 [Broker,0,127.0.0.1] <RemoteShellCommand '['make', 'lint']'> rc=0
+2012-06-19 22:15:47+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa3ef4cc>
+2012-06-19 22:15:47+0800 [-] releaseLocks(<buildbot.steps.shell.ShellCommand instance at 0xa321c6c>): []
+2012-06-19 22:15:47+0800 [-]  step 'shell' complete: success
+2012-06-19 22:15:47+0800 [-] ShellCommand.startCommand(cmd=<RemoteShellCommand '['make']'>)
+2012-06-19 22:15:47+0800 [-]   cmd.args = {'workdir': 'build', 'timeout': 1200, 'env': None, 'want_stdout': 1, 'usePTY': 'slave-config', 'maxTime': None, 'logEnviron': True, 'want_stderr': 1, 'logfiles': {}}
+2012-06-19 22:15:47+0800 [-] <RemoteShellCommand '['make']'>: RemoteCommand.run [10]
+2012-06-19 22:15:47+0800 [-] command '['make']' in dir 'build'
+2012-06-19 22:15:54+0800 [Broker,0,127.0.0.1] <RemoteShellCommand '['make']'> rc=0
+2012-06-19 22:15:54+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa09bcec>
+2012-06-19 22:15:54+0800 [-] releaseLocks(<buildbot.steps.shell.ShellCommand instance at 0xa41e6ac>): []
+2012-06-19 22:15:54+0800 [-]  step 'shell_1' complete: success
+2012-06-19 22:15:54+0800 [-] ShellCommand.startCommand(cmd=<RemoteShellCommand '['make', 'test']'>)
+2012-06-19 22:15:54+0800 [-]   cmd.args = {'workdir': 'build', 'timeout': 1200, 'env': None, 'want_stdout': 1, 'usePTY': 'slave-config', 'maxTime': None, 'logEnviron': True, 'want_stderr': 1, 'logfiles': {}}
+2012-06-19 22:15:54+0800 [-] <RemoteShellCommand '['make', 'test']'>: RemoteCommand.run [11]
+2012-06-19 22:15:54+0800 [-] command '['make', 'test']' in dir 'build'
+2012-06-19 22:16:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:16:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:16:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:16:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:16:57+0800 [Broker,0,127.0.0.1] <RemoteShellCommand '['make', 'test']'> rc=0
+2012-06-19 22:16:57+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa41e1cc>
+2012-06-19 22:16:57+0800 [-] releaseLocks(<buildbot.steps.shell.ShellCommand instance at 0xa41e7ec>): []
+2012-06-19 22:16:57+0800 [-]  step 'shell_2' complete: success
+2012-06-19 22:16:57+0800 [-]  <Build runtests>: build finished
+2012-06-19 22:16:57+0800 [-]  setting expectations for next time
+2012-06-19 22:16:57+0800 [-] new expectations: 76.6088637114 seconds
+2012-06-19 22:16:57+0800 [-] releaseLocks(<BuildSlave 'example-slave'>): []
+2012-06-19 22:17:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:17:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:17:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:17:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:18:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:18:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:18:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:18:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:19:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:19:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:19:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:19:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:20:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:20:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:20:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:20:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:21:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:21:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:21:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:21:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:22:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:22:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:22:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:22:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:23:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:23:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:23:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:23:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:24:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:24:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:24:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:24:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:25:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:25:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:25:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:25:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:26:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:26:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:26:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:26:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:27:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:27:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:27:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:27:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:28:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:28:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:28:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:28:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:29:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:29:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:29:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:29:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:30:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:30:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:30:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:30:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:31:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:31:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:31:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:31:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:32:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:32:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:32:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:32:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:33:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:33:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:33:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:33:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:34:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:34:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:34:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:34:38+0800 [-] gitpoller: processing 1 changes: ['c099fa557e43173bc01119e7330f9b6a6c5a8bb2'] in "/home/airekans/programming/buildbot/master/gitpoller-workdir"
+2012-06-19 22:34:39+0800 [-] checking for User Object from git Change for: Yaolong Huang <airekans@gmail.com>
+2012-06-19 22:34:39+0800 [-] added change Change(revision=u'c099fa557e43173bc01119e7330f9b6a6c5a8bb2', who=u'Yaolong Huang <airekans@gmail.com>', branch=u'master', comments=u'Add FunctorFutureTask and unittest.', when=1340116457, category=None, project=u'', repository=u'/home/airekans/programming/Tpool') to database
+2012-06-19 22:34:39+0800 [-] gitpoller: catching up tracking branch
+2012-06-19 22:34:39+0800 [-] added buildset 8 to database
+2012-06-19 22:34:40+0800 [-] starting build <Build runtests> using slave <SlaveBuilder builder='runtests' slave='example-slave'>
+2012-06-19 22:34:40+0800 [-] acquireLocks(slave <BuildSlave 'example-slave'>, locks [])
+2012-06-19 22:34:40+0800 [-] starting build <Build runtests>.. pinging the slave <SlaveBuilder builder='runtests' slave='example-slave'>
+2012-06-19 22:34:40+0800 [-] sending ping
+2012-06-19 22:34:40+0800 [Broker,0,127.0.0.1] ping finished: success
+2012-06-19 22:34:40+0800 [-] <Build runtests>.startBuild
+2012-06-19 22:34:40+0800 [-] ShellCommand.startCommand(cmd=<RemoteCommand 'git' at 171756940>)
+2012-06-19 22:34:40+0800 [-]   cmd.args = {'ignore_ignores': None, 'retry': None, 'env': None, 'reference': None, 'submodules': False, 'shallow': False, 'patch': None, 'repourl': '/home/airekans/programming/Tpool', 'workdir': 'build', 'mode': 'copy', 'timeout': 1200, 'branch': u'master', 'progress': False, 'logEnviron': True, 'revision': u'c099fa557e43173bc01119e7330f9b6a6c5a8bb2'}
+2012-06-19 22:34:40+0800 [-] <RemoteCommand 'git' at 171756940>: RemoteCommand.run [12]
+2012-06-19 22:34:40+0800 [Broker,0,127.0.0.1] <RemoteCommand 'git' at 171756940> rc=0
+2012-06-19 22:34:40+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa3cc98c>
+2012-06-19 22:34:40+0800 [-] releaseLocks(<buildbot.steps.source.oldsource.Git instance at 0xa3ccacc>): []
+2012-06-19 22:34:40+0800 [-]  step 'git' complete: success
+2012-06-19 22:34:40+0800 [-] ShellCommand.startCommand(cmd=<RemoteShellCommand '['make', 'lint']'>)
+2012-06-19 22:34:40+0800 [-]   cmd.args = {'workdir': 'build', 'timeout': 1200, 'env': None, 'want_stdout': 1, 'usePTY': 'slave-config', 'maxTime': None, 'logEnviron': True, 'want_stderr': 1, 'logfiles': {}}
+2012-06-19 22:34:40+0800 [-] <RemoteShellCommand '['make', 'lint']'>: RemoteCommand.run [13]
+2012-06-19 22:34:40+0800 [-] command '['make', 'lint']' in dir 'build'
+2012-06-19 22:34:49+0800 [Broker,0,127.0.0.1] <RemoteShellCommand '['make', 'lint']'> rc=0
+2012-06-19 22:34:49+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa3cc0ec>
+2012-06-19 22:34:49+0800 [-] releaseLocks(<buildbot.steps.shell.ShellCommand instance at 0xa3ccbcc>): []
+2012-06-19 22:34:49+0800 [-]  step 'shell' complete: success
+2012-06-19 22:34:49+0800 [-] ShellCommand.startCommand(cmd=<RemoteShellCommand '['make']'>)
+2012-06-19 22:34:49+0800 [-]   cmd.args = {'workdir': 'build', 'timeout': 1200, 'env': None, 'want_stdout': 1, 'usePTY': 'slave-config', 'maxTime': None, 'logEnviron': True, 'want_stderr': 1, 'logfiles': {}}
+2012-06-19 22:34:49+0800 [-] <RemoteShellCommand '['make']'>: RemoteCommand.run [14]
+2012-06-19 22:34:49+0800 [-] command '['make']' in dir 'build'
+2012-06-19 22:35:00+0800 [Broker,0,127.0.0.1] <RemoteShellCommand '['make']'> rc=0
+2012-06-19 22:35:00+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa3cce4c>
+2012-06-19 22:35:00+0800 [-] releaseLocks(<buildbot.steps.shell.ShellCommand instance at 0xa3cc6cc>): []
+2012-06-19 22:35:00+0800 [-]  step 'shell_1' complete: success
+2012-06-19 22:35:00+0800 [-] ShellCommand.startCommand(cmd=<RemoteShellCommand '['make', 'test']'>)
+2012-06-19 22:35:00+0800 [-]   cmd.args = {'workdir': 'build', 'timeout': 1200, 'env': None, 'want_stdout': 1, 'usePTY': 'slave-config', 'maxTime': None, 'logEnviron': True, 'want_stderr': 1, 'logfiles': {}}
+2012-06-19 22:35:00+0800 [-] <RemoteShellCommand '['make', 'test']'>: RemoteCommand.run [15]
+2012-06-19 22:35:00+0800 [-] command '['make', 'test']' in dir 'build'
+2012-06-19 22:35:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:35:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:35:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:35:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:36:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:36:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:36:13+0800 [Broker,0,127.0.0.1] <RemoteShellCommand '['make', 'test']'> rc=0
+2012-06-19 22:36:13+0800 [-] closing log <buildbot.status.logfile.LogFile instance at 0xa3afb8c>
+2012-06-19 22:36:13+0800 [-] releaseLocks(<buildbot.steps.shell.ShellCommand instance at 0xa3cc62c>): []
+2012-06-19 22:36:13+0800 [-]  step 'shell_2' complete: success
+2012-06-19 22:36:13+0800 [-]  <Build runtests>: build finished
+2012-06-19 22:36:13+0800 [-]  setting expectations for next time
+2012-06-19 22:36:13+0800 [-] new expectations: 84.8350833058 seconds
+2012-06-19 22:36:13+0800 [-] releaseLocks(<BuildSlave 'example-slave'>): []
+2012-06-19 22:36:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:36:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:37:08+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:37:08+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:37:38+0800 [-] gitpoller: polling git repo at /home/airekans/programming/Tpool
+2012-06-19 22:37:38+0800 [-] gitpoller: no changes, no catch_up
+2012-06-19 22:37:40+0800 [-] Received SIGTERM, shutting down.
+2012-06-19 22:37:40+0800 [buildbot.status.web.baseweb.RotateLogSite] (TCP Port 8010 Closed)
+2012-06-19 22:37:40+0800 [buildbot.status.web.baseweb.RotateLogSite] Stopping factory <buildbot.status.web.baseweb.RotateLogSite instance at 0xa32676c>
+2012-06-19 22:37:40+0800 [Broker,0,127.0.0.1] BuildSlave.detached(example-slave)
+2012-06-19 22:37:40+0800 [Broker,0,127.0.0.1] releaseLocks(<BuildSlave 'example-slave'>): []
+2012-06-19 22:37:40+0800 [Broker,0,127.0.0.1] Buildslave example-slave detached from runtests
+2012-06-19 22:37:40+0800 [twisted.spread.pb.PBServerFactory] (TCP Port 9989 Closed)
+2012-06-19 22:37:40+0800 [twisted.spread.pb.PBServerFactory] Stopping factory <twisted.spread.pb.PBServerFactory instance at 0xa29564c>
+2012-06-19 22:37:40+0800 [-] Main loop terminated.
+2012-06-19 22:37:40+0800 [-] Server Shut Down.
