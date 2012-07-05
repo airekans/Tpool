@@ -12,7 +12,7 @@ namespace tpool {
   template <typename T>
   class FutureTask : public TaskBase {
   public:
-    typedef boost::shared_ptr<FutureTask> Ptr;
+    typedef boost::shared_ptr<FutureTask<T> > Ptr;
     
     FutureTask();
     virtual ~FutureTask();

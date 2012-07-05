@@ -39,7 +39,7 @@ namespace tpool {
     TaskBase::Ptr AddTask(Func f);
 
     template <typename T, typename Func>
-    FunctorTask::Ptr AddFutureTask(Func f);
+    boost::shared_ptr<FutureTask<T> > AddFutureTask(Func f);
     
     void Stop();
     void StopAsync();
@@ -94,7 +94,6 @@ namespace tpool {
   {
     // keep other thread from pushing more tasks
     StopAsync();
-    
   }
 
   template<class TaskQueue>
@@ -118,9 +117,9 @@ namespace tpool {
 
   template<class TaskQueue>
   template<typename T, typename Func>
-  FutureTask::Ptr FixedThreadPool<TaskQueue>::AddFutureTask(Func f)
+  boost::shared_ptr<FutureTask<T> > FixedThreadPool<TaskQueue>::AddFutureTask(Func f)
   {
-    FutureTask::Ptr task(MakeFunctorFutureTask<T>(f));
+    boost::shared_ptr<FutureTask<T> > task(MakeFunctorFutureTask<T>(f).get());
     DoAddTask(TaskBase::Ptr(task.get()));
     return task;
   }
