@@ -58,7 +58,11 @@ namespace tpool {
   template <typename T>
   void FutureTask<T>::DoRun()
   {
+    sync::ConditionNotifyAllLocker l(m_resultCondition,
+				     bind(not1(mem_fun(&FutureTask::IsResultReturned)),
+					  this));
     m_result = Call();
+    m_isResultReturned = true;
   }
 
   template <typename T>
