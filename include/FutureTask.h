@@ -4,20 +4,27 @@
 
 #include "TaskBase.h"
 #include "ConditionVariable.h"
+#include "Mutex.h"
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <functional>
 
 namespace tpool {
+  class ResultNotReadyException
+  {
+  };
+  
   template <typename T>
   class FutureTask : public TaskBase {
   public:
-    typedef boost::shared_ptr<FutureTask<T> > Ptr;
+    typedef boost::shared_ptr<FutureTask> Ptr;
+    typedef T ReturnType;
     
     FutureTask();
     virtual ~FutureTask();
 
     T GetResult();
+    T TryGetResult() throw(ResultNotReadyException);
     
   private:
     virtual void DoRun();
@@ -76,6 +83,18 @@ namespace tpool {
   bool FutureTask<T>::IsResultReturned() const
   {
     return m_isResultReturned;
+  }
+
+  template <typename T>
+  T FutureTask<T>::TryGetResult()
+    throw(ResultNotReadyException)
+  {
+    sync::MutexLocker l(m_resultCondition);
+    if (!m_isResultReturned)
+      {
+	throw ResultNotReadyException();
+      }
+    return m_result;
   }
 }
 
