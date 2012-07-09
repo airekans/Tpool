@@ -1,7 +1,7 @@
 PROJECT_ROOT := ..
 DEPEND_LIB := $(PROJECT_ROOT)/libtpool.so
 
-CXXFLAGS += -I ../include
+CXXFLAGS += -g -I ../include
 
 LDFLAGS += -pthread
 LDFLAGS += -L .. -ltpool

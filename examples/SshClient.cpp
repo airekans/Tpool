@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <boost/shared_ptr.hpp>
 #include <string>
+#include <arpa/inet.h>
 
 using namespace tpool;
 using namespace std;
@@ -29,7 +30,8 @@ public:
     const int data = 1;
     sync::MutexLocker l(m_channelGuard);
     cout << "forward data: " << data << endl;
-    m_forwardChannel->write(&data, sizeof(data));
+    const long networkData = htonl(data);
+    m_forwardChannel->write(&networkData, sizeof(data));
   }
 };
 
@@ -80,10 +82,12 @@ int main(int argc, char *argv[])
   
   // execute a command
   Channel execChannel(sshSession);
+  string remoteCmd;
+  cin >> remoteCmd;
   try
     {
       execChannel.openSession();
-      execChannel.requestExec("ls /home");
+      execChannel.requestExec(remoteCmd.c_str());
     }
   catch (SshException& e)
     {
@@ -96,13 +100,19 @@ int main(int argc, char *argv[])
       cerr << "[Error] read" << endl;
       exit(1);
     }
-  cout << "exec result: " << string(execResult, count) << endl;
+  string resultString(execResult, count);
+  cout << "exec result: " << resultString << endl;
   execChannel.close();
 
   shared_ptr<Channel> forwardChannel(new Channel(sshSession));
   try
     {
-      forwardChannel->openForward("127.0.0.1", 8999, "localhost");
+      const int result = forwardChannel->openForward("127.0.0.1", 8999, "localhost");
+      if (!(forwardChannel->isOpen()))
+	{
+	  cerr << "Forward Channel Open Failed." << endl;
+	  exit(1);
+	}
     }
   catch (SshException& e)
     {
@@ -115,7 +125,8 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < 5; ++i)
       {
-	threadPool.AddTask(TaskBase::Ptr(new SshForwardTask(forwardChannel, channelGuard)));
+	threadPool.AddTask(TaskBase::Ptr(new SshForwardTask(forwardChannel,
+							    channelGuard)));
       }
 
     threadPool.Stop();
