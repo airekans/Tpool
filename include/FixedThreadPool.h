@@ -8,6 +8,7 @@
 #include "EndTask.h"
 #include "ConditionVariable.h"
 #include "Atomic.h"
+#include "FunctorFutureTask.h"
 #include <vector>
 #include <cstdlib> // for size_t
 #include <boost/foreach.hpp>
@@ -37,6 +38,9 @@ namespace tpool {
     template<typename Func>
     TaskBase::Ptr AddTask(Func f);
 
+    template <typename T, typename Func>
+    typename FutureTask<T>::Ptr AddFutureTask(Func f);
+    
     void Stop();
     void StopAsync();
     void StopNow();
@@ -90,7 +94,6 @@ namespace tpool {
   {
     // keep other thread from pushing more tasks
     StopAsync();
-    
   }
 
   template<class TaskQueue>
@@ -110,6 +113,15 @@ namespace tpool {
   TaskBase::Ptr FixedThreadPool<TaskQueue>::AddTask(Func f)
   {
     return DoAddTask(MakeFunctorTask(f));
+  }
+
+  template<class TaskQueue>
+  template<typename T, typename Func>
+  typename FutureTask<T>::Ptr FixedThreadPool<TaskQueue>::AddFutureTask(Func f)
+  {
+    typename FutureTask<T>::Ptr task(MakeFunctorFutureTask<T>(f).get());
+    DoAddTask(TaskBase::Ptr(task.get()));
+    return task;
   }
 
   template<class TaskQueue>
