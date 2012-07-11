@@ -18,7 +18,7 @@ class MyRequestHandler(SRH):
         
 if __name__ == '__main__':
     tcpServ = TCP(ADDR, MyRequestHandler)
-    stdout.write(str(PORT))
+    stdout.write("port:%5d" % PORT)
     stdout.flush()
     # print 'waiting for connection...'
     tcpServ.serve_forever()
