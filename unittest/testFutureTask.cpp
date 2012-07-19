@@ -86,9 +86,19 @@ TEST(FutureTask, test_GetResultBeforeCallDone)
   EXPECT_EQ(1, task.GetResult());
 }
 
-TEST(FutureTask, test_TryGetResult)
+TEST(FutureTask, test_TryGetResultBeforeCall)
 {
   TestFutureTask task;
 
   EXPECT_THROW(task.TryGetResult(), ResultNotReadyException);
+}
+
+TEST(FutureTask, test_TryGetResultAfterCallDone)
+{
+  TestFutureTask task;
+
+  task.Run();
+
+  EXPECT_NO_THROW(task.TryGetResult());
+  EXPECT_EQ(1, task.TryGetResult());
 }
