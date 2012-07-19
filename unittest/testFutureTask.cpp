@@ -1,4 +1,5 @@
 #include "FutureTask.h"
+#include "Thread.h"
 #include <gtest/gtest.h>
 
 using namespace tpool;
@@ -37,6 +38,52 @@ TEST(FutureTask, test_Call)
   int *result = task.GetResult();
   ASSERT_NE((int *)NULL, result);
   ASSERT_EQ(1, *result);
+}
+
+namespace {
+  struct TestIncFutureTask : public FutureTask<int>
+  {
+    int& data;
+    
+    TestIncFutureTask(int& i)
+      : data(i)
+    {}
+
+    virtual int Call()
+    {
+      sleep(2);
+      return ++data;
+    }
+  };
+
+  struct TestIncFunctor
+  {
+    TestIncFutureTask& task;
+
+    TestIncFunctor(TestIncFutureTask& t)
+      : task(t)
+    {}
+    
+    void operator()()
+    {
+      task.Run();
+    }
+  };
+}
+
+TEST(FutureTask, test_GetResultBeforeCallDone)
+{
+  int data = 0;
+  TestIncFutureTask task(data);
+
+  {
+    Thread t((TestIncFunctor(task)));
+    sleep(1);
+    EXPECT_EQ(0, data);
+  }
+
+  EXPECT_EQ(1, data);
+  EXPECT_EQ(1, task.GetResult());
 }
 
 TEST(FutureTask, test_TryGetResult)
