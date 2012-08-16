@@ -15,21 +15,13 @@ using boost::shared_ptr;
 using google::protobuf::Message;
 
 
-void HandleSimpleDataChunkRequest(Message* message,
+void HandleSimpleDataChunkRequest(simple::GetSimpleDataChunkRequest* request,
 				  shared_ptr<tcp::socket> socket)
 {
   using simple::GetSimpleDataChunkRequest;
   using simple::SimpleDataChunkResponse;
 
   cout << "In HandleSimpleDataChunkRequest" << endl;
-
-  GetSimpleDataChunkRequest* request =
-    dynamic_cast<GetSimpleDataChunkRequest*>(message);
-
-  if (request == NULL)
-    {
-      return;
-    }
 
   const int responseNum = request->num();
   cout << "responseNum: " << responseNum << endl;
