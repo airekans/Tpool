@@ -31,7 +31,9 @@ void MessageDispatcher::Dispatch(Message* message)
   HandlerMap::const_iterator handler = m_messageHandlers.find(message->GetDescriptor());
   if (handler != m_messageHandlers.end())
     {
-      m_threadPool.AddTask(boost::protect(boost::bind(handler->second, message)));
+      m_threadPool.AddTask(boost::protect(
+        boost::bind(&MessageHandler::HandleMessage,
+          handler->second.get(), message)));
     }
   else
     {

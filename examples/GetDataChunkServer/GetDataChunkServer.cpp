@@ -67,7 +67,7 @@ int main(int argc, char** argv)
 
       MessageDispatcher::GetInstance().
 	SetMessageHandler<simple::GetSimpleDataChunkRequest>
-	(MessageDispatcher::MessageHandler(boost::bind(&HandleSimpleDataChunkRequest, _1, socket)));
+	(boost::bind(&HandleSimpleDataChunkRequest, _1, socket));
       
       MessageReader reader(socket);
       reader.Loop();

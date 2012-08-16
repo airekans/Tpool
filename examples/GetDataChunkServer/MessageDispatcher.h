@@ -4,6 +4,7 @@
 
 #include "FixedThreadPool.h"
 #include "DataChunk.pb.h"
+#include "MessageHandler.h"
 #include <map>
 #include <boost/function.hpp>
 #include <google/protobuf/descriptor.h>
@@ -12,26 +13,28 @@
 
 class MessageDispatcher {
 public:
-  typedef boost::function<void (google::protobuf::Message* message)> MessageHandler;
+  // typedef boost::function<void (google::protobuf::Message* message)> MessageHandler;
   
   void Dispatch(google::protobuf::Message* message);
   template <typename T>
-  void SetMessageHandler(MessageHandler messageHandler);
+  void SetMessageHandler(const typename FunctorMessageHandler<T>::Handler& messageHandler);
 
   static MessageDispatcher& GetInstance();
   
 private:
   void DefaultHandler(google::protobuf::Message* message) const;
   
-  typedef std::map<const google::protobuf::Descriptor*, MessageHandler> HandlerMap;
+  typedef std::map<const google::protobuf::Descriptor*,
+		   MessageHandler::Ptr> HandlerMap;
   
   HandlerMap m_messageHandlers;
   tpool::LFixedThreadPool m_threadPool;
 };
 
 template <typename T>
-void MessageDispatcher::SetMessageHandler(MessageHandler messageHandler)
+void MessageDispatcher::SetMessageHandler(const typename FunctorMessageHandler<T>::Handler& handler)
 {
+  MessageHandler::Ptr messageHandler(new FunctorMessageHandler<T>(handler));
   m_messageHandlers[T::default_instance().GetDescriptor()] = messageHandler;
 }
 
