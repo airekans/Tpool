@@ -4,11 +4,12 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
+#include "Socket.h"
 
 class MessageReader {
   
 public:
-  MessageReader(boost::shared_ptr<boost::asio::ip::tcp::socket> socket)
+  MessageReader(Socket& socket)
     : m_socket(socket)
   {}
 
@@ -17,7 +18,7 @@ public:
 private:
   void ProcessMessagePackage(const long packageLength);
   
-  boost::shared_ptr<boost::asio::ip::tcp::socket> m_socket;
+  Socket& m_socket;
 };
 
 

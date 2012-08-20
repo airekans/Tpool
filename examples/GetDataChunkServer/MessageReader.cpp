@@ -13,11 +13,10 @@ void MessageReader::Loop()
   using boost::asio::detail::socket_ops::network_to_host_long;
 
   char lengthBuffer[sizeof(long)] = {0};
-  boost::system::error_code error;
 
   while (true)
     {
-      size_t length = m_socket->read_some(boost::asio::buffer(lengthBuffer), error);
+      size_t length = m_socket.Read(boost::asio::buffer(lengthBuffer));
       const long packageLengthNetwork = *(long*) lengthBuffer;
       const long packageLength = network_to_host_long(packageLengthNetwork);
 
@@ -32,8 +31,7 @@ void MessageReader::ProcessMessagePackage(const long packageLength)
   using boost::asio::detail::socket_ops::network_to_host_long;
 
   char packageBuffer[packageLength];
-  boost::system::error_code error;
-  const int length = m_socket->read_some(boost::asio::buffer(packageBuffer, packageLength), error);
+  const int length = m_socket.Read(boost::asio::buffer(packageBuffer, packageLength));
 
   cout << "received buffer contents: ";
   for (int i = 0; i < length; ++i)

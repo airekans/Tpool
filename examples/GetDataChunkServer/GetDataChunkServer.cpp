@@ -1,6 +1,7 @@
 #include "DataChunk.pb.h"
 #include "MessageReader.h"
 #include "MessageDispatcher.h"
+#include "Socket.h"
 #include <exception>
 #include <iostream>
 #include <boost/asio.hpp>
@@ -16,7 +17,7 @@ using google::protobuf::Message;
 
 
 void HandleSimpleDataChunkRequest(simple::GetSimpleDataChunkRequest* request,
-				  shared_ptr<tcp::socket> socket)
+				  Socket& socket)
 {
   using simple::GetSimpleDataChunkRequest;
   using simple::SimpleDataChunkResponse;
@@ -38,9 +39,7 @@ void HandleSimpleDataChunkRequest(simple::GetSimpleDataChunkRequest* request,
   response.SerializeToOstream(&oss);
   cout << "response length: " << oss.str().length() << endl;
 
-  boost::system::error_code ignored_error;
-  boost::asio::write(*socket, boost::asio::buffer(oss.str()),
-		     boost::asio::transfer_all(), ignored_error);
+  socket.Write(oss.str());
 }
 
 int main(int argc, char** argv)
@@ -54,12 +53,13 @@ int main(int argc, char** argv)
 			     tcp::endpoint(tcp::v4(), SERVER_PORT));
       cout << "Server starts listening port " << SERVER_PORT << endl;
       
-      shared_ptr<tcp::socket> socket(new tcp::socket(io_service));
-      acceptor.accept(*socket);
+      Socket socket(boost::shared_ptr<tcp::socket>(new tcp::socket(io_service)));
+      acceptor.accept(*(socket.GetImpl()));
 
       MessageDispatcher::GetInstance().
 	SetMessageHandler<simple::GetSimpleDataChunkRequest>
-	(boost::bind(&HandleSimpleDataChunkRequest, _1, socket));
+	(boost::bind(&HandleSimpleDataChunkRequest, _1,
+		     boost::ref(socket)));
       
       MessageReader reader(socket);
       reader.Loop();
