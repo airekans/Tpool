@@ -5,6 +5,7 @@
 #include "FixedThreadPool.h"
 #include "DataChunk.pb.h"
 #include "MessageHandler.h"
+#include "Socket.h"
 #include <map>
 #include <boost/function.hpp>
 #include <google/protobuf/descriptor.h>
@@ -17,6 +18,7 @@ public:
   template <typename T>
   void SetMessageHandler(const typename FunctorMessageHandler<T>::Handler& messageHandler);
 
+  void SetSocket(Socket& socket);
   static MessageDispatcher& GetInstance();
   
 private:
@@ -27,6 +29,7 @@ private:
   
   HandlerMap m_messageHandlers;
   tpool::LFixedThreadPool m_threadPool;
+  Socket* m_socket;
 };
 
 template <typename T>

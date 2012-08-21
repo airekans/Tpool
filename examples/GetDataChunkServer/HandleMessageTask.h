@@ -15,7 +15,7 @@ public:
 		    Socket& socket);
   virtual ~HandleMessageTask();
 
-  virtual void Run();
+  virtual void DoRun();
 
 private:
   MessageHandler::Ptr m_handler;

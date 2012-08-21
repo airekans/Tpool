@@ -1,11 +1,18 @@
 #include "MessageDispatcher.h"
+#include "HandleMessageTask.h"
 #include <iostream>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/message.h>
+#include <cassert>
 
 using namespace std;
 using namespace google::protobuf;
+using tpool::TaskBase;
 
+void MessageDispatcher::SetSocket(Socket& socket)
+{
+  m_socket = &socket;
+}
 
 MessageDispatcher& MessageDispatcher::GetInstance()
 {
@@ -31,9 +38,10 @@ void MessageDispatcher::Dispatch(Message* message)
   HandlerMap::const_iterator handler = m_messageHandlers.find(message->GetDescriptor());
   if (handler != m_messageHandlers.end())
     {
-      m_threadPool.AddTask(boost::protect(
-        boost::bind(&MessageHandler::HandleMessage,
-          handler->second.get(), message)));
+      assert(m_socket != NULL);
+      m_threadPool.AddTask(TaskBase::Ptr(new HandleMessageTask(handler->second,
+							       message,
+							       *m_socket)));
     }
   else
     {

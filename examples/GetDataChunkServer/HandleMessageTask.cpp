@@ -15,7 +15,7 @@ HandleMessageTask::HandleMessageTask(MessageHandler::Ptr handler,
 HandleMessageTask::~HandleMessageTask()
 {}
 
-void HandleMessageTask::Run()
+void HandleMessageTask::DoRun()
 {
   Message* response = m_handler->HandleMessage(m_message);
   if (response != NULL)
