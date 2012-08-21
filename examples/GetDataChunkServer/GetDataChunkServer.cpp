@@ -16,8 +16,7 @@ using boost::shared_ptr;
 using google::protobuf::Message;
 
 
-Message* HandleSimpleDataChunkRequest(simple::GetSimpleDataChunkRequest* request,
-				  Socket& socket)
+Message* HandleSimpleDataChunkRequest(simple::GetSimpleDataChunkRequest* request)
 {
   using simple::GetSimpleDataChunkRequest;
   using simple::SimpleDataChunkResponse;
@@ -27,21 +26,19 @@ Message* HandleSimpleDataChunkRequest(simple::GetSimpleDataChunkRequest* request
   const int responseNum = request->num();
   cout << "responseNum: " << responseNum << endl;
   
-  SimpleDataChunkResponse response;
+  SimpleDataChunkResponse* response = new SimpleDataChunkResponse;
   for (int i = 0; i < responseNum; ++i)
     {
-      BOOST_AUTO(chunk, response.add_chunks());
+      BOOST_AUTO(chunk, response->add_chunks());
       chunk->set_x((double) i);
       chunk->set_y((double) i);
     }
 
   ostringstream oss;
-  response.SerializeToOstream(&oss);
+  response->SerializeToOstream(&oss);
   cout << "response length: " << oss.str().length() << endl;
 
-  socket.Write(oss.str());
-
-  return NULL;
+  return response;
 }
 
 int main(int argc, char** argv)
@@ -58,10 +55,10 @@ int main(int argc, char** argv)
       Socket socket(boost::shared_ptr<tcp::socket>(new tcp::socket(io_service)));
       acceptor.accept(*(socket.GetImpl()));
 
+      MessageDispatcher::GetInstance().SetSocket(socket);
       MessageDispatcher::GetInstance().
 	SetMessageHandler<simple::GetSimpleDataChunkRequest>
-	(boost::bind(&HandleSimpleDataChunkRequest, _1,
-		     boost::ref(socket)));
+	(boost::bind(&HandleSimpleDataChunkRequest, _1));
       
       MessageReader reader(socket);
       reader.Loop();

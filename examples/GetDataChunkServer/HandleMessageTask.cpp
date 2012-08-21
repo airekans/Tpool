@@ -17,8 +17,10 @@ HandleMessageTask::~HandleMessageTask()
 
 void HandleMessageTask::DoRun()
 {
-  Message* response = m_handler->HandleMessage(m_message);
-  if (response != NULL)
+  using boost::shared_ptr;
+
+  shared_ptr<Message> response(m_handler->HandleMessage(m_message));
+  if (response)
     {
         ostringstream oss;
 	response->SerializeToOstream(&oss);
