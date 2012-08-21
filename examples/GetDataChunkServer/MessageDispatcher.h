@@ -13,8 +13,6 @@
 
 class MessageDispatcher {
 public:
-  // typedef boost::function<void (google::protobuf::Message* message)> MessageHandler;
-  
   void Dispatch(google::protobuf::Message* message);
   template <typename T>
   void SetMessageHandler(const typename FunctorMessageHandler<T>::Handler& messageHandler);

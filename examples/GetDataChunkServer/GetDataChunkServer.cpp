@@ -16,7 +16,7 @@ using boost::shared_ptr;
 using google::protobuf::Message;
 
 
-void HandleSimpleDataChunkRequest(simple::GetSimpleDataChunkRequest* request,
+Message* HandleSimpleDataChunkRequest(simple::GetSimpleDataChunkRequest* request,
 				  Socket& socket)
 {
   using simple::GetSimpleDataChunkRequest;
@@ -40,6 +40,8 @@ void HandleSimpleDataChunkRequest(simple::GetSimpleDataChunkRequest* request,
   cout << "response length: " << oss.str().length() << endl;
 
   socket.Write(oss.str());
+
+  return NULL;
 }
 
 int main(int argc, char** argv)

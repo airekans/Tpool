@@ -12,6 +12,7 @@ class MessageHandler
 {
 public:
   typedef boost::shared_ptr<MessageHandler> Ptr;
+  typedef google::protobuf::Message Message;
   
   MessageHandler()
   {}
@@ -19,14 +20,14 @@ public:
   virtual ~MessageHandler()
   {}
 
-  virtual void HandleMessage(google::protobuf::Message* message) = 0;
+  virtual Message* HandleMessage(Message* message) = 0;
 };
 
 template <typename T>
 class FunctorMessageHandler : public MessageHandler
 {
 public:
-  typedef boost::function<void (T* message)> Handler;
+  typedef boost::function<Message* (T* message)> Handler;
   
   FunctorMessageHandler(const Handler& handler)
     : m_handler(handler)
@@ -35,11 +36,11 @@ public:
   virtual ~FunctorMessageHandler()
   {}
 
-  virtual void HandleMessage(google::protobuf::Message* message)
+  virtual Message* HandleMessage(google::protobuf::Message* message)
   {
     T* concreteMessage = dynamic_cast<T*>(message);
     assert(concreteMessage != NULL);
-    m_handler(concreteMessage);
+    return m_handler(concreteMessage);
   }
 
 private:
