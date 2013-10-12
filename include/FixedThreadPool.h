@@ -28,7 +28,7 @@ namespace tpool {
     };
 
   public:
-    FixedThreadPool(const size_t threadNum = 10);
+    FixedThreadPool(const size_t threadNum = 4);
     ~FixedThreadPool();
   
 
