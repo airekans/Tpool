@@ -26,7 +26,6 @@ public:
     
     virtual void DoRun()
     {
-        cout << "Process Daytime Request." << endl;
         time_t now = time(0);
         const string daytimeString = ctime(&now);
         socket.Write(daytimeString);
@@ -43,15 +42,12 @@ int main(int argc, char** argv)
     tcp::acceptor acceptor(io_service,
                            tcp::endpoint(tcp::v4(), 12345));
     
-    int cnt = 0;
     while (true)
     {
         shared_ptr<tcp::socket> socket(new tcp::socket);
         acceptor.accept(*socket);
-        
         // Add the task to thread pool
         threadPool.AddTask(TaskBase::Ptr(new DaytimeTask(socket)));
-        cout << "Received Connection: " << ++cnt << endl;
     }
 
     return 0;
