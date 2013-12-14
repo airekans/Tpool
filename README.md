@@ -39,8 +39,9 @@ private:
 int main(int argc, char** argv)
 {
     LFixedThreadPool threadPool; // create the thread pool, with 4 threads by default
+    // create a socket listen on port 12345
     tcp::acceptor acceptor(io_service,
-                           tcp::endpoint(tcp::v4(), 12345)); // create a socket listen on port 12345
+                           tcp::endpoint(tcp::v4(), 12345));
     
     int cnt = 0;
     while (true)
