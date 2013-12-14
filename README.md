@@ -39,8 +39,7 @@ int main(int argc, char** argv)
 {
     LFixedThreadPool threadPool; // create the thread pool, with 4 threads by default
     // create a socket listen on port 12345
-    tcp::acceptor acceptor(io_service,
-                           tcp::endpoint(tcp::v4(), 12345));
+    tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), 12345));
     
     while (true)
     {
@@ -53,3 +52,6 @@ int main(int argc, char** argv)
     return 0;
 }
 ```
+
+As you can see, you just write a class to handle the request, create the thread pool, create the task and
+put the task into the thread pool.
