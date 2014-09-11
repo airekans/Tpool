@@ -14,12 +14,13 @@
 #include <boost/foreach.hpp>
 #include <boost/bind.hpp>
 #include <boost/bind/protect.hpp>
+#include <boost/noncopyable.hpp>
 #include <functional>
 
 namespace tpool {
   
   template<class TaskQueue = LinearTaskQueue>
-  class FixedThreadPool {
+  class FixedThreadPool : public boost::noncopyable {
   private:
     enum State {
       INIT,
