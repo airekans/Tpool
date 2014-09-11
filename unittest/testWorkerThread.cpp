@@ -48,7 +48,7 @@ TEST(WorkerThread, test_Cancel)
     ASSERT_EQ(1, counter);
   }
   ASSERT_EQ(1, counter);
-  ASSERT_EQ(1, q->Size());
+  ASSERT_EQ(static_cast<size_t>(1), q->Size());
 }
 
 TEST(WorkerThread, test_multiple_Cancel)

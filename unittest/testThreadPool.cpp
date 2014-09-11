@@ -13,12 +13,12 @@ TEST(FixedThreadPool, test_Construction)
 {
   {
     LFixedThreadPool threadPool;
-    EXPECT_EQ(10, threadPool.GetThreadNum());
+    EXPECT_EQ(static_cast<size_t>(4), threadPool.GetThreadNum());
   }
   
   {
     LFixedThreadPool threadPool(5);
-    EXPECT_EQ(5, threadPool.GetThreadNum());
+    EXPECT_EQ(static_cast<size_t>(5), threadPool.GetThreadNum());
   }
 }
 
@@ -181,7 +181,7 @@ TEST(FixedThreadPool, test_StopNow)
     sleep(1);
     threadPool.StopNow();
 
-    EXPECT_GT(counter, num);
+    EXPECT_GT(static_cast<size_t>(counter), num);
     EXPECT_FALSE(threadPool.AddTask(TaskBase::Ptr(new IncTask(counter))));
   }
 }

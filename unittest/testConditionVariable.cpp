@@ -87,7 +87,6 @@ TEST(ConditionVariableTestSuite, test_MutexCondition_wait)
       // ensure condition can be used both as Mutex
       // and ConditionVariable
       MutexLocker l(condition);
-      int tmp = 1;
     }
   }
   ASSERT_EQ(1, GLOBAL_COUNTER);

@@ -8,11 +8,12 @@
 #include "Atomic.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/bind.hpp>
+#include <boost/noncopyable.hpp>
 #include <memory>
 #include <exception>
 
 namespace tpool {
-  class WorkerThread {
+  class WorkerThread : public boost::noncopyable {
   private:
     enum State {
       INIT,

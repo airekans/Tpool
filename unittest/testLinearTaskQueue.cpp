@@ -21,7 +21,7 @@ namespace {
     LinearTaskQueue& taskQueue;
     
     PushThreadFunc(LinearTaskQueue& q, const int n)
-      : taskQueue(q), num(n)
+      : num(n), taskQueue(q)
     {}
 
     virtual void DoRun()
@@ -47,7 +47,7 @@ TEST(LinearTaskQueueTestSuite, test_Push)
     Thread t2((PushThreadFunc(taskQueue, 50)));
   }
 
-  ASSERT_EQ(70, taskQueue.Size());
+  ASSERT_EQ(static_cast<size_t>(70), taskQueue.Size());
 }
 
 namespace {
@@ -75,7 +75,7 @@ TEST(LinearTaskQueueTestSuite, test_PopWait)
     Thread pushThread((PushThreadFunc(taskQueue, 10)));
   }
 
-  ASSERT_EQ(9, taskQueue.Size());
+  ASSERT_EQ(static_cast<size_t>(9), taskQueue.Size());
 }
 
 namespace {

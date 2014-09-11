@@ -81,7 +81,7 @@ namespace {
     Mutex& mutex;
 
     WaitThreadFunc(Mutex& m, int& i, int& wc)
-      : mutex(m), counter(i), wakeCount(wc)
+      : wakeCount(wc), counter(i), mutex(m)
     {
       wakeCount = -1;
     }

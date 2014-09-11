@@ -70,10 +70,10 @@ namespace tpool {
   template<class TaskQueue>
   FixedThreadPool<TaskQueue>::FixedThreadPool(const size_t threadNum)
     : m_taskQueue(new TaskQueue),
-      m_threads(threadNum),
       m_stoppedThreadNum(0),
       m_state(INIT),
-      m_isRequestStop(false)
+      m_isRequestStop(false),
+      m_threads(threadNum)
   {
     using boost::bind;
     using boost::protect;
