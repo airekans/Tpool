@@ -1,6 +1,8 @@
 Tpool
 ======
 
+[![Build Status](https://travis-ci.org/airekans/Tpool.svg?branch=master)](https://travis-ci.org/airekans/Tpool)
+
 Tpool is C++ thread pool implementation based on POSIX pthread. It is designed with simplicity in mind.
 
 Intro
