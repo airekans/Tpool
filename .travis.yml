@@ -6,7 +6,7 @@ compiler:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq libboost-all-dev libgtest-dev
-
+  - cd /usr/src/gtest && sudo cmake . && sudo make && sudo mv libg* /usr/lib/
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install: make
 # command to run tests, e.g. python setup.py test
