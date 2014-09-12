@@ -4,18 +4,20 @@
 
 #include "Thread.h"
 
+#include "TaskBase.h"
+
 #include <memory>
 #include <boost/noncopyable.hpp>
+#include <boost/shared_ptr.hpp>
 
 
 namespace tpool {
 
-  class TimerEvent {
+  class TimerTask : public TaskBase {
   public:
-    TimerEvent();
-    ~TimerEvent();
-  };
+	typedef boost::shared_ptr<TimerTask> Ptr;
 
+  };
 
   // This timer implementation uses a thread to 
   // sleep until timeout
@@ -24,8 +26,14 @@ namespace tpool {
     Timer();
     ~Timer();
 
-  private:
+    void RunAt(TimerTask::Ptr task, long delay);
+    void RunLater(TimerTask::Ptr task, long delay);
+    void RunEvery(TimerTask::Ptr task, long delay);
 
+    template<typename Func>
+    TimerTask::Ptr RunAt(Func func, long delay);
+
+  private:
     std::auto_ptr<Thread> m_thread;
   };
 }
