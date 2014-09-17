@@ -7,6 +7,8 @@
 #include <boost/noncopyable.hpp>
 
 namespace tpool {
+  typedef unsigned long long TimeValue;
+
   namespace sync {
     class ConditionWaitLocker;
     class ConditionNotifyLocker;
@@ -25,6 +27,10 @@ namespace tpool {
       void Notify();
       void NotifyAll();
       void Wait();
+
+      /// returns true when the condition is notified,
+      /// otherwise return false on time expired
+      bool TimedWait(TimeValue delay_in_ms);
       void Lock();
       void Unlock();
 
@@ -41,6 +47,12 @@ namespace tpool {
 
     class ConditionWaitLocker : private boost::noncopyable {
     public:
+      /// This ctor is usually used with TimedWait.
+      /// If you don't use TimedWait, DO NOT use this ctor.
+      explicit ConditionWaitLocker(ConditionVariable& c)
+	: m_conditionVariable(c)
+      {}
+
       template<typename WaitConditionFunc>
       explicit ConditionWaitLocker(ConditionVariable& c,
 			       WaitConditionFunc f)
@@ -53,6 +65,24 @@ namespace tpool {
 	  }
       }
       
+      /// returns *true* when the condition is notified and
+      /// function f returns true, otherwise returns *false*
+      /// when time expired.
+      /// Note that when the function returns, the mutex is locked.
+      template<typename WaitConditionFunc>
+      bool TimedWait(WaitConditionFunc f, TimeValue delay_in_ms)
+      {
+	m_conditionVariable.Lock();
+	while (f())
+	{
+	  if (!m_conditionVariable.TimedWait(delay_in_ms))
+	  {
+	    return false;
+	  }
+	}
+	return true;
+      }
+
       ~ConditionWaitLocker()
       {
 	m_conditionVariable.Unlock();

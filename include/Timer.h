@@ -3,18 +3,20 @@
 #define _TPOOL_TIMER_H_
 
 #include "Thread.h"
-
+#include "ConditionVariable.h"
 #include "TaskBase.h"
 
 #include <memory>
 #include <queue>
+#include <exception>
 
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 
 
 namespace tpool {
-  typedef unsigned long long TimeValue;
+
+  TimeValue GetCurrentTime();
 
   class Timer;
 
@@ -27,8 +29,9 @@ namespace tpool {
 
     TimerTask();
 
-  private:
     TimeValue GetDeadline() const;
+
+  private:
     void SetDeadline(const TimeValue deadline);
     bool IsIntervalTask() const;
     void SetIsIntervalTask(const bool is_interval_task);
@@ -59,11 +62,15 @@ namespace tpool {
     TimerTask::Ptr RunEvery(Func func, TimeValue interval_in_ms,
             bool is_run_now);
 
+
+
   private:
     void ThreadFunction();
+    void ProcessError(const std::exception& e);
 
     class TimerQueue {
     public:
+      TimerQueue();
       TimerTask::Ptr GetMin() const;
       TimerTask::Ptr PopMin();
       void PushTask(TimerTask::Ptr task);
@@ -71,9 +78,15 @@ namespace tpool {
       unsigned GetSize() const;
 
     private:
-      ::std::priority_queue<TimerTask::Ptr> m_queue;
+      static bool CompareTimerTask(TimerTask::Ptr a, TimerTask::Ptr b);
+
+      typedef bool (*CompareFunc)(TimerTask::Ptr, TimerTask::Ptr);
+      typedef ::std::priority_queue<TimerTask::Ptr,
+          std::vector<TimerTask::Ptr>, CompareFunc> Queue;
+      Queue m_queue;
     };
 
+    mutable sync::MutexConditionVariable m_mutexCond;
     TimerQueue m_timer_queue;
     ::std::auto_ptr<Thread> m_thread;
   };
