@@ -23,7 +23,9 @@ namespace tpool {
       explicit ConditionVariable(Mutex& m);
       ~ConditionVariable();
 
-    private:
+      /// NOTE: Normally you should not use the following
+      /// functions directly. Consider use ConditionWaitLocker
+      /// and ConditionNotifyLocker first.
       void Notify();
       void NotifyAll();
       void Wait();
@@ -31,6 +33,8 @@ namespace tpool {
       /// returns true when the condition is notified,
       /// otherwise return false on time expired
       bool TimedWait(TimeValue delay_in_ms);
+
+    private:
       void Lock();
       void Unlock();
 

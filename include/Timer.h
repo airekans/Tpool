@@ -34,9 +34,11 @@ namespace tpool {
   private:
     void SetDeadline(const TimeValue deadline);
     bool IsIntervalTask() const;
-    void SetIsIntervalTask(const bool is_interval_task);
+    TimeValue GetInterval() const;
+    void SetInterval(const TimeValue interval);
 
     TimeValue m_deadline;
+    TimeValue m_interval;
     bool m_is_interval_task;
   };
 
@@ -70,12 +72,19 @@ namespace tpool {
 
     class TimerQueue {
     public:
-      TimerQueue();
+      TimerQueue(sync::Mutex& m);
       TimerTask::Ptr GetMin() const;
       TimerTask::Ptr PopMin();
+      void PopMinAndPush();
       void PushTask(TimerTask::Ptr task);
       bool IsEmpty() const;
       unsigned GetSize() const;
+
+      void Wait();
+
+      /// return true when the condition is signaled,
+      /// otherwise return false
+      bool TimedWait(TimeValue delay);
 
     private:
       static bool CompareTimerTask(TimerTask::Ptr a, TimerTask::Ptr b);
@@ -83,10 +92,12 @@ namespace tpool {
       typedef bool (*CompareFunc)(TimerTask::Ptr, TimerTask::Ptr);
       typedef ::std::priority_queue<TimerTask::Ptr,
           std::vector<TimerTask::Ptr>, CompareFunc> Queue;
+
+      mutable sync::ConditionVariable m_cond;
       Queue m_queue;
     };
 
-    mutable sync::MutexConditionVariable m_mutexCond;
+    mutable sync::Mutex m_queue_guard;
     TimerQueue m_timer_queue;
     ::std::auto_ptr<Thread> m_thread;
   };

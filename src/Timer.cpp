@@ -10,7 +10,7 @@ using namespace tpool;
 
 
 tpool::TimerTask::TimerTask()
-: m_deadline(0), m_is_interval_task(false)
+: m_deadline(0), m_interval(0)
 {}
 
 TimeValue tpool::TimerTask::GetDeadline() const
@@ -25,14 +25,20 @@ void tpool::TimerTask::SetDeadline(const TimeValue deadline)
 
 bool tpool::TimerTask::IsIntervalTask() const
 {
-  return m_deadline;
+  return m_interval > 0;
 }
 
-void tpool::TimerTask::SetIsIntervalTask(const bool is_interval_task)
+TimeValue tpool::TimerTask::GetInterval() const
 {
-  m_is_interval_task = is_interval_task;
+  return m_interval;
 }
 
+void tpool::TimerTask::SetInterval(const TimeValue interval)
+{
+  m_interval = interval;
+}
+
+/// Timer::TimerQueue
 TimerTask::Ptr tpool::Timer::TimerQueue::GetMin() const
 {
   assert(!m_queue.empty());
@@ -47,6 +53,17 @@ TimerTask::Ptr tpool::Timer::TimerQueue::PopMin()
   return min_task;
 }
 
+void
+tpool::Timer::TimerQueue::PopMinAndPush()
+{
+  assert(!m_queue.empty());
+  // the deadline in the min_task should be changed
+  TimerTask::Ptr min_task = m_queue.top();
+  m_queue.pop();
+  m_queue.push(min_task);
+}
+
+
 void tpool::Timer::TimerQueue::PushTask(TimerTask::Ptr task)
 {
   m_queue.push(task);
@@ -57,8 +74,8 @@ bool tpool::Timer::TimerQueue::IsEmpty() const
   return m_queue.empty();
 }
 
-tpool::Timer::TimerQueue::TimerQueue()
-: m_queue(TimerQueue::CompareTimerTask)
+tpool::Timer::TimerQueue::TimerQueue(sync::Mutex& m)
+: m_cond(m), m_queue(TimerQueue::CompareTimerTask)
 {}
 
 unsigned tpool::Timer::TimerQueue::GetSize() const
@@ -67,6 +84,7 @@ unsigned tpool::Timer::TimerQueue::GetSize() const
 }
 
 tpool::Timer::Timer()
+: m_timer_queue(m_queue_guard)
 {
   using boost::bind;
 
@@ -95,36 +113,49 @@ void tpool::Timer::ThreadFunction()
   TimeValue wait_time = 0;
   while (true)
   {
-    // lock here
-    while (m_timer_queue.IsEmpty())
-    {
-      // cond_wait here
-    }
+    bool is_fired = false;
+    TimerTask::Ptr task;
 
-    TimerTask::Ptr task = m_timer_queue.GetMin();
-    // unlock here
-    if (task->IsCancelled())
     {
-      // lock here
-      (void) m_timer_queue.PopMin();
-      // unlock here
-      continue;
-    }
+      sync::MutexLocker lock(m_queue_guard);
+      while (m_timer_queue.IsEmpty())
+      {
+        m_timer_queue.Wait();
+      }
 
-    TimeValue now = GetCurrentTime();
-    TimeValue deadline = task->GetDeadline();
-    if (deadline <= now)
+      task = m_timer_queue.GetMin();
+      if (task->IsCancelled())
+      {
+        (void) m_timer_queue.PopMin();
+        continue;
+        // mutex unlock here
+      }
+
+      const TimeValue now = GetCurrentTime();
+      const TimeValue deadline = task->GetDeadline();
+      if (deadline <= now)
+      {
+        is_fired = true;
+        if (task->IsIntervalTask())
+        {
+          task->SetDeadline(now + task->GetInterval());
+          m_timer_queue.PopMinAndPush();
+        }
+        else
+        {
+          (void) m_timer_queue.PopMin();
+        }
+      }
+      else
+      {
+        const TimeValue delay = deadline - now;
+        (void) m_timer_queue.TimedWait(delay);
+      }
+    } // mutex unlock
+
+    if (is_fired)
     {
       task->Run();
-      // lock here
-      (void) m_timer_queue.PopMin();
-      // unlock here
-    }
-    else
-    {
-      // lock
-      // sleep the delay here
-      // unlock
     }
   }
 }
@@ -136,11 +167,22 @@ void tpool::Timer::ProcessError(const std::exception& e)
   cerr << "Try again." << endl;
 }
 
+void tpool::Timer::TimerQueue::Wait()
+{
+  m_cond.Wait();
+}
+
+bool tpool::Timer::TimerQueue::TimedWait(TimeValue delay)
+{
+  return m_cond.TimedWait(delay);
+}
+
 bool tpool::Timer::TimerQueue::CompareTimerTask(
     TimerTask::Ptr a, TimerTask::Ptr b)
 {
   return a->GetDeadline() < b->GetDeadline();
 }
+
 
 
 
