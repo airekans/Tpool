@@ -39,7 +39,6 @@ namespace tpool {
 
     TimeValue m_deadline;
     TimeValue m_interval;
-    bool m_is_interval_task;
   };
 
   template<typename Func>
