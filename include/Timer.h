@@ -42,6 +42,24 @@ namespace tpool {
     bool m_is_interval_task;
   };
 
+  template<typename Func>
+  class TimerFunctorTask : public TimerTask {
+  public:
+    TimerFunctorTask(Func f);
+
+    virtual void DoRun();
+
+  private:
+    Func m_functor;
+  };
+
+  /// helper function
+  template<typename Func>
+  TimerTask::Ptr MakeTimerFunctorTask(Func f)
+  {
+    return TimerTask::Ptr(new TimerFunctorTask<Func>(f));
+  }
+
   // This timer implementation uses a thread to 
   // sleep until timeout
   class Timer : public boost::noncopyable {
@@ -64,9 +82,10 @@ namespace tpool {
     TimerTask::Ptr RunEvery(Func func, TimeValue interval_in_ms,
             bool is_run_now);
 
-
-
   private:
+    void DoRunLater(TimerTask::Ptr task, TimeValue delay_in_ms);
+    void DoRunEvery(TimerTask::Ptr task, TimeValue interval_in_ms,
+            bool is_run_now);
     void ThreadFunction();
     void ProcessError(const std::exception& e);
 
@@ -101,7 +120,40 @@ namespace tpool {
     TimerQueue m_timer_queue;
     ::std::auto_ptr<Thread> m_thread;
   };
-}
+
+
+  /// Implementation
+  template<typename Func>
+  inline TimerFunctorTask<Func>::TimerFunctorTask(Func f)
+  : m_functor(f)
+  {}
+
+  template<typename Func>
+  inline void TimerFunctorTask<Func>::DoRun()
+  {
+    m_functor();
+  }
+
+
+  template<typename Func>
+  inline TimerTask::Ptr Timer::RunLater(Func func, TimeValue delay_in_ms)
+  {
+    TimerTask::Ptr task(MakeTimerFunctorTask(func));
+    DoRunLater(task, delay_in_ms);
+    return task;
+  }
+
+  template<typename Func>
+  inline TimerTask::Ptr
+  Timer::RunEvery(Func func, TimeValue interval_in_ms, bool is_run_now)
+  {
+    TimerTask::Ptr task(MakeTimerFunctorTask(func));
+    DoRunEvery(task, interval_in_ms, is_run_now);
+    return task;
+  }
+
+}  // namespace tpool
+
 
 #endif  // _TPOOL_TIMER_H_
 
