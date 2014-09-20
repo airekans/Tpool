@@ -109,6 +109,17 @@ bool tpool::Timer::TimerQueue::TimedWait(TimeValue delay)
   return m_cond.TimedWait(delay);
 }
 
+/// precondition: the mutex associated with this queue
+///    should be locked
+void tpool::Timer::TimerQueue::Clear()
+{
+  while (!m_queue.empty())
+  {
+    m_queue.pop();
+  }
+  m_cond.Notify();
+}
+
 bool tpool::Timer::TimerQueue::CompareTimerTask(
     TimerTask::Ptr a, TimerTask::Ptr b)
 {
@@ -118,7 +129,7 @@ bool tpool::Timer::TimerQueue::CompareTimerTask(
 
 /// Timer
 tpool::Timer::Timer()
-: m_timer_queue(m_queue_guard)
+: m_is_stop(false), m_timer_queue(m_queue_guard)
 {
   using boost::bind;
 
@@ -151,9 +162,13 @@ void tpool::Timer::ThreadFunction()
 
     {
       sync::MutexLocker lock(m_queue_guard);
-      while (m_timer_queue.IsEmpty())
+      while (m_timer_queue.IsEmpty() && !m_is_stop)
       {
         m_timer_queue.Wait();
+      }
+      if (m_is_stop)
+      {
+        break;
       }
 
       task = m_timer_queue.GetMin();
@@ -230,6 +245,13 @@ void tpool::Timer::DoRunEvery(TimerTask::Ptr task, TimeValue interval_in_ms,
 
   sync::MutexLocker lock(m_queue_guard);
   m_timer_queue.PushTask(task);
+}
+
+void tpool::Timer::Stop()
+{
+  sync::MutexLocker lock(m_queue_guard);
+  m_is_stop = true;
+  m_timer_queue.Clear();
 }
 
 void tpool::Timer::ProcessError(const std::exception& e)

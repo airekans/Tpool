@@ -82,6 +82,8 @@ namespace tpool {
     TimerTask::Ptr RunEvery(Func func, TimeValue interval_in_ms,
             bool is_run_now);
 
+    void Stop();
+
   private:
     void DoRunLater(TimerTask::Ptr task, TimeValue delay_in_ms);
     void DoRunEvery(TimerTask::Ptr task, TimeValue interval_in_ms,
@@ -98,6 +100,7 @@ namespace tpool {
       void PushTask(TimerTask::Ptr task);
       bool IsEmpty() const;
       unsigned GetSize() const;
+      void Clear();
 
       void Wait();
 
@@ -117,6 +120,7 @@ namespace tpool {
     };
 
     mutable sync::Mutex m_queue_guard;
+    bool m_is_stop;
     TimerQueue m_timer_queue;
     ::std::auto_ptr<Thread> m_thread;
   };
