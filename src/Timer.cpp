@@ -144,7 +144,6 @@ tpool::Timer::~Timer()
 
 void tpool::Timer::ThreadFunction()
 {
-  TimeValue wait_time = 0;
   while (true)
   {
     bool is_fired = false;

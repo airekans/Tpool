@@ -2,6 +2,7 @@
 #include "Mutex.h"
 
 #include <sys/time.h>
+#include <errno.h>
 
 using namespace tpool::sync;
 
