@@ -4,6 +4,10 @@ DEPDIR := .deps
 df = $(DEPDIR)/$(*F)
 MAKEDEPEND = g++ $(CXXFLAGS) -MM -MT $*.o $<
 
+ifdef DEBUG
+CXXFLAGS += -g
+endif
+
 
 #### Rules ####
 # generate the dependency and compile

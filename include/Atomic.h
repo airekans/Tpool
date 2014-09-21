@@ -22,27 +22,66 @@ namespace tpool {
     const T& GetRawData() const;
 
   private:
-    T m_data;
     mutable sync::Mutex m_mutex;
+    T m_data;
   };
 
   // Partial specialization
   template <>
-  class Atomic<unsigned int>
+  class Atomic<unsigned>
   {
   public:
-    explicit Atomic(const unsigned int& data);
-    Atomic(const Atomic& atom);
-    virtual ~Atomic();
+    explicit Atomic(const unsigned data)
+    : m_data(data)
+    {}
 
-    Atomic& operator=(const Atomic& atom);
-    int operator++();
-    int operator--();
-    Atomic& operator+=(const unsigned int& data);
+    Atomic(const Atomic& atom)
+    {
+      sync::MutexLocker l(m_mutex);
+      m_data = atom.m_data;
+    }
+
+    // This may cause deadlock, use with caution.
+    Atomic& operator=(const unsigned data)
+    {
+      sync::MutexLocker l(m_mutex);
+      m_data = data;
+      return *this;
+    }
+
+    unsigned operator++()
+    {
+      sync::MutexLocker l(m_mutex);
+      return ++m_data;
+    }
+
+    unsigned operator++(int)
+    {
+      sync::MutexLocker l(m_mutex);
+      return m_data++;
+    }
+
+    unsigned operator--()
+    {
+      sync::MutexLocker l(m_mutex);
+      return --m_data;
+    }
+
+    unsigned operator--(int)
+    {
+      sync::MutexLocker l(m_mutex);
+      return m_data--;
+    }
+
+    operator unsigned() const
+    {
+      sync::MutexLocker l(m_mutex);
+      return m_data;
+    }
 
   private:
-    int m_data;
     mutable sync::Mutex m_mutex;
+    unsigned m_data;
   };
   
   // Implementation

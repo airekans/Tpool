@@ -1,4 +1,5 @@
 #include "Timer.h"
+#include "Atomic.h"
 #include "TestUtil.h"
 
 #include <gtest/gtest.h>
@@ -10,7 +11,11 @@ namespace {
   class TimerTestSuite : public ::testing::Test
   {
   protected:
-    unsigned counter;
+    Atomic<unsigned> counter;
+
+    TimerTestSuite()
+    : counter(0)
+    {}
 
     virtual void SetUp()
     {
@@ -20,9 +25,9 @@ namespace {
 
   struct TestTimerTask : public TimerTask
   {
-    unsigned& counter;
+    Atomic<unsigned>& counter;
 
-    TestTimerTask(unsigned& cnt)
+    TestTimerTask(Atomic<unsigned>& cnt)
     : counter(cnt)
     {}
 
@@ -31,7 +36,6 @@ namespace {
       ++counter;
     }
   };
-
 }
 
 TEST_F(TimerTestSuite, test_Ctor)
@@ -147,4 +151,48 @@ TEST_F(TimerTestSuite, test_Run_with_multiple_tasks)
   ASSERT_EQ(3, counter);
 }
 
+namespace {
+  struct TestTimerFunc
+  {
+    Atomic<unsigned>& counter;
+
+    TestTimerFunc(Atomic<unsigned>& cnt)
+    : counter(cnt)
+    {}
+
+    void operator()()
+    {
+      ++counter;
+    }
+  };
+}
+
+TEST_F(TimerTestSuite, test_RunLater_with_functor)
+{
+  {
+    Timer timer;
+    timer.RunLater(TestTimerFunc(counter), 200);
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(500);
+    ASSERT_EQ(1, counter);
+  }
+  ASSERT_EQ(1, counter);
+}
+
+TEST_F(TimerTestSuite, test_RunEvery_with_functor)
+{
+  {
+    Timer timer;
+    timer.RunEvery(TestTimerFunc(counter), 500, false);
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(600);
+    ASSERT_EQ(1, counter);
+
+    MilliSleep(500);
+    ASSERT_EQ(2, counter);
+  }
+  ASSERT_EQ(2, counter);
+}
 
