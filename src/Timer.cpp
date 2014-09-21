@@ -123,7 +123,7 @@ void tpool::Timer::TimerQueue::Clear()
 bool tpool::Timer::TimerQueue::CompareTimerTask(
     TimerTask::Ptr a, TimerTask::Ptr b)
 {
-  return a->GetDeadline() < b->GetDeadline();
+  return a->GetDeadline() > b->GetDeadline();
 }
 
 
@@ -173,13 +173,6 @@ void tpool::Timer::ThreadFunction()
       }
 
       task = m_timer_queue.GetMin();
-      if (task->IsCancelled())
-      {
-        (void) m_timer_queue.PopMin();
-        continue;
-        // mutex unlock here
-      }
-
       const TimeValue now = GetCurrentTime();
       const TimeValue deadline = task->GetDeadline();
       if (task->IsCancelled())

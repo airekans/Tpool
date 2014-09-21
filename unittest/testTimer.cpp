@@ -95,3 +95,56 @@ TEST_F(TimerTestSuite, test_RunEvery)
   ASSERT_EQ(3, counter);
 }
 
+TEST_F(TimerTestSuite, test_RunEvery_and_not_run_now)
+{
+  {
+    Timer timer;
+    TimerTask::Ptr task(new TestTimerTask(counter));
+    timer.RunEvery(task, 500, false);
+    MilliSleep(100);
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(1100);
+    ASSERT_EQ(2, counter);
+  }
+  ASSERT_EQ(2, counter);
+}
+
+TEST_F(TimerTestSuite, test_RunEvery_and_cancel)
+{
+  {
+    Timer timer;
+    TimerTask::Ptr task(new TestTimerTask(counter));
+    timer.RunEvery(task, 500, true);
+    MilliSleep(100);
+    ASSERT_EQ(1, counter);
+
+    MilliSleep(500);
+    ASSERT_EQ(2, counter);
+    task->Cancel();
+
+    MilliSleep(500);
+    ASSERT_EQ(2, counter);
+  }
+  ASSERT_EQ(2, counter);
+}
+
+TEST_F(TimerTestSuite, test_Run_with_multiple_tasks)
+{
+  {
+    Timer timer;
+    timer.RunLater(TimerTask::Ptr(new TestTimerTask(counter)), 200);
+    timer.RunLater(TimerTask::Ptr(new TestTimerTask(counter)), 100);
+    timer.RunLater(TimerTask::Ptr(new TestTimerTask(counter)), 300);
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(200);
+    ASSERT_GT(counter, 0);
+
+    MilliSleep(500);
+    ASSERT_EQ(3, counter);
+  }
+  ASSERT_EQ(3, counter);
+}
+
+
