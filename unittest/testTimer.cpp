@@ -196,3 +196,20 @@ TEST_F(TimerTestSuite, test_RunEvery_with_functor)
   ASSERT_EQ(2, counter);
 }
 
+TEST_F(TimerTestSuite, test_Stop)
+{
+  {
+    Timer timer;
+    timer.RunLater(TimerTask::Ptr(new TestTimerTask(counter)), 500);
+    timer.RunLater(TimerTask::Ptr(new TestTimerTask(counter)), 100);
+    timer.RunLater(TimerTask::Ptr(new TestTimerTask(counter)), 1000);
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(200);
+    ASSERT_EQ(1, counter);
+
+    timer.Stop();
+  }
+  ASSERT_EQ(1, counter);
+}
+
