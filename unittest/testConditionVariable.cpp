@@ -1,11 +1,12 @@
 #include "ConditionVariable.h"
 #include "Thread.h"
+#include "TestUtil.h"
 #include <gtest/gtest.h>
 #include <unistd.h>
-#include <sys/select.h>
 
 using namespace tpool;
 using namespace tpool::sync;
+using namespace tpool::unittest;
 
 namespace {
   int GLOBAL_COUNTER = 0;
@@ -34,14 +35,6 @@ namespace {
       ++GLOBAL_COUNTER;
     }
   };
-
-  void MilliSleep(TimeValue sleep_period)
-  {
-    struct timeval timeout;
-    timeout.tv_sec = sleep_period / 1000;
-    timeout.tv_usec = (sleep_period % 1000) * 1000;
-    (void) select(0, NULL, NULL, NULL, &timeout);
-  }
 
   struct NotifyFunc {
     TimeValue sleep_time;

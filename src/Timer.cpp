@@ -151,6 +151,7 @@ tpool::Timer::Timer()
 
 tpool::Timer::~Timer()
 {
+  Stop();
 }
 
 void tpool::Timer::ThreadFunction()
@@ -181,7 +182,12 @@ void tpool::Timer::ThreadFunction()
 
       const TimeValue now = GetCurrentTime();
       const TimeValue deadline = task->GetDeadline();
-      if (deadline <= now)
+      if (task->IsCancelled())
+      {
+        is_fired = true;
+        (void) m_timer_queue.PopMin();
+      }
+      else if (deadline <= now)
       {
         is_fired = true;
         if (task->IsIntervalTask())
