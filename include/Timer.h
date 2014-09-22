@@ -67,11 +67,11 @@ namespace tpool {
     ~Timer();
 
     /// RunLater will run the task after delay_in_ms.
-    void RunLater(TimerTask::Ptr task, TimeValue delay_in_ms);
+    bool RunLater(TimerTask::Ptr task, TimeValue delay_in_ms);
 
     /// RunEvery will run the task every interval_in_ms.
     /// If is_run_now is true, the task will be run immediately
-    void RunEvery(TimerTask::Ptr task, TimeValue interval_in_ms,
+    bool RunEvery(TimerTask::Ptr task, TimeValue interval_in_ms,
             bool is_run_now);
 
     template<typename Func>
@@ -84,8 +84,8 @@ namespace tpool {
     void Stop();
 
   private:
-    void DoRunLater(TimerTask::Ptr task, TimeValue delay_in_ms);
-    void DoRunEvery(TimerTask::Ptr task, TimeValue interval_in_ms,
+    bool DoRunLater(TimerTask::Ptr task, TimeValue delay_in_ms);
+    bool DoRunEvery(TimerTask::Ptr task, TimeValue interval_in_ms,
             bool is_run_now);
     void ThreadFunction();
     void ProcessError(const std::exception& e);
@@ -142,7 +142,10 @@ namespace tpool {
   inline TimerTask::Ptr Timer::RunLater(Func func, TimeValue delay_in_ms)
   {
     TimerTask::Ptr task(MakeTimerFunctorTask(func));
-    DoRunLater(task, delay_in_ms);
+    if (!DoRunLater(task, delay_in_ms))
+    {
+      task.reset();
+    }
     return task;
   }
 
@@ -151,7 +154,10 @@ namespace tpool {
   Timer::RunEvery(Func func, TimeValue interval_in_ms, bool is_run_now)
   {
     TimerTask::Ptr task(MakeTimerFunctorTask(func));
-    DoRunEvery(task, interval_in_ms, is_run_now);
+    if (!DoRunEvery(task, interval_in_ms, is_run_now))
+    {
+      task.reset();
+    }
     return task;
   }
 
