@@ -181,7 +181,7 @@ TEST(FixedThreadPool, test_StopNow)
     sleep(1);
     threadPool.StopNow();
 
-    EXPECT_GT(static_cast<size_t>(counter), num);
+    EXPECT_GE(static_cast<size_t>(counter), num);
     EXPECT_FALSE(threadPool.AddTask(TaskBase::Ptr(new IncTask(counter))));
   }
 }

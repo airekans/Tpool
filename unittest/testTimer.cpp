@@ -84,12 +84,43 @@ TEST_F(TimerTestSuite, test_RunLater_and_async_cancel_task)
   ASSERT_EQ(0, counter);
 }
 
+TEST_F(TimerTestSuite, test_RunLater_with_same_task)
+{
+  {
+    Timer timer;
+    TimerTask::Ptr task(new TestTimerTask(counter));
+    ASSERT_TRUE(timer.RunLater(task, 200));
+    ASSERT_FALSE(timer.RunLater(task, 200));
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(300);
+    ASSERT_EQ(1, counter);
+  }
+  ASSERT_EQ(1, counter);
+}
+
 TEST_F(TimerTestSuite, test_RunEvery)
 {
   {
     Timer timer;
     TimerTask::Ptr task(new TestTimerTask(counter));
     timer.RunEvery(task, 500, true);
+    MilliSleep(100);
+    ASSERT_EQ(1, counter);
+
+    MilliSleep(1100);
+    ASSERT_EQ(3, counter);
+  }
+  ASSERT_EQ(3, counter);
+}
+
+TEST_F(TimerTestSuite, test_RunEvery_with_same_task)
+{
+  {
+    Timer timer;
+    TimerTask::Ptr task(new TestTimerTask(counter));
+    ASSERT_TRUE(timer.RunEvery(task, 500, true));
+    ASSERT_FALSE(timer.RunEvery(task, 500, true));
     MilliSleep(100);
     ASSERT_EQ(1, counter);
 
@@ -209,6 +240,28 @@ TEST_F(TimerTestSuite, test_Stop)
     ASSERT_EQ(1, counter);
 
     timer.Stop();
+  }
+  ASSERT_EQ(1, counter);
+}
+
+TEST_F(TimerTestSuite, test_RunLater_after_Stop)
+{
+  {
+    Timer timer;
+    TimerTask::Ptr task(new TestTimerTask(counter));
+    ASSERT_TRUE(timer.RunLater(task, 100));
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(300);
+    ASSERT_EQ(1, counter);
+
+    timer.Stop();
+    TimerTask::Ptr task1(new TestTimerTask(counter));
+    ASSERT_FALSE(timer.RunLater(task1, 100));
+    ASSERT_EQ(1, counter);
+
+    MilliSleep(300);
+    ASSERT_EQ(1, counter);
   }
   ASSERT_EQ(1, counter);
 }

@@ -207,31 +207,56 @@ void tpool::Timer::ThreadFunction()
   }
 }
 
-void tpool::Timer::RunLater(TimerTask::Ptr task, TimeValue delay_in_ms)
+bool tpool::Timer::RunLater(TimerTask::Ptr task, TimeValue delay_in_ms)
 {
-  DoRunLater(task, delay_in_ms);
+  return DoRunLater(task, delay_in_ms);
 }
 
-void tpool::Timer::RunEvery(TimerTask::Ptr task, TimeValue interval_in_ms,
+bool tpool::Timer::RunEvery(TimerTask::Ptr task, TimeValue interval_in_ms,
     bool is_run_now)
 {
-  DoRunEvery(task, interval_in_ms, is_run_now);
+  return DoRunEvery(task, interval_in_ms, is_run_now);
 }
 
-void tpool::Timer::DoRunLater(TimerTask::Ptr task, TimeValue delay_in_ms)
+bool tpool::Timer::DoRunLater(TimerTask::Ptr task, TimeValue delay_in_ms)
 {
   const TimeValue now = GetCurrentTime();
   const TimeValue task_deadline = now + delay_in_ms;
-  task->SetDeadline(task_deadline);
 
   sync::MutexLocker lock(m_queue_guard);
+  if (m_is_stop)
+  {
+    return false;
+  }
+
+  // A task having been put in the timer cannot be put again
+  if (task->GetDeadline() != 0)
+  {
+    return false;
+  }
+
+  task->SetDeadline(task_deadline);
   m_timer_queue.PushTask(task);
+  return true;
 }
 
-void tpool::Timer::DoRunEvery(TimerTask::Ptr task, TimeValue interval_in_ms,
+bool tpool::Timer::DoRunEvery(TimerTask::Ptr task, TimeValue interval_in_ms,
     bool is_run_now)
 {
   const TimeValue now = GetCurrentTime();
+
+  sync::MutexLocker lock(m_queue_guard);
+  if (m_is_stop)
+  {
+    return false;
+  }
+
+  // A task having been put in the timer cannot be put again
+  if (task->GetDeadline() != 0)
+  {
+    return false;
+  }
+
   if (is_run_now)
   {
     task->SetDeadline(now);
@@ -241,9 +266,8 @@ void tpool::Timer::DoRunEvery(TimerTask::Ptr task, TimeValue interval_in_ms,
     task->SetDeadline(now + interval_in_ms);
   }
   task->SetInterval(interval_in_ms);
-
-  sync::MutexLocker lock(m_queue_guard);
   m_timer_queue.PushTask(task);
+  return true;
 }
 
 void tpool::Timer::Stop()
