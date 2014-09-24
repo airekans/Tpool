@@ -1,4 +1,6 @@
 #include "FixedThreadPool.h"
+#include "TestUtil.h"
+
 #include <gtest/gtest.h>
 #include <boost/bind.hpp>
 #include <unistd.h>
@@ -7,6 +9,7 @@ using namespace tpool;
 using namespace tpool::sync;
 using namespace boost;
 using namespace std;
+using namespace tpool::unittest;
 
 
 TEST(FixedThreadPool, test_Construction)
@@ -193,3 +196,44 @@ TEST(FixedThreadPool, test_StopNow_when_TaskQueue_empty)
     threadPool.StopNow();
   }
 }
+
+TEST(FixedThreadPool, test_AddTimerTask)
+{
+  int counter = 0;
+  {
+    LFixedThreadPool threadPool;
+    threadPool.AddTimerTask(TaskBase::Ptr(new IncTask(counter)), 300);
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(100);
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(300);
+    ASSERT_EQ(1, counter);
+  }
+  ASSERT_EQ(1, counter);
+}
+
+TEST(FixedThreadPool, test_AddIntervalTask)
+{
+  int counter = 0;
+  {
+    LFixedThreadPool threadPool;
+    threadPool.AddIntervalTask(TaskBase::Ptr(new IncTask(counter)),
+        200, false);
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(100);
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(200);
+    ASSERT_EQ(1, counter);
+
+    MilliSleep(200);
+    ASSERT_EQ(2, counter);
+  }
+  MilliSleep(200);
+  ASSERT_EQ(2, counter);
+}
+
+

@@ -161,6 +161,7 @@ namespace tpool {
 				bind(not1(mem_fun(&FixedThreadPool::
 						  DoIsFinished)),
 				     this));
+    m_timer.Stop(); // wait timer thread to stop
   }
 
   template<class TaskQueue>
@@ -168,6 +169,9 @@ namespace tpool {
   {
     if (m_isRequestStop.CompareAndSet(false, true))
       {
+        // Stop the timer first
+        m_timer.StopAsync();
+
 	const size_t threadNum = m_threads.size();
 	for (size_t i = 0; i < threadNum; ++i)
 	  {
@@ -190,6 +194,8 @@ namespace tpool {
       {
 	t->CancelNow();
       }
+
+    m_timer.Stop(); // wait timer thread to stop
   }
 
   template<class TaskQueue>
