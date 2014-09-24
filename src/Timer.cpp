@@ -270,11 +270,19 @@ bool tpool::Timer::DoRunEvery(TimerTask::Ptr task, TimeValue interval_in_ms,
   return true;
 }
 
-void tpool::Timer::Stop()
+void tpool::Timer::StopAsync()
 {
   sync::MutexLocker lock(m_queue_guard);
   m_is_stop = true;
   m_timer_queue.Clear();
+}
+
+void tpool::Timer::Stop()
+{
+  StopAsync();
+
+  sync::MutexLocker lock(m_thread_guard);
+  m_thread.reset();
 }
 
 void tpool::Timer::ProcessError(const std::exception& e)

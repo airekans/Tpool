@@ -81,6 +81,7 @@ namespace tpool {
     TimerTask::Ptr RunEvery(Func func, TimeValue interval_in_ms,
             bool is_run_now);
 
+    void StopAsync();
     void Stop();
 
   private:
@@ -121,6 +122,7 @@ namespace tpool {
     mutable sync::Mutex m_queue_guard;
     bool m_is_stop;
     TimerQueue m_timer_queue;
+    mutable sync::Mutex m_thread_guard;
     ::std::auto_ptr<Thread> m_thread;
   };
 

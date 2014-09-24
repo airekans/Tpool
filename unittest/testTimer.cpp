@@ -227,6 +227,45 @@ TEST_F(TimerTestSuite, test_RunEvery_with_functor)
   ASSERT_EQ(2, counter);
 }
 
+TEST_F(TimerTestSuite, test_StopAsync)
+{
+  {
+    Timer timer;
+    timer.RunLater(TimerTask::Ptr(new TestTimerTask(counter)), 500);
+    timer.RunLater(TimerTask::Ptr(new TestTimerTask(counter)), 100);
+    timer.RunLater(TimerTask::Ptr(new TestTimerTask(counter)), 1000);
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(200);
+    ASSERT_EQ(1, counter);
+
+    timer.StopAsync();
+  }
+  ASSERT_EQ(1, counter);
+}
+
+TEST_F(TimerTestSuite, test_RunLater_after_StopAsync)
+{
+  {
+    Timer timer;
+    TimerTask::Ptr task(new TestTimerTask(counter));
+    ASSERT_TRUE(timer.RunLater(task, 100));
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(300);
+    ASSERT_EQ(1, counter);
+
+    timer.StopAsync();
+    TimerTask::Ptr task1(new TestTimerTask(counter));
+    ASSERT_FALSE(timer.RunLater(task1, 100));
+    ASSERT_EQ(1, counter);
+
+    MilliSleep(300);
+    ASSERT_EQ(1, counter);
+  }
+  ASSERT_EQ(1, counter);
+}
+
 TEST_F(TimerTestSuite, test_Stop)
 {
   {
@@ -240,6 +279,9 @@ TEST_F(TimerTestSuite, test_Stop)
     ASSERT_EQ(1, counter);
 
     timer.Stop();
+
+    MilliSleep(500);
+    ASSERT_EQ(1, counter);
   }
   ASSERT_EQ(1, counter);
 }
@@ -265,4 +307,3 @@ TEST_F(TimerTestSuite, test_RunLater_after_Stop)
   }
   ASSERT_EQ(1, counter);
 }
-
