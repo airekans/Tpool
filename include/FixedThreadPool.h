@@ -202,9 +202,13 @@ namespace tpool {
   TaskBase::Ptr FixedThreadPool<TaskQueue>::DoAddTask(TaskBase::Ptr task)
   {
     if (m_isRequestStop)
-      {
-	return TaskBase::Ptr();
-      }
+    {
+      return TaskBase::Ptr();
+    }
+    else if (!task)
+    {
+      return task;
+    }
     
     m_taskQueue->Push(task);
     return task;
@@ -267,6 +271,13 @@ namespace tpool {
 
     virtual void DoRun()
     {
+      if (m_task->IsRequestCancel())
+      {
+        CancelAsync();
+        CheckCancellation();
+        return;
+      }
+
       // If the task cannot be added, it means the
       // thread pool has been stopped.
       (void) m_thread_pool.AddTask(m_task);
@@ -318,6 +329,15 @@ namespace tpool {
   FixedThreadPool<TaskQueue>::DoAddTimerTask(TaskBase::Ptr task,
       TimeValue delay_in_ms)
   {
+    if (m_isRequestStop)
+    {
+      return TaskBase::Ptr();
+    }
+    else if (!task)
+    {
+      return task;
+    }
+
     TimerTask::Ptr timer_task(new ThreadPoolTimerTask(*this, task));
     if (m_timer.RunLater(timer_task, delay_in_ms))
     {
@@ -334,6 +354,15 @@ namespace tpool {
   FixedThreadPool<TaskQueue>::DoAddIntervalTask(TaskBase::Ptr task,
       TimeValue period_in_ms, bool is_run_now)
   {
+    if (m_isRequestStop)
+    {
+      return TaskBase::Ptr();
+    }
+    else if (!task)
+    {
+      return task;
+    }
+
     TimerTask::Ptr timer_task(new ThreadPoolTimerTask(*this, task));
     if (m_timer.RunEvery(timer_task, period_in_ms, is_run_now))
     {

@@ -29,6 +29,7 @@ namespace tpool {
     bool IsRunning() const;
     bool IsFinished() const;
     bool IsCancelled() const;
+    bool IsRequestCancel() const;
     bool IsStopped() const;
 
   protected:

@@ -121,6 +121,11 @@ void TaskBase::SetState(const State state)
   m_state = state;
 }
 
+bool TaskBase::IsRequestCancel() const
+{
+  return m_isRequestCancel;
+}
+
 bool TaskBase::IsStopState() const
 {
   return m_state == FINISHED || m_state == CANCELLED;
