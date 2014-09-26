@@ -214,7 +214,7 @@ TEST(FixedThreadPool, test_AddTimerTask)
   ASSERT_EQ(1, counter);
 }
 
-TEST(FixedThreadPool, test_AddTimerTask_and_cancel)
+TEST(FixedThreadPool, test_AddTimerTask_and_CancelAsync)
 {
   int counter = 0;
   {
@@ -242,6 +242,35 @@ TEST(FixedThreadPool, test_AddTimerTask_and_cancel)
   ASSERT_EQ(0, counter);
 }
 
+TEST(FixedThreadPool, test_AddTimerTask_and_Cancel)
+{
+  int counter = 0;
+  {
+    LFixedThreadPool threadPool;
+    TaskBase::Ptr task(new IncTask(counter));
+    threadPool.AddTimerTask(task, 200);
+    ASSERT_EQ(0, counter);
+    task->Cancel();
+
+    MilliSleep(300);
+    ASSERT_EQ(0, counter);
+  }
+  ASSERT_EQ(0, counter);
+
+  {
+    LFixedThreadPool threadPool;
+    TaskBase::Ptr task(new IncTask(counter));
+    task = threadPool.AddTimerTask(task, 200);
+    ASSERT_EQ(0, counter);
+    task->Cancel();
+
+    MilliSleep(300);
+    ASSERT_EQ(0, counter);
+  }
+  ASSERT_EQ(0, counter);
+}
+
+
 TEST(FixedThreadPool, test_AddIntervalTask)
 {
   int counter = 0;
@@ -264,7 +293,7 @@ TEST(FixedThreadPool, test_AddIntervalTask)
   ASSERT_EQ(2, counter);
 }
 
-TEST(FixedThreadPool, test_AddIntervalTask_and_cancel)
+TEST(FixedThreadPool, test_AddIntervalTask_and_CancelAsync)
 {
   int counter = 0;
   {
@@ -298,4 +327,37 @@ TEST(FixedThreadPool, test_AddIntervalTask_and_cancel)
   ASSERT_EQ(0, counter);
 }
 
+TEST(FixedThreadPool, test_AddIntervalTask_and_Cancel)
+{
+  int counter = 0;
+  {
+    LFixedThreadPool threadPool;
+    TaskBase::Ptr task(new IncTask(counter));
+    threadPool.AddIntervalTask(task, 200, false);
+    ASSERT_EQ(0, counter);
+    task->Cancel();
+
+    MilliSleep(300);
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(200);
+    ASSERT_EQ(0, counter);
+  }
+  ASSERT_EQ(0, counter);
+
+  {
+    LFixedThreadPool threadPool;
+    TaskBase::Ptr task(new IncTask(counter));
+    task = threadPool.AddIntervalTask(task, 200, false);
+    ASSERT_EQ(0, counter);
+    task->Cancel();
+
+    MilliSleep(300);
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(200);
+    ASSERT_EQ(0, counter);
+  }
+  ASSERT_EQ(0, counter);
+}
 

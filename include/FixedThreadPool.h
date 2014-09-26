@@ -273,6 +273,7 @@ namespace tpool {
     {
       if (m_task->IsRequestCancel())
       {
+        m_task->Run(); // to make the task to cancelled state.
         CancelAsync();
         CheckCancellation();
         return;
