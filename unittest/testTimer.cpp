@@ -1,5 +1,6 @@
 #include "Timer.h"
 #include "Atomic.h"
+#include "Thread.h"
 #include "TestUtil.h"
 
 #include <gtest/gtest.h>
@@ -211,6 +212,40 @@ TEST_F(TimerTestSuite, test_RunLater_with_functor)
   ASSERT_EQ(1, counter);
 }
 
+namespace {
+  struct RunLaterThread {
+    Timer& m_timer;
+    Atomic<unsigned>& m_counter;
+    TimeValue m_delay;
+
+    RunLaterThread(Timer& timer, Atomic<unsigned>& counter,
+        TimeValue delay)
+    : m_timer(timer), m_counter(counter), m_delay(delay)
+    {}
+
+    void operator()()
+    {
+      m_timer.RunLater(TestTimerFunc(m_counter), m_delay);
+    }
+  };
+}
+
+TEST_F(TimerTestSuite, test_RunLater_with_multiple_threads)
+{
+  {
+    Timer timer;
+
+    // create 2 threads to do RunLater
+    Thread thread1(RunLaterThread(timer, counter, 100));
+    Thread thread2(RunLaterThread(timer, counter, 100));
+    timer.RunLater(TestTimerFunc(counter), 100);
+
+    MilliSleep(300);
+    ASSERT_EQ(3, counter);
+  }
+  ASSERT_EQ(3, counter);
+}
+
 TEST_F(TimerTestSuite, test_RunEvery_with_functor)
 {
   {
@@ -225,6 +260,46 @@ TEST_F(TimerTestSuite, test_RunEvery_with_functor)
     ASSERT_EQ(2, counter);
   }
   ASSERT_EQ(2, counter);
+}
+
+namespace {
+  struct RunEveryThread {
+    Timer& m_timer;
+    Atomic<unsigned>& m_counter;
+    TimeValue m_delay;
+    bool m_is_run_now;
+
+    RunEveryThread(Timer& timer, Atomic<unsigned>& counter,
+        TimeValue delay, bool is_run_now)
+    : m_timer(timer), m_counter(counter), m_delay(delay),
+      m_is_run_now(is_run_now)
+    {}
+
+    void operator()()
+    {
+      m_timer.RunEvery(TestTimerFunc(m_counter), m_delay,
+          m_is_run_now);
+    }
+  };
+}
+
+TEST_F(TimerTestSuite, test_RunEvery_with_multiple_threads)
+{
+  {
+    Timer timer;
+
+    // create 2 threads to do RunEvery
+    Thread thread1(RunEveryThread(timer, counter, 200, true));
+    Thread thread2(RunEveryThread(timer, counter, 200, true));
+    timer.RunEvery(TestTimerFunc(counter), 200, true);
+
+    MilliSleep(100);
+    ASSERT_EQ(3, counter);
+
+    MilliSleep(200);
+    ASSERT_EQ(6, counter);
+  }
+  ASSERT_EQ(6, counter);
 }
 
 TEST_F(TimerTestSuite, test_StopAsync)
@@ -278,6 +353,43 @@ TEST_F(TimerTestSuite, test_Stop)
     MilliSleep(200);
     ASSERT_EQ(1, counter);
 
+    timer.Stop();
+
+    MilliSleep(500);
+    ASSERT_EQ(1, counter);
+  }
+  ASSERT_EQ(1, counter);
+}
+
+namespace {
+  struct TimerStopThread {
+    Timer& m_timer;
+
+    TimerStopThread(Timer& timer)
+    : m_timer(timer)
+    {}
+
+    void operator()()
+    {
+      m_timer.Stop();
+    }
+  };
+}
+
+TEST_F(TimerTestSuite, test_Stop_with_multiple_threads)
+{
+  {
+    Timer timer;
+    timer.RunLater(TimerTask::Ptr(new TestTimerTask(counter)), 500);
+    timer.RunLater(TimerTask::Ptr(new TestTimerTask(counter)), 100);
+    timer.RunLater(TimerTask::Ptr(new TestTimerTask(counter)), 1000);
+    ASSERT_EQ(0, counter);
+
+    MilliSleep(200);
+    ASSERT_EQ(1, counter);
+
+    Thread thread1(TimerStopThread(timer));
+    Thread thread2(TimerStopThread(timer));
     timer.Stop();
 
     MilliSleep(500);
