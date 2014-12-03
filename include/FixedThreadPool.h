@@ -17,6 +17,7 @@
 #include <boost/bind.hpp>
 #include <boost/bind/protect.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <functional>
 
 namespace tpool {
@@ -84,7 +85,8 @@ namespace tpool {
     mutable sync::MutexConditionVariable m_stateGuard;
     Atomic<bool> m_isRequestStop;
     WorkerThreads m_threads;
-    Timer m_timer;
+    sync::Mutex m_timerGuard;
+    ::boost::scoped_ptr<Timer> m_timer;
   };
 
   typedef FixedThreadPool<> LFixedThreadPool;
@@ -161,7 +163,17 @@ namespace tpool {
 				bind(not1(mem_fun(&FixedThreadPool::
 						  DoIsFinished)),
 				     this));
-    m_timer.Stop(); // wait timer thread to stop
+
+    bool isTimerStarted = false;
+    {
+      sync::MutexLocker lock(m_timerGuard);
+      isTimerStarted = static_cast<bool>(m_timer);
+    }
+
+    if (isTimerStarted)
+    {
+      m_timer->Stop(); // wait timer thread to stop
+    }
   }
 
   template<class TaskQueue>
@@ -170,8 +182,23 @@ namespace tpool {
     if (m_isRequestStop.CompareAndSet(false, true))
       {
         // Stop the timer first
-        m_timer.StopAsync();
+        bool isTimerStarted = false;
+        {
+          sync::MutexLocker lock(m_timerGuard);
+          isTimerStarted = static_cast<bool>(m_timer);
+        }
 
+        if (isTimerStarted)
+        {
+          m_timer->StopAsync();
+        }
+
+        // NOTE: there may be some tasks pushed after these EndTasks,
+        //     because m_isRequestStop is locked alone, and if a thread
+        //     calling AddTask before this StopAsync and stop running,
+        //     then StopAsync is run, push EndTasks and the thread is
+        //     running again, then the tasks will be pushed after the
+        //     EndTasks.
 	const size_t threadNum = m_threads.size();
 	for (size_t i = 0; i < threadNum; ++i)
 	  {
@@ -195,7 +222,16 @@ namespace tpool {
 	t->CancelNow();
       }
 
-    m_timer.Stop(); // wait timer thread to stop
+    bool isTimerStarted = false;
+    {
+      sync::MutexLocker lock(m_timerGuard);
+      isTimerStarted = static_cast<bool>(m_timer);
+    }
+
+    if (isTimerStarted)
+    {
+      m_timer->Stop(); // wait timer thread to stop
+    }
   }
 
   template<class TaskQueue>
@@ -278,6 +314,7 @@ namespace tpool {
         CheckCancellation();
         return;
       }
+      // TODO: check isRequestedStop here.
 
       // If the task cannot be added, it means the
       // thread pool has been stopped.
@@ -340,7 +377,15 @@ namespace tpool {
     }
 
     TimerTask::Ptr timer_task(new ThreadPoolTimerTask(*this, task));
-    if (m_timer.RunLater(timer_task, delay_in_ms))
+
+    {
+      sync::MutexLocker lock(m_timerGuard);
+      if (!m_timer)
+      {
+        m_timer.reset(new Timer);
+      }
+    }
+    if (m_timer->RunLater(timer_task, delay_in_ms))
     {
       return task;
     }
@@ -365,7 +410,14 @@ namespace tpool {
     }
 
     TimerTask::Ptr timer_task(new ThreadPoolTimerTask(*this, task));
-    if (m_timer.RunEvery(timer_task, period_in_ms, is_run_now))
+    {
+      sync::MutexLocker lock(m_timerGuard);
+      if (!m_timer)
+      {
+        m_timer.reset(new Timer);
+      }
+    }
+    if (m_timer->RunEvery(timer_task, period_in_ms, is_run_now))
     {
       return task;
     }
