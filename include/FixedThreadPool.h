@@ -228,6 +228,11 @@ namespace tpool {
       isTimerStarted = static_cast<bool>(m_timer);
     }
 
+    // NOTE: there may be a case that when a thread calling
+    //    AddTimerTask and stop running, then this thread calling
+    //    StopNow, then the timer thread runs again.
+    //    In this case, the thread will be created and put a timer task
+    //    but the task will not be put in the thread pool task queue.
     if (isTimerStarted)
     {
       m_timer->Stop(); // wait timer thread to stop
@@ -318,7 +323,11 @@ namespace tpool {
 
       // If the task cannot be added, it means the
       // thread pool has been stopped.
-      (void) m_thread_pool.AddTask(m_task);
+      if (!m_thread_pool.AddTask(m_task))
+      {
+        CancelAsync();
+        CheckCancellation();
+      }
     }
 
     ThreadPool& m_thread_pool;
