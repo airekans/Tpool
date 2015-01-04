@@ -388,8 +388,8 @@ TEST_F(TimerTestSuite, test_Stop_with_multiple_threads)
     MilliSleep(200);
     ASSERT_EQ(1, counter);
 
-    Thread thread1(TimerStopThread(timer));
-    Thread thread2(TimerStopThread(timer));
+    Thread thread1((TimerStopThread(timer)));
+    Thread thread2((TimerStopThread(timer)));
     timer.Stop();
 
     MilliSleep(500);

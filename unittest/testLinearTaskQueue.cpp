@@ -141,7 +141,7 @@ TEST(LinearTaskQueueTestSuite, test_NormalUsage)
   LinearTaskQueue taskQueue;
   ThreadSafeInt counter;
   {
-    typedef shared_ptr<Thread> ThreadPtr;
+    typedef boost::shared_ptr<Thread> ThreadPtr;
     vector<ThreadPtr> workers;
 
     for (int i = 0; i < 10; ++i)

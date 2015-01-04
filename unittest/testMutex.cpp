@@ -12,11 +12,11 @@ using namespace tpool::sync;
 
 namespace {
   int GLOBAL_COUNTER = 0;
-  Mutex mutex;
+  Mutex g_mutex;
   
   struct ThreadFunctor {
-    ThreadFunctor(Mutex& mutex)
-      : m(mutex)
+    ThreadFunctor(Mutex& mut)
+      : m(mut)
     {
       
     }
@@ -39,12 +39,12 @@ namespace {
 TEST(MutexTestSuite, test_MutexLocker)
 {
   {
-    Thread t1((ThreadFunctor(mutex)));
-    Thread t2((ThreadFunctor(mutex)));
+    Thread t1((ThreadFunctor(g_mutex)));
+    Thread t2((ThreadFunctor(g_mutex)));
 
     for (int i = 0; i < 20; ++i)
       {
-	MutexLocker l(mutex);
+	MutexLocker l(g_mutex);
 	  ++GLOBAL_COUNTER;
       }
   }
