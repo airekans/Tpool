@@ -17,11 +17,10 @@ namespace tpool {
 
   // This class can not be derived.
     class CancelableThread : private ::boost::noncopyable {
-    private:
+    public:
         typedef ::boost::function<void()> Function;
         typedef ::boost::function<void(Function)> WorkFunction;
 
-    public:
         CancelableThread(WorkFunction workFunction);
         CancelableThread(WorkFunction workFunction, Function finishAction);
         ~CancelableThread();
