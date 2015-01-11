@@ -27,6 +27,7 @@ namespace tpool {
 
         void Cancel();
         void CancelAsync();
+        bool IsRequestCancel() const;
 
     protected:
         enum State {

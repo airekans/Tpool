@@ -63,6 +63,11 @@ void tpool::CancelableThread::CancelAsync()
     m_isRequestCancel = true;
 }
 
+bool tpool::CancelableThread::IsRequestCancel() const
+{
+    return m_isRequestCancel;
+}
+
 void tpool::CancelableThread::Init()
 {
     using boost::bind;

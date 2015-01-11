@@ -2,7 +2,7 @@
 #ifndef _TPOOL_TIMER_H_
 #define _TPOOL_TIMER_H_
 
-#include "Thread.h"
+#include "CancelableThread.h"
 #include "ConditionVariable.h"
 #include "TaskBase.h"
 
@@ -16,22 +16,22 @@
 
 namespace tpool {
 
-  TimeValue GetCurrentTime();
+TimeValue GetCurrentTime();
 
-  class Timer;
+class Timer;
 
-  /// Subclass should override the DoRun function
-  class TimerTask : public TaskBase {
+/// Subclass should override the DoRun function
+class TimerTask : public TaskBase {
     friend class Timer;
 
-  public:
+public:
     typedef boost::shared_ptr<TimerTask> Ptr;
 
     TimerTask();
 
     TimeValue GetDeadline() const;
 
-  private:
+private:
     void SetDeadline(const TimeValue deadline);
     bool IsIntervalTask() const;
     TimeValue GetInterval() const;
@@ -39,30 +39,30 @@ namespace tpool {
 
     TimeValue m_deadline;
     TimeValue m_interval;
-  };
+};
 
-  template<typename Func>
-  class TimerFunctorTask : public TimerTask {
-  public:
+template<typename Func>
+class TimerFunctorTask : public TimerTask {
+public:
     TimerFunctorTask(Func f);
 
     virtual void DoRun();
 
-  private:
+private:
     Func m_functor;
-  };
+};
 
-  /// helper function
-  template<typename Func>
-  TimerTask::Ptr MakeTimerFunctorTask(Func f)
-  {
+/// helper function
+template<typename Func>
+TimerTask::Ptr MakeTimerFunctorTask(Func f)
+{
     return TimerTask::Ptr(new TimerFunctorTask<Func>(f));
-  }
+}
 
-  // This timer implementation uses a thread to 
-  // sleep until timeout
-  class Timer : public boost::noncopyable {
-  public:
+// This timer implementation uses a thread to
+// sleep until timeout
+class Timer : public boost::noncopyable {
+public:
     Timer();
     ~Timer();
 
@@ -84,84 +84,84 @@ namespace tpool {
     void StopAsync();
     void Stop();
 
-  private:
+private:
     bool DoRunLater(TimerTask::Ptr task, TimeValue delay_in_ms);
     bool DoRunEvery(TimerTask::Ptr task, TimeValue interval_in_ms,
             bool is_run_now);
-    void ThreadFunction();
+
+    typedef CancelableThread::Function Function;
+    void ThreadFunction(const Function& checkFunc);
     void ProcessError(const std::exception& e);
 
     class TimerQueue {
     public:
-      TimerQueue(sync::Mutex& m);
-      TimerTask::Ptr GetMin() const;
-      TimerTask::Ptr PopMin();
-      void PopMinAndPush();
-      void PushTask(TimerTask::Ptr task);
-      bool IsEmpty() const;
-      unsigned GetSize() const;
-      void Clear();
+        TimerQueue(sync::Mutex& m);
+        TimerTask::Ptr GetMin() const;
+        TimerTask::Ptr PopMin();
+        void PopMinAndPush();
+        void PushTask(TimerTask::Ptr task);
+        bool IsEmpty() const;
+        unsigned GetSize() const;
+        void Clear();
 
-      void Wait();
+        void Wait();
 
-      /// return true when the condition is signaled,
-      /// otherwise return false
-      bool TimedWait(TimeValue delay);
+        /// return true when the condition is signaled,
+        /// otherwise return false
+        bool TimedWait(TimeValue delay);
 
     private:
-      static bool CompareTimerTask(TimerTask::Ptr a, TimerTask::Ptr b);
+        static bool CompareTimerTask(TimerTask::Ptr a, TimerTask::Ptr b);
 
-      typedef bool (*CompareFunc)(TimerTask::Ptr, TimerTask::Ptr);
-      typedef ::std::priority_queue<TimerTask::Ptr,
-          std::vector<TimerTask::Ptr>, CompareFunc> Queue;
+        typedef bool (*CompareFunc)(TimerTask::Ptr, TimerTask::Ptr);
+        typedef ::std::priority_queue<TimerTask::Ptr,
+                std::vector<TimerTask::Ptr>, CompareFunc> Queue;
 
-      mutable sync::ConditionVariable m_cond;
-      Queue m_queue;
+        mutable sync::ConditionVariable m_cond;
+        Queue m_queue;
     };
 
     mutable sync::Mutex m_queue_guard;
-    bool m_is_stop;
     TimerQueue m_timer_queue;
-    mutable sync::Mutex m_thread_guard;
-    ::std::auto_ptr<Thread> m_thread;
-  };
+    ::std::auto_ptr<CancelableThread> m_thread;
+};
 
 
-  /// Implementation
-  template<typename Func>
-  inline TimerFunctorTask<Func>::TimerFunctorTask(Func f)
-  : m_functor(f)
+/// Implementation
+template<typename Func>
+inline TimerFunctorTask<Func>::TimerFunctorTask(Func f)
+: m_functor(f)
   {}
 
-  template<typename Func>
-  inline void TimerFunctorTask<Func>::DoRun()
-  {
+template<typename Func>
+inline void TimerFunctorTask<Func>::DoRun()
+{
     m_functor();
-  }
+}
 
 
-  template<typename Func>
-  inline TimerTask::Ptr Timer::RunLater(Func func, TimeValue delay_in_ms)
-  {
+template<typename Func>
+inline TimerTask::Ptr Timer::RunLater(Func func, TimeValue delay_in_ms)
+{
     TimerTask::Ptr task(MakeTimerFunctorTask(func));
     if (!DoRunLater(task, delay_in_ms))
     {
-      task.reset();
+        task.reset();
     }
     return task;
-  }
+}
 
-  template<typename Func>
-  inline TimerTask::Ptr
-  Timer::RunEvery(Func func, TimeValue interval_in_ms, bool is_run_now)
-  {
+template<typename Func>
+inline TimerTask::Ptr
+Timer::RunEvery(Func func, TimeValue interval_in_ms, bool is_run_now)
+{
     TimerTask::Ptr task(MakeTimerFunctorTask(func));
     if (!DoRunEvery(task, interval_in_ms, is_run_now))
     {
-      task.reset();
+        task.reset();
     }
     return task;
-  }
+}
 
 }  // namespace tpool
 

@@ -15,30 +15,11 @@ using namespace tpool::sync;
 using namespace boost;
 
 namespace {
-  // This exception makes thread exit.
-  class WorkerThreadExitException : public std::exception {
-  public:
-    explicit WorkerThreadExitException(const string& s)
-      : m_exitMessage(s)
-    {}
-
-    virtual ~WorkerThreadExitException() throw()
-    {}
-
-    virtual const char* what() const throw()
-    {
-      return m_exitMessage.c_str();
-    }
-
-  private:
-    string m_exitMessage;
-  };
-
-  struct NoOp {
+struct NoOp {
     void operator()()
     {}
-  };
-}
+};
+}  // namespace
 
 
 WorkerThread::WorkerThread(TaskQueueBase::Ptr taskQueue)
@@ -47,13 +28,13 @@ WorkerThread::WorkerThread(TaskQueueBase::Ptr taskQueue)
 }
 
 WorkerThread::WorkerThread(TaskQueueBase::Ptr taskQueue,
-                           const Function& action)
+        const Function& action)
 {
     Init(taskQueue, action);
 }
 
 inline void WorkerThread::Init(TaskQueueBase::Ptr taskQueue,
-                               const Function& action)
+        const Function& action)
 {
     using boost::bind;
 
@@ -66,7 +47,7 @@ inline void WorkerThread::Init(TaskQueueBase::Ptr taskQueue,
         {
             // check for the creation exception
             m_thread.reset(new CancelableThread(
-                bind(&WorkerThread::WorkFunction, this, _1), action));
+                    bind(&WorkerThread::WorkFunction, this, _1), action));
             break;
         }
         catch (const std::exception& e)
@@ -78,8 +59,7 @@ inline void WorkerThread::Init(TaskQueueBase::Ptr taskQueue,
 
 // dtor has to be defined for pimpl idiom
 WorkerThread::~WorkerThread()
-{
-}
+{}
 
 void WorkerThread::Cancel()
 {
@@ -105,9 +85,9 @@ void WorkerThread::CancelNow()
 
 void WorkerThread::ProcessError(const std::exception& e)
 {
-  cerr << "WorkerThread ctor" << endl;
-  cerr << e.what() << endl;
-  cerr << "Try again." << endl;
+    cerr << "WorkerThread ctor" << endl;
+    cerr << e.what() << endl;
+    cerr << "Try again." << endl;
 }
 
 void WorkerThread::WorkFunction(const Function& checkFunc)
