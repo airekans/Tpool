@@ -69,6 +69,7 @@ void TaskBase::Cancel()
 void TaskBase::CancelAsync()
 {
   m_isRequestCancel = true;
+  OnCallCancel();
 }
 
 TaskBase::State TaskBase::GetState() const
@@ -110,7 +111,12 @@ void TaskBase::CheckCancellation() const
     }
 }
 
-void TaskBase::OnCancel()
+inline void TaskBase::OnCancel()
+{
+  // The default cancal action is doing nothing.
+}
+
+inline void TaskBase::OnCallCancel()
 {
   // The default cancal action is doing nothing.
 }

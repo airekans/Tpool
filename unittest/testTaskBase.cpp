@@ -187,3 +187,41 @@ TEST(TaskBase, test_OnCancel_when_running)
   EXPECT_EQ(TaskBase::CANCELLED, task.GetState());
 }
 
+namespace {
+
+  struct TaskWithOnCallCancel : public TaskBase {
+    bool& m_onCancelFlag;
+
+    TaskWithOnCallCancel(bool& onCancelFlag)
+    : m_onCancelFlag(onCancelFlag)
+    {}
+
+    virtual void OnCallCancel()
+    {
+      m_onCancelFlag = true;
+    }
+
+    virtual void DoRun()
+    {
+      sleep(2);
+      CheckCancellation();
+    }
+  };
+
+}  // namespace
+
+TEST(TaskBase, test_OnCallCancel_when_running)
+{
+  bool onCancelFlag = false;
+
+  TaskWithOnCallCancel task(onCancelFlag);
+  {
+    Thread t((ThreadFunc(task)));
+    sleep(1);
+    task.Cancel();
+  }
+
+  EXPECT_TRUE(onCancelFlag);
+  EXPECT_EQ(TaskBase::CANCELLED, task.GetState());
+}
+
