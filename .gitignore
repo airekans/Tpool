@@ -5,3 +5,6 @@
 *#
 .deps
 *.pb.*
+.cproject
+.project
+Debug/*
