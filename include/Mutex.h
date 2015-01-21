@@ -25,6 +25,7 @@ namespace tpool {
       // These two functions can only called by MutexLocker
       void Lock();
       void Unlock();
+      bool TryLock();
       void Init();
 
       pthread_mutex_t m_mutex;
