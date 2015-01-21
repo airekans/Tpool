@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <cassert>
+#include <errno.h>
 
 using namespace tpool::sync;
 using namespace std;
