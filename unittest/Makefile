@@ -3,6 +3,7 @@ PROJECT_ROOT := ..
 DEPEND_LIB := $(wildcard $(PROJECT_ROOT)/libtpool.*)
 
 CXXFLAGS += -I ../include
+CXXFLAGS += -Wall -Werror
 
 LDFLAGS += -pthread
 LDFLAGS += -L /usr/local/lib/gtest -lgtest_main -lgtest

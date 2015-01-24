@@ -84,7 +84,7 @@ public:
     }
 
     // Use this version of Front if copying object is expensive
-    void Front(ElemType& elem)
+    void Front(ElemType& elem) const
     {
         // wait until task queue is not empty
         sync::ConditionWaitLocker l(m_mutexCond,
@@ -93,7 +93,7 @@ public:
         elem = m_queue.front();
     }
 
-    bool NonblockingFront(ElemType& elem)
+    bool NonblockingFront(ElemType& elem) const
     {
         sync::MutexLocker l(m_mutexCond);
         if (m_queue.empty())
