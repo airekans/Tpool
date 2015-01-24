@@ -2,7 +2,6 @@
 #include "Thread.h"
 #include <gtest/gtest.h>
 #include <cstdlib>
-#include <boost/shared_ptr.hpp>
 #include <vector>
 
 using namespace std;

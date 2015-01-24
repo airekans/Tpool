@@ -5,8 +5,10 @@
 #include "ConditionVariable.h"
 
 #include <boost/noncopyable.hpp>
+#include <boost/bind.hpp>
 
 #include <queue>
+#include <cassert>
 
 namespace tpool {
 
@@ -14,6 +16,7 @@ template<typename T, typename QueueImpl = std::queue<T> >
 class BoundedBlockingQueue : private boost::noncopyable {
 private:
     typedef BoundedBlockingQueue<T, QueueImpl> Self;
+    typedef typename QueueImpl::container_type QueueContainer;
 
 public:
     typedef T ElemType;
@@ -22,7 +25,25 @@ public:
     explicit BoundedBlockingQueue(size_t max_size)
     : m_max_size(max_size), m_queue_empty_cond(m_queue_guard)
     , m_queue_full_cond(m_queue_guard)
-    {}
+    {
+        assert(max_size > 0);
+    }
+
+    BoundedBlockingQueue(size_t max_size, const QueueImpl& container)
+    : m_max_size(max_size), m_queue(container)
+    , m_queue_empty_cond(m_queue_guard), m_queue_full_cond(m_queue_guard)
+    {
+        assert(max_size > 0);
+        assert(container.size() <= max_size);
+    }
+
+    BoundedBlockingQueue(size_t max_size, const QueueContainer& container)
+    : m_max_size(max_size), m_queue(container)
+    , m_queue_empty_cond(m_queue_guard), m_queue_full_cond(m_queue_guard)
+    {
+        assert(max_size > 0);
+        assert(container.size() <= max_size);
+    }
 
     void Push(const T& elem)
     {
@@ -126,6 +147,11 @@ public:
     {
         sync::MutexLocker lock(m_queue_guard);
         return m_queue.size();
+    }
+
+    size_t MaxSize() const
+    {
+        return m_max_size;
     }
 
     bool IsFull() const
