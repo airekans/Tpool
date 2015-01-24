@@ -17,11 +17,18 @@ private:
 
 public:
     typedef T ElemType;
+    typedef QueueImpl QueueImplType;
 
     BlockingQueue() {}
-    BlockingQueue(const QueueContainer& container)
+
+    explicit BlockingQueue(const QueueImpl& container)
     : m_queue(container)
     {}
+
+    explicit BlockingQueue(const QueueContainer& container)
+    : m_queue(container)
+    {}
+
 
     void Push(const ElemType& elem)
     {
@@ -53,6 +60,21 @@ public:
         m_queue.pop();
     }
 
+    bool NonblockingPop(ElemType& elem)
+    {
+        sync::MutexLocker l(m_mutexCond);
+        if (m_queue.empty())
+        {
+            return false;
+        }
+        else
+        {
+            elem = m_queue.front();
+            m_queue.pop();
+            return true;
+        }
+    }
+
     ElemType Front() const
     {
         // wait until task queue is not empty
@@ -71,10 +93,30 @@ public:
         elem = m_queue.front();
     }
 
+    bool NonblockingFront(ElemType& elem)
+    {
+        sync::MutexLocker l(m_mutexCond);
+        if (m_queue.empty())
+        {
+            return false;
+        }
+        else
+        {
+            elem = m_queue.front();
+            return true;
+        }
+    }
+
     size_t Size() const
     {
         sync::MutexLocker l(m_mutexCond);
         return m_queue.size();
+    }
+
+    bool IsEmpty() const
+    {
+        sync::MutexLocker l(m_mutexCond);
+        return m_queue.empty();
     }
 
 private:

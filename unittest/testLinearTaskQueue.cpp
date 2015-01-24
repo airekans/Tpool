@@ -24,6 +24,8 @@ namespace {
       : num(n), taskQueue(q)
     {}
 
+    virtual ~PushThreadFunc() {}
+
     virtual void DoRun()
     {
       for (int i = 0; i < num; ++i)
