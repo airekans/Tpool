@@ -182,4 +182,68 @@ TEST(BoundedBlockingQueueTestSuite, test_NonblockingFront)
     ASSERT_TRUE(b_queue.IsEmpty());
 }
 
+TEST(BoundedBlockingQueueTestSuite, test_concurrent_blocking_push)
+{
+    int num_array[] = {1, 4, 5, 3, 7, 8};
+    size_t array_size = sizeof(num_array) / sizeof(int);
+    vector<int> numbers(num_array, num_array + array_size);
+    ASSERT_EQ(array_size, static_cast<size_t>(numbers.size()));
 
+    BoundedBlockingQueue<int> b_queue(array_size * 2 - 4);
+    ASSERT_EQ(array_size * 2 - 4, b_queue.MaxSize());
+
+    {
+        Thread t1((PushThreadFunc<int>(numbers, b_queue)));
+        Thread t2((PushThreadFunc<int>(numbers, b_queue)));
+        unittest::MilliSleep(500);
+        ASSERT_EQ(b_queue.MaxSize(), b_queue.Size());
+
+        for (int i = 0; i < 4; ++i)
+        {
+            (void) b_queue.Pop();
+        }
+    }
+
+    ASSERT_EQ(b_queue.MaxSize(), b_queue.Size());
+}
+
+namespace {
+
+template<typename T>
+struct PopThreadFunc {
+    size_t pop_count;
+    BoundedBlockingQueue<T>& blocking_queue;
+
+    PopThreadFunc(size_t cnt, BoundedBlockingQueue<T>& q)
+    : pop_count(cnt), blocking_queue(q)
+    {}
+
+    void operator()()
+    {
+        for (size_t i = 0; i < pop_count; ++i)
+        {
+            (void) blocking_queue.Front();
+            (void) blocking_queue.Pop();
+        }
+    }
+};
+
+}
+
+
+TEST(BoundedBlockingQueueTestSuite, test_concurrent_Push_Pop)
+{
+    int num_array[] = {1, 4, 5, 3, 7, 8};
+    size_t array_size = sizeof(num_array) / sizeof(int);
+    vector<int> numbers(num_array, num_array + array_size);
+    ASSERT_EQ(array_size, static_cast<size_t>(numbers.size()));
+
+    BoundedBlockingQueue<int> b_queue(array_size * 2 - 4);
+    {
+        Thread t1((PushThreadFunc<int>(numbers, b_queue)));
+        Thread t2((PushThreadFunc<int>(numbers, b_queue)));
+        Thread t3((PopThreadFunc<int>(array_size * 2, b_queue)));
+    }
+
+    ASSERT_EQ(0, static_cast<size_t>(b_queue.Size()));
+}
