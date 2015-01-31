@@ -2,6 +2,8 @@
 #ifndef _TPOOL_THREAD_H_
 #define _TPOOL_THREAD_H_
 
+#include "ThisThread.h"
+
 #include <pthread.h>
 #include <memory>
 #include <cstdlib>
@@ -10,66 +12,84 @@
 
 
 namespace tpool {
-  
-  class Thread : private boost::noncopyable {
-  public:
+
+class Thread : private boost::noncopyable {
+public:
     template<class Func>
     explicit Thread(const Func& f);
 
     ~Thread();
 
-  private:
+    int GetThreadId() const { return m_threadId; }
+
+private:
     template<class Func>
     static void* ThreadFunction(void* arg);
 
     void ProcessCreateError(const int error);
     static void ProcessException(const std::exception& e);
     static void ProcessUnknownException();
-    
 
-    pthread_t m_threadId;
+    template<typename Func>
+    struct ThreadArgs {
+        ThreadArgs(int* tid, const Func& f)
+        : threadId(tid), func(f)
+        {}
+
+        int* threadId;
+        Func func;
+    };
+
+    pthread_t m_threadData;
+    int m_threadId;
     bool m_isStart;
-  };
+};
 
 
-  // Implementation
-  template<class Func>
-  Thread::Thread(const Func& f)
-    : m_isStart(false)
-  {
-    std::auto_ptr<Func> fp(new Func(f));
+// Implementation
+template<class Func>
+Thread::Thread(const Func& f)
+: m_threadId(0), m_isStart(false)
+{
+    typedef ThreadArgs<Func> TArgs;
 
-    int error =  pthread_create(&m_threadId, NULL,
-				ThreadFunction<Func>, fp.get());
+    std::auto_ptr<TArgs> fp(new TArgs(&m_threadId, f));
+
+    int error =  pthread_create(&m_threadData, NULL,
+            ThreadFunction<Func>, fp.get());
     if (error != 0)
-      {
-	ProcessCreateError(error);
-      }
-	
+    {
+        ProcessCreateError(error);
+    }
+
     fp.release();
     m_isStart = true;
-  }
+}
 
-  template<class Func>
-  void* Thread::ThreadFunction(void* arg)
-  {
-    std::auto_ptr<Func> fp(static_cast<Func*>(arg));
+template<class Func>
+void* Thread::ThreadFunction(void* arg)
+{
+    typedef ThreadArgs<Func> TArgs;
+
+    std::auto_ptr<TArgs> fp(reinterpret_cast<TArgs*>(arg));
+    *(fp->threadId) = Tid();
 
     try
-      {
-	(*fp)(); // call the functor
-      }
+    {
+        (fp->func)(); // call the functor
+    }
     catch (const std::exception& e)
-      {
-	ProcessException(e);
-      }
+    {
+        ProcessException(e);
+    }
     catch (...)
-      {
-	ProcessUnknownException();
-      }
-	
+    {
+        ProcessUnknownException();
+    }
+
     return NULL;
-  }
 }
+
+}  // namespace tpool
 
 #endif

@@ -8,40 +8,40 @@ using namespace tpool;
 
 void Thread::ProcessCreateError(const int error)
 {
-  const string msg = "Create Thread failed: ";
-  if (error == EAGAIN) // resource limit
+    const string msg = "Create Thread failed: ";
+    if (error == EAGAIN) // resource limit
     {
-      throw std::runtime_error(msg + "resource limit");
+        throw std::runtime_error(msg + "resource limit");
     }
-  else if (error == EINVAL)
+    else if (error == EINVAL)
     {
-      throw std::runtime_error(msg + "invalid attribute");
+        throw std::runtime_error(msg + "invalid attribute");
     }
-  else if (error == EPERM)
+    else if (error == EPERM)
     {
-      throw std::runtime_error(msg + "no permission to set scheduling");
+        throw std::runtime_error(msg + "no permission to set scheduling");
     }
-  else
+    else
     {
-      throw std::runtime_error(msg + "unknown error");
+        throw std::runtime_error(msg + "unknown error");
     }
 }
 
 void Thread::ProcessException(const exception& e)
 {
-  cerr << e.what() << endl;
+    cerr << e.what() << endl;
 }
 
 void Thread::ProcessUnknownException()
 {
-  cerr << "Caught Unexpected Excetion." << endl;
+    cerr << "Caught Unexpected Excetion." << endl;
 }
 
 Thread::~Thread()
 {
-  if (m_isStart)
+    if (m_isStart)
     {
-      pthread_join(m_threadId, NULL);
+        pthread_join(m_threadData, NULL);
     }
 }
 

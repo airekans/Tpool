@@ -112,6 +112,14 @@ public:
         // The user code should set the condition to true
     }
 
+    explicit ConditionNotifyLocker(ConditionVariable& c)
+    : m_conditionVariable(c)
+    {
+        m_conditionVariable.Lock();
+        // TODO: change to notify after unlock
+        m_conditionVariable.Notify();
+    }
+
     ~ConditionNotifyLocker()
     {
         m_conditionVariable.Unlock();
