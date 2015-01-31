@@ -120,7 +120,7 @@ struct RunThreadFunctor {
 
 bool IsNotStart(bool& isStart)
 {
-    return isStart;
+    return !isStart;
 }
 
 }

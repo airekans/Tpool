@@ -3,6 +3,7 @@
 #define _TPOOL_THREAD_H_
 
 #include "ThisThread.h"
+#include "Atomic.h"
 
 #include <pthread.h>
 #include <memory>
@@ -32,16 +33,16 @@ private:
 
     template<typename Func>
     struct ThreadArgs {
-        ThreadArgs(int* tid, const Func& f)
+        ThreadArgs(Atomic<int>* tid, const Func& f)
         : threadId(tid), func(f)
         {}
 
-        int* threadId;
+        Atomic<int>* threadId;
         Func func;
     };
 
     pthread_t m_threadData;
-    int m_threadId;
+    Atomic<int> m_threadId;
     bool m_isStart;
 };
 
