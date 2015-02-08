@@ -1,5 +1,8 @@
 #include "FutureTask.h"
 #include "Thread.h"
+
+#include <boost/scoped_ptr.hpp>
+
 #include <gtest/gtest.h>
 
 using namespace tpool;
@@ -35,8 +38,8 @@ TEST(FutureTask, test_Call)
 
   task.Run();
 
-  int *result = task.GetResult();
-  ASSERT_NE((int *)NULL, result);
+  ::boost::scoped_ptr<int> result(task.GetResult());
+  ASSERT_NE((int *)NULL, result.get());
   ASSERT_EQ(1, *result);
 }
 
