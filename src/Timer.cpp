@@ -181,6 +181,10 @@ void tpool::Timer::ThreadFunction(const Function& checkFunc)
             const TimeValue deadline = task->GetDeadline();
             if (task->IsCancelled())
             {
+                (void) m_timer_queue.PopMin();
+            }
+            else if (task->IsRequestCancel())
+            {
                 is_fired = true;
                 (void) m_timer_queue.PopMin();
             }
