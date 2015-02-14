@@ -103,7 +103,7 @@ struct WaitThreadFunc {
 
     void operator()()
     {
-        MutexWaitLocker(mutex,
+        MutexWaitLocker lock(mutex,
                 (GreaterThanFunc(counter)));
         cout << "wait end: counter " << counter << endl;
         wakeCount = counter; // wakeCount should > 0 now
