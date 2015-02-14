@@ -1,5 +1,6 @@
 #include "FutureTask.h"
 #include "Thread.h"
+#include "Atomic.h"
 
 #include <boost/scoped_ptr.hpp>
 
@@ -46,9 +47,9 @@ TEST(FutureTask, test_Call)
 namespace {
   struct TestIncFutureTask : public FutureTask<int>
   {
-    int& data;
+    Atomic<int>& data;
     
-    TestIncFutureTask(int& i)
+    TestIncFutureTask(Atomic<int>& i)
       : data(i)
     {}
 
@@ -76,7 +77,7 @@ namespace {
 
 TEST(FutureTask, test_GetResultBeforeCallDone)
 {
-  int data = 0;
+  Atomic<int> data(0);
   TestIncFutureTask task(data);
 
   {

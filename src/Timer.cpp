@@ -26,26 +26,31 @@ tpool::TimerTask::TimerTask()
 
 TimeValue tpool::TimerTask::GetDeadline() const
 {
+    sync::MutexLocker lock(m_time_guard);
     return m_deadline;
 }
 
 void tpool::TimerTask::SetDeadline(const TimeValue deadline)
 {
+    sync::MutexLocker lock(m_time_guard);
     m_deadline = deadline;
 }
 
 bool tpool::TimerTask::IsIntervalTask() const
 {
+    sync::MutexLocker lock(m_time_guard);
     return m_interval > 0;
 }
 
 TimeValue tpool::TimerTask::GetInterval() const
 {
+    sync::MutexLocker lock(m_time_guard);
     return m_interval;
 }
 
 void tpool::TimerTask::SetInterval(const TimeValue interval)
 {
+    sync::MutexLocker lock(m_time_guard);
     m_interval = interval;
 }
 

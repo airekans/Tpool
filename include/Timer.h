@@ -5,6 +5,7 @@
 #include "CancelableThread.h"
 #include "ConditionVariable.h"
 #include "TaskBase.h"
+#include "Mutex.h"
 
 #include <memory>
 #include <queue>
@@ -39,6 +40,7 @@ private:
 
     TimeValue m_deadline;
     TimeValue m_interval;
+    mutable sync::Mutex m_time_guard;
 };
 
 template<typename Func>

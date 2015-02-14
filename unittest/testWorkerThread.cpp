@@ -20,9 +20,9 @@ TEST(WorkerThread, test_Ctor)
 
 namespace {
   struct TestTask : public TaskBase {
-    int& counter;
+    Atomic<int>& counter;
 
-    TestTask(int& i)
+    TestTask(Atomic<int>& i)
       : counter(i)
     {}
 
@@ -36,7 +36,7 @@ namespace {
 
 TEST(WorkerThread, test_Cancel)
 {
-  int counter = 0;
+  Atomic<int> counter(0);
   TaskQueueBase::Ptr q(new LinearTaskQueue);
   {
     WorkerThread t(q);
@@ -53,7 +53,7 @@ TEST(WorkerThread, test_Cancel)
 
 TEST(WorkerThread, test_multiple_Cancel)
 {
-  int counter = 0;
+  Atomic<int> counter(0);
   TaskQueueBase::Ptr q(new LinearTaskQueue);
   {
     WorkerThread t(q);
@@ -84,7 +84,7 @@ namespace {
 
 TEST(WorkerThread, test_multiple_Cancel_simultunuously)
 {
-  int counter = 0;
+  Atomic<int> counter(0);
   TaskQueueBase::Ptr q(new LinearTaskQueue);
   {
     WorkerThread t(q);
@@ -100,7 +100,7 @@ TEST(WorkerThread, test_multiple_Cancel_simultunuously)
 
 TEST(WorkerThread, test_CancelAsync)
 {
-  int counter = 0;
+  Atomic<int> counter(0);
   TaskQueueBase::Ptr q(new LinearTaskQueue);
   {
     WorkerThread t(q);
@@ -116,9 +116,9 @@ TEST(WorkerThread, test_CancelAsync)
 namespace {
   struct FinishAction
   {
-    int& counter;
+    Atomic<int>& counter;
     
-    FinishAction(int& i)
+    FinishAction(Atomic<int>& i)
       : counter(i)
     {}
 
@@ -131,7 +131,7 @@ namespace {
 
 TEST(WorkerThread, test_ctor_with_FinishAction)
 {
-  int counter = 0;
+  Atomic<int> counter(0);
 
   TaskQueueBase::Ptr q(new LinearTaskQueue);
   {
@@ -144,7 +144,7 @@ TEST(WorkerThread, test_ctor_with_FinishAction)
 
 namespace {
   struct LoopTask : TestTask {
-    LoopTask(int& i)
+    LoopTask(Atomic<int>& i)
       : TestTask(i)
     {}
 
@@ -161,8 +161,8 @@ namespace {
 
 TEST(WorkerThread, test_CancelNow)
 {
-  int counter = 0;
-  int finishFlag = 0;
+  Atomic<int> counter(0);
+  Atomic<int> finishFlag(0);
   TaskQueueBase::Ptr q(new LinearTaskQueue);
   {
     WorkerThread t(q, FinishAction(finishFlag));
@@ -177,8 +177,8 @@ TEST(WorkerThread, test_CancelNow)
 
 TEST(WorkerThread, test_multiple_CancelNow)
 {
-  int counter = 0;
-  int finishFlag = 0;
+  Atomic<int> counter(0);
+  Atomic<int> finishFlag(0);
   TaskQueueBase::Ptr q(new LinearTaskQueue);
   {
     WorkerThread t(q, FinishAction(finishFlag));
@@ -194,7 +194,7 @@ TEST(WorkerThread, test_multiple_CancelNow)
 
 namespace {
   struct SleepFinishAction : public FinishAction {
-    SleepFinishAction(int& i)
+    SleepFinishAction(Atomic<int>& i)
       : FinishAction(i)
     {}
     
@@ -208,8 +208,8 @@ namespace {
 
 TEST(WorkerThread, test_FinishAcion_execute_before_Finished)
 {
-  int counter = 0;
-  int finishFlag = 0;
+  Atomic<int> counter(0);
+  Atomic<int> finishFlag(0);
   TaskQueueBase::Ptr q(new LinearTaskQueue);
   {
     WorkerThread t(q, FinishAction(finishFlag));

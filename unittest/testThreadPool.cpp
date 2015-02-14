@@ -218,8 +218,8 @@ TEST(FixedThreadPool, test_AddTimerTask_and_CancelAsync)
 {
   int counter = 0;
   {
-    LFixedThreadPool threadPool;
     TaskBase::Ptr task(new IncTask(counter));
+    LFixedThreadPool threadPool;
     threadPool.AddTimerTask(task, 200);
     ASSERT_EQ(0, counter);
     task->CancelAsync();
@@ -230,8 +230,8 @@ TEST(FixedThreadPool, test_AddTimerTask_and_CancelAsync)
   ASSERT_EQ(0, counter);
 
   {
-    LFixedThreadPool threadPool;
     TaskBase::Ptr task(new IncTask(counter));
+    LFixedThreadPool threadPool;
     task = threadPool.AddTimerTask(task, 200);
     ASSERT_EQ(0, counter);
     task->CancelAsync();
@@ -246,8 +246,8 @@ TEST(FixedThreadPool, test_AddTimerTask_and_Cancel)
 {
   int counter = 0;
   {
-    LFixedThreadPool threadPool;
     TaskBase::Ptr task(new IncTask(counter));
+    LFixedThreadPool threadPool;
     threadPool.AddTimerTask(task, 200);
     ASSERT_EQ(0, counter);
     task->Cancel();
@@ -258,8 +258,8 @@ TEST(FixedThreadPool, test_AddTimerTask_and_Cancel)
   ASSERT_EQ(0, counter);
 
   {
-    LFixedThreadPool threadPool;
     TaskBase::Ptr task(new IncTask(counter));
+    LFixedThreadPool threadPool;
     task = threadPool.AddTimerTask(task, 200);
     ASSERT_EQ(0, counter);
     task->Cancel();
@@ -297,8 +297,8 @@ TEST(FixedThreadPool, test_AddIntervalTask_and_CancelAsync)
 {
   int counter = 0;
   {
-    LFixedThreadPool threadPool;
     TaskBase::Ptr task(new IncTask(counter));
+    LFixedThreadPool threadPool;
     threadPool.AddIntervalTask(task, 200, false);
     ASSERT_EQ(0, counter);
     task->CancelAsync();
@@ -312,8 +312,8 @@ TEST(FixedThreadPool, test_AddIntervalTask_and_CancelAsync)
   ASSERT_EQ(0, counter);
 
   {
-    LFixedThreadPool threadPool;
     TaskBase::Ptr task(new IncTask(counter));
+    LFixedThreadPool threadPool;
     task = threadPool.AddIntervalTask(task, 200, false);
     ASSERT_EQ(0, counter);
     task->CancelAsync();
@@ -331,8 +331,8 @@ TEST(FixedThreadPool, test_AddIntervalTask_and_Cancel)
 {
   int counter = 0;
   {
-    LFixedThreadPool threadPool;
     TaskBase::Ptr task(new IncTask(counter));
+    LFixedThreadPool threadPool;
     threadPool.AddIntervalTask(task, 200, false);
     ASSERT_EQ(0, counter);
     task->Cancel();
@@ -346,8 +346,8 @@ TEST(FixedThreadPool, test_AddIntervalTask_and_Cancel)
   ASSERT_EQ(0, counter);
 
   {
-    LFixedThreadPool threadPool;
     TaskBase::Ptr task(new IncTask(counter));
+    LFixedThreadPool threadPool;
     task = threadPool.AddIntervalTask(task, 200, false);
     ASSERT_EQ(0, counter);
     task->Cancel();

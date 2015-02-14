@@ -260,12 +260,13 @@ namespace tpool {
   {
     using boost::bind;
 
+    size_t stoppedThreadNum = 0;
     {
       sync::MutexLocker l(m_stoppedThreadNumGuard);
-      ++m_stoppedThreadNum;
+      stoppedThreadNum = ++m_stoppedThreadNum;
     }
 
-    if (m_stoppedThreadNum >= m_threads.size())
+    if (stoppedThreadNum >= m_threads.size())
       {
     	sync::ConditionNotifyAllLocker l(m_stateGuard,
     				      bind(&Atomic<bool>::GetData,
