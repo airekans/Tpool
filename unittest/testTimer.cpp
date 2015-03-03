@@ -302,6 +302,45 @@ TEST_F(TimerTestSuite, test_RunEvery_with_multiple_threads)
   ASSERT_EQ(6, counter);
 }
 
+namespace {
+  struct SelfCancelTimerTask : public TimerTask
+  {
+    Atomic<int>& counter;
+    const int cancel_count;
+
+    SelfCancelTimerTask(Atomic<int>& cnt, int cancel_cnt)
+    : counter(cnt), cancel_count(cancel_cnt)
+    {}
+
+    virtual void DoRun()
+    {
+      ++counter;
+      if (counter == cancel_count)
+      {
+        CancelAsync();
+      }
+    }
+  };
+}
+
+TEST_F(TimerTestSuite, test_RunEvery_with_self_cancel_task)
+{
+  {
+    Timer timer;
+    TimerTask::Ptr task(new SelfCancelTimerTask(counter, 3));
+    timer.RunEvery(task, 200, false);
+    MilliSleep(100);
+    ASSERT_EQ(0, counter);
+
+    while (!(task->IsCancelled()))
+    {
+      MilliSleep(200);
+    }
+    ASSERT_EQ(3, counter);
+  }
+  ASSERT_EQ(3, counter);
+}
+
 TEST_F(TimerTestSuite, test_StopAsync)
 {
   {
