@@ -12,7 +12,7 @@ namespace {
   class TimerTestSuite : public ::testing::Test
   {
   protected:
-    Atomic<unsigned> counter;
+    Atomic<int> counter;
 
     TimerTestSuite()
     : counter(0)
@@ -26,9 +26,9 @@ namespace {
 
   struct TestTimerTask : public TimerTask
   {
-    Atomic<unsigned>& counter;
+    Atomic<int>& counter;
 
-    TestTimerTask(Atomic<unsigned>& cnt)
+    TestTimerTask(Atomic<int>& cnt)
     : counter(cnt)
     {}
 
@@ -186,9 +186,9 @@ TEST_F(TimerTestSuite, test_Run_with_multiple_tasks)
 namespace {
   struct TestTimerFunc
   {
-    Atomic<unsigned>& counter;
+    Atomic<int>& counter;
 
-    TestTimerFunc(Atomic<unsigned>& cnt)
+    TestTimerFunc(Atomic<int>& cnt)
     : counter(cnt)
     {}
 
@@ -215,10 +215,10 @@ TEST_F(TimerTestSuite, test_RunLater_with_functor)
 namespace {
   struct RunLaterThread {
     Timer& m_timer;
-    Atomic<unsigned>& m_counter;
+    Atomic<int>& m_counter;
     TimeValue m_delay;
 
-    RunLaterThread(Timer& timer, Atomic<unsigned>& counter,
+    RunLaterThread(Timer& timer, Atomic<int>& counter,
         TimeValue delay)
     : m_timer(timer), m_counter(counter), m_delay(delay)
     {}
@@ -265,11 +265,11 @@ TEST_F(TimerTestSuite, test_RunEvery_with_functor)
 namespace {
   struct RunEveryThread {
     Timer& m_timer;
-    Atomic<unsigned>& m_counter;
+    Atomic<int>& m_counter;
     TimeValue m_delay;
     bool m_is_run_now;
 
-    RunEveryThread(Timer& timer, Atomic<unsigned>& counter,
+    RunEveryThread(Timer& timer, Atomic<int>& counter,
         TimeValue delay, bool is_run_now)
     : m_timer(timer), m_counter(counter), m_delay(delay),
       m_is_run_now(is_run_now)
