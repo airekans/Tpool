@@ -19,32 +19,58 @@ public:
     typedef T ElemType;
     typedef QueueImpl QueueImplType;
 
-    BlockingQueue() {}
+    BlockingQueue()
+    : m_waiting_pop_count(0), m_waiting_front_count(0)
+    {}
 
     explicit BlockingQueue(const QueueImpl& container)
-    : m_queue(container)
+    : m_queue(container), m_waiting_pop_count(0), m_waiting_front_count(0)
     {}
 
     explicit BlockingQueue(const QueueContainer& container)
-    : m_queue(container)
+    : m_queue(container), m_waiting_pop_count(0), m_waiting_front_count(0)
     {}
-
 
     void Push(const ElemType& elem)
     {
-        sync::ConditionNotifyAllLocker l(m_mutexCond,
-                boost::bind(&QueueImpl::empty, &m_queue));
+        sync::MutexLocker lock(m_mutexCond);
         m_queue.push(elem);
+        if (m_waiting_front_count > 0)
+        {
+            m_mutexCond.NotifyAll();
+            m_waiting_front_count = 0;
+            if (m_waiting_pop_count > 0)
+            {
+                --m_waiting_pop_count;
+            }
+        }
+        else if (m_waiting_pop_count > 0)
+        {
+            m_mutexCond.Notify();
+            --m_waiting_pop_count;
+        }
     }
 
     // Return copy here to avoid concurrent acess issue
     ElemType Pop()
     {
+        ElemType elem;
         // wait until task queue is not empty
-        sync::ConditionWaitLocker l(m_mutexCond,
-                boost::bind(&QueueImpl::empty, &m_queue));
+        for (int i = 0; i < 100; ++i)
+        {
+            if (NonblockingPop(elem))
+            {
+                return elem;
+            }
+        }
+        sync::MutexLocker lock(m_mutexCond);
+        while (m_queue.empty())
+        {
+            ++m_waiting_pop_count;
+            m_mutexCond.Wait();
+        }
 
-        ElemType elem = m_queue.front();
+        elem = m_queue.front();
         m_queue.pop();
         return elem;
     }
@@ -53,8 +79,12 @@ public:
     void Pop(ElemType& elem)
     {
         // wait until task queue is not empty
-        sync::ConditionWaitLocker l(m_mutexCond,
-                boost::bind(&QueueImpl::empty, &m_queue));
+        sync::MutexLocker lock(m_mutexCond);
+        while (m_queue.empty())
+        {
+            ++m_waiting_pop_count;
+            m_mutexCond.Wait();
+        }
 
         elem = m_queue.front();
         m_queue.pop();
@@ -78,8 +108,12 @@ public:
     ElemType Front() const
     {
         // wait until task queue is not empty
-        sync::ConditionWaitLocker l(m_mutexCond,
-                boost::bind(&QueueImpl::empty, &m_queue));
+        sync::MutexLocker lock(m_mutexCond);
+        while (m_queue.empty())
+        {
+            ++m_waiting_front_count;
+            m_mutexCond.Wait();
+        }
         return m_queue.front();
     }
 
@@ -87,8 +121,12 @@ public:
     void Front(ElemType& elem) const
     {
         // wait until task queue is not empty
-        sync::ConditionWaitLocker l(m_mutexCond,
-                boost::bind(&QueueImpl::empty, &m_queue));
+        sync::MutexLocker lock(m_mutexCond);
+        while (m_queue.empty())
+        {
+            ++m_waiting_front_count;
+            m_mutexCond.Wait();
+        }
 
         elem = m_queue.front();
     }
@@ -121,6 +159,8 @@ public:
 
 private:
     QueueImpl m_queue;
+    mutable unsigned int m_waiting_pop_count;
+    mutable unsigned int m_waiting_front_count;
     mutable sync::MutexConditionVariable m_mutexCond;
 };
 
