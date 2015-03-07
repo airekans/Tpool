@@ -20,34 +20,25 @@ public:
     typedef QueueImpl QueueImplType;
 
     BlockingQueue()
-    : m_waiting_pop_count(0), m_waiting_front_count(0)
+    : m_waiting_count(0)
     {}
 
     explicit BlockingQueue(const QueueImpl& container)
-    : m_queue(container), m_waiting_pop_count(0), m_waiting_front_count(0)
+    : m_queue(container), m_waiting_count(0)
     {}
 
     explicit BlockingQueue(const QueueContainer& container)
-    : m_queue(container), m_waiting_pop_count(0), m_waiting_front_count(0)
+    : m_queue(container), m_waiting_count(0)
     {}
 
     void Push(const ElemType& elem)
     {
         sync::MutexLocker lock(m_mutexCond);
         m_queue.push(elem);
-        if (m_waiting_front_count > 0)
+        if (m_waiting_count > 0)
         {
             m_mutexCond.NotifyAll();
-            m_waiting_front_count = 0;
-            if (m_waiting_pop_count > 0)
-            {
-                --m_waiting_pop_count;
-            }
-        }
-        else if (m_waiting_pop_count > 0)
-        {
-            m_mutexCond.Notify();
-            --m_waiting_pop_count;
+            m_waiting_count = 0;
         }
     }
 
@@ -66,7 +57,7 @@ public:
         sync::MutexLocker lock(m_mutexCond);
         while (m_queue.empty())
         {
-            ++m_waiting_pop_count;
+            ++m_waiting_count;
             m_mutexCond.Wait();
         }
 
@@ -82,7 +73,7 @@ public:
         sync::MutexLocker lock(m_mutexCond);
         while (m_queue.empty())
         {
-            ++m_waiting_pop_count;
+            ++m_waiting_count;
             m_mutexCond.Wait();
         }
 
@@ -111,7 +102,7 @@ public:
         sync::MutexLocker lock(m_mutexCond);
         while (m_queue.empty())
         {
-            ++m_waiting_front_count;
+            ++m_waiting_count;
             m_mutexCond.Wait();
         }
         return m_queue.front();
@@ -124,7 +115,7 @@ public:
         sync::MutexLocker lock(m_mutexCond);
         while (m_queue.empty())
         {
-            ++m_waiting_front_count;
+            ++m_waiting_count;
             m_mutexCond.Wait();
         }
 
@@ -159,8 +150,7 @@ public:
 
 private:
     QueueImpl m_queue;
-    mutable unsigned int m_waiting_pop_count;
-    mutable unsigned int m_waiting_front_count;
+    mutable unsigned int m_waiting_count;
     mutable sync::MutexConditionVariable m_mutexCond;
 };
 
