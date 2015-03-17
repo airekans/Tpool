@@ -14,6 +14,7 @@ namespace tpool {
     
     virtual void Push(TaskBase::Ptr task) = 0;
     virtual TaskBase::Ptr Pop() = 0;
+    virtual bool NonblockingPop(TaskBase::Ptr& task) = 0;
     virtual size_t Size() const = 0;
   };
 }

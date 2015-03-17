@@ -39,6 +39,7 @@ inline void WorkerThread::Init(TaskQueueBase::Ptr taskQueue,
     using boost::bind;
 
     m_taskQueue = taskQueue;
+    m_pendingTasks.reserve(4);
 
     // ensure that the thread is created successfully.
     while (true)
@@ -114,6 +115,31 @@ void WorkerThread::WorkFunction(const Function& checkFunc)
             {
                 m_runningTask->Run();
             }
+
+            bool isExit = false;
+            for (std::size_t i = 0; i < m_pendingTasks.size(); ++i)
+            {
+                {
+                    MutexLocker l(m_runningTaskGuard);
+                    m_runningTask = m_pendingTasks[i];
+                }
+                checkFunc();
+
+                m_pendingTasks[i].reset();
+                if (dynamic_cast<EndTask*>(m_runningTask.get()) != NULL)
+                {
+                    isExit = true;
+                    break; // stop the worker thread.
+                }
+                else
+                {
+                    m_runningTask->Run();
+                }
+            }
+            if (isExit)
+            {
+                break;
+            }
         }
         // 4. perform any post-task action
     }
@@ -121,7 +147,28 @@ void WorkerThread::WorkFunction(const Function& checkFunc)
 
 void WorkerThread::GetTaskFromTaskQueue()
 {
-    MutexLocker l(m_runningTaskGuard);
-    m_runningTask = m_taskQueue->Pop();
+    {
+        MutexLocker l(m_runningTaskGuard);
+        m_runningTask = m_taskQueue->Pop();
+    }
+
+    if (dynamic_cast<EndTask*>(m_runningTask.get()) != NULL)
+    {
+        return;
+    }
+
+    m_pendingTasks.clear();
+    TaskBase::Ptr task;
+    for (std::size_t i = 0; i < m_pendingTasks.capacity(); ++i)
+    {
+        if (m_taskQueue->NonblockingPop(task))
+        {
+            m_pendingTasks.push_back(task);
+            if (dynamic_cast<EndTask*>(task.get()) != NULL)
+            {
+                return;
+            }
+        }
+    }
 }
 

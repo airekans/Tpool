@@ -47,13 +47,13 @@ public:
     {
         ElemType elem;
         // wait until task queue is not empty
-        for (int i = 0; i < 100; ++i)
-        {
-            if (NonblockingPop(elem))
-            {
-                return elem;
-            }
-        }
+//        for (;;)
+//        {
+//            if (NonblockingPop(elem))
+//            {
+//                return elem;
+//            }
+//        }
         sync::MutexLocker lock(m_mutexCond);
         while (m_queue.empty())
         {

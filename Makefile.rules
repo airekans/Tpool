@@ -5,7 +5,7 @@ df = $(DEPDIR)/$(*F)
 MAKEDEPEND = g++ $(CXXFLAGS) -MM -MT $*.o $<
 
 ifdef DEBUG
-CXXFLAGS += -g -D_DEBUG_
+CXXFLAGS += -g  #-D_DEBUG_
 else
 CXXFLAGS += -O2
 endif

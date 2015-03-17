@@ -15,6 +15,11 @@ TaskBase::Ptr LinearTaskQueue::Pop()
     return m_tasks.Pop();
 }
 
+bool LinearTaskQueue::NonblockingPop(TaskBase::Ptr& task)
+{
+    return m_tasks.NonblockingPop(task);
+}
+
 size_t LinearTaskQueue::Size() const
 {
     return m_tasks.Size();

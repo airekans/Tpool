@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <exception>
+#include <vector>
 
 namespace tpool {
 
@@ -45,6 +46,7 @@ private:
     TaskQueueBase::Ptr m_taskQueue;
     TaskBase::Ptr m_runningTask;
     mutable sync::Mutex m_runningTaskGuard;
+    std::vector<TaskBase::Ptr> m_pendingTasks;
     std::auto_ptr<CancelableThread> m_thread; // Thread must be the last variable
 };
 

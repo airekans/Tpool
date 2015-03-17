@@ -12,6 +12,7 @@ class LinearTaskQueue : public TaskQueueBase {
 public:
     virtual void Push(TaskBase::Ptr task);
     virtual TaskBase::Ptr Pop();
+    virtual bool NonblockingPop(TaskBase::Ptr& task);
     virtual size_t Size() const;
 
 private:

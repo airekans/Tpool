@@ -13,6 +13,7 @@ namespace tpool {
 
     virtual void Push(TaskBase::Ptr task);
     virtual TaskBase::Ptr Pop();
+    virtual bool NonblockingPop(TaskBase::Ptr& task) { return false; }
     virtual size_t Size() const;
 
   private:
